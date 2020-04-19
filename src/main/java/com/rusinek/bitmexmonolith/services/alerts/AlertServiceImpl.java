@@ -6,6 +6,7 @@ import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AlertRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,12 @@ import java.util.List;
  * Created by Adrian Rusinek on 19.03.2020
  **/
 @Service
+@RequiredArgsConstructor
 public class AlertServiceImpl implements AlertService{
 
-    private AlertRepository alertRepository;
-    private MapValidationErrorService errorService;
-    private UserRepository userRepository;
-
-    public AlertServiceImpl(AlertRepository alertRepository, MapValidationErrorService errorService, UserRepository userRepository) {
-        this.alertRepository = alertRepository;
-        this.errorService = errorService;
-        this.userRepository = userRepository;
-    }
+    private final AlertRepository alertRepository;
+    private final MapValidationErrorService errorService;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {

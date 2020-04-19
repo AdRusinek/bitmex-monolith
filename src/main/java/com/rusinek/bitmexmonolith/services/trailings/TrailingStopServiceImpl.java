@@ -8,6 +8,7 @@ import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.services.credentials.AccountService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +22,15 @@ import java.util.stream.Collectors;
 /**
  * Created by Adrian Rusinek on 25.02.2020
  **/
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class TrailingStopServiceImpl implements TrailingStopService {
 
-    private TrailingStopRepository trailingStopRepository;
-    private UserRepository userRepository;
-    private AccountService accountService;
-    private MapValidationErrorService errorService;
-
-    public TrailingStopServiceImpl(TrailingStopRepository trailingStopRepository, UserRepository userRepository,
-                                   AccountService accountService, MapValidationErrorService errorService) {
-        this.trailingStopRepository = trailingStopRepository;
-        this.userRepository = userRepository;
-        this.accountService = accountService;
-        this.errorService = errorService;
-    }
+    private final TrailingStopRepository trailingStopRepository;
+    private final UserRepository userRepository;
+    private final AccountService accountService;
+    private final MapValidationErrorService errorService;
 
     @Override
     public ResponseEntity<?> saveTrailingStop(TrailingStop trailingStop, BindingResult result, Principal principal, String accountId) {

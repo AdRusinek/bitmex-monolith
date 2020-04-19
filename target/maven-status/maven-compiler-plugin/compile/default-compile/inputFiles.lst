@@ -29,7 +29,6 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\payload\LoginRequest.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNotFoundException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\model\User.java
-C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\fileExceptions\FileStorageException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\model\Alert.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\JwtTokenProvider.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\validator\UserValidator.java
@@ -47,7 +46,6 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\BitmexMonolithApplication.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\SecurityConstants.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\websocket\WebSocketInspector.java
-C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\fileExceptions\FileNotFoundException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\TrailingStopController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\authenticationException\InvalidLoginResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\alerts\AlertServiceImpl.java

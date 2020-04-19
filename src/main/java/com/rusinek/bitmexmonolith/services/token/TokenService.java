@@ -6,6 +6,7 @@ import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.services.mail.MailService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
@@ -18,17 +19,12 @@ import java.util.UUID;
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
-    private MailService mailService;
-    private TokenRepository tokenRepository;
-    private UserRepository userRepository;
-
-    public TokenService(MailService mailService, TokenRepository tokenRepository, UserRepository userRepository) {
-        this.mailService = mailService;
-        this.tokenRepository = tokenRepository;
-        this.userRepository = userRepository;
-    }
+    private final MailService mailService;
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
 
     public RedirectView verifyToken(String value) {
         Token token = tokenRepository.findByValue(value);

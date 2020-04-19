@@ -2,6 +2,7 @@ package com.rusinek.bitmexmonolith.services.users;
 
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Adrian Rusinek on 02.03.2020
  **/
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
 
-    private UserRepository userRepository;
-
-    public CustomUserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

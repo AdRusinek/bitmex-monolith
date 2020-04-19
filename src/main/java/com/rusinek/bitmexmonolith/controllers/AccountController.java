@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.services.credentials.AccountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +14,13 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 08.03.2020
  **/
-@RestController
-@RequestMapping("api/accounts")
 @CrossOrigin
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("api/accounts")
 public class AccountController {
 
-    private AccountService accountService;
-
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
-    }
+    private final AccountService accountService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addAccountForUser(@Valid @RequestBody Account account,

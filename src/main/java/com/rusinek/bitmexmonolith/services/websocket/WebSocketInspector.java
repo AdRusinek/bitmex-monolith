@@ -5,6 +5,7 @@ import com.rusinek.bitmexmonolith.services.websocket.observers.TrailingStopSende
 import info.bitrich.xchangestream.bitmex.BitmexStreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchangeFactory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -20,15 +21,11 @@ import java.util.Date;
  **/
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class WebSocketInspector implements ApplicationListener<ContextRefreshedEvent> {
 
-    private TrailingStopSender trailingStopSender;
-    private AlertSender alertSender;
-
-    public WebSocketInspector(TrailingStopSender trailingStopSender, AlertSender alertSender) {
-        this.trailingStopSender = trailingStopSender;
-        this.alertSender = alertSender;
-    }
+    private final TrailingStopSender trailingStopSender;
+    private final AlertSender alertSender;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {

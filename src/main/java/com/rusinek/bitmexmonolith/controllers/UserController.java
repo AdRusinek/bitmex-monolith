@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.services.users.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,14 +17,11 @@ import javax.validation.Valid;
  * Created by Adrian Rusinek on 01.03.2020
  **/
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
-    private UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,

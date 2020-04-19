@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.services.alerts.AlertService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +14,13 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 19.03.2020
  **/
-@RestController
-@RequestMapping("/api/alerts")
 @CrossOrigin
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/alerts")
 public class AlertController {
 
-    private AlertService alertService;
-
-    public AlertController(AlertService alertService) {
-        this.alertService = alertService;
-    }
+    private final AlertService alertService;
 
     @PostMapping("/setAlert")
     public ResponseEntity<?> setAlert(@RequestBody @Valid Alert alert,

@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.security;
 
 import com.rusinek.bitmexmonolith.services.users.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,20 +24,13 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.SIGN_UP_URLS
  **/
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity( securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
-    private CustomUserDetailsService customUserDetailsService;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public SecurityConfig(JwtAuthenticationEntryPoint unauthorizedHandler,
-                          CustomUserDetailsService customUserDetailsService,
-                          BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.unauthorizedHandler = unauthorizedHandler;
-        this.customUserDetailsService = customUserDetailsService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

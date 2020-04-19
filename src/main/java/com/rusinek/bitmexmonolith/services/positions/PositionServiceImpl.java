@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.services.positions;
 
 import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,13 +21,10 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PositionServiceImpl implements PositionService {
 
-    private ExchangeService exchangeService;
-
-    public PositionServiceImpl(ExchangeService exchangeService) {
-        this.exchangeService = exchangeService;
-    }
+    private final ExchangeService exchangeService;
 
     @Override
     public ResponseEntity<String> requestPositions(String accountId, Principal principal) {

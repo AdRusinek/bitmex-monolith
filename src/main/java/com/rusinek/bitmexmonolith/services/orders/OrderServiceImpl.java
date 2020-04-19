@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.services.orders;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,13 +25,10 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private ExchangeService exchangeService;
-
-    public OrderServiceImpl(ExchangeService exchangeService) {
-        this.exchangeService = exchangeService;
-    }
+    private final ExchangeService exchangeService;
 
     private JSONArray setCorrectPrice(List<LinkedTreeMap> orders) {
         JSONArray array = new JSONArray();

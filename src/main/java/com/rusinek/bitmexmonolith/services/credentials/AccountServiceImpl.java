@@ -7,6 +7,7 @@ import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,19 +21,12 @@ import java.util.Optional;
  * Created by Adrian Rusinek on 21.02.2020
  **/
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private UserRepository userRepository;
-    private AccountRepository accountRepository;
-    private MapValidationErrorService mapValidationErrorService;
-
-    public AccountServiceImpl(UserRepository userRepository,
-                              AccountRepository accountRepository,
-                              MapValidationErrorService mapValidationErrorService) {
-        this.userRepository = userRepository;
-        this.accountRepository = accountRepository;
-        this.mapValidationErrorService = mapValidationErrorService;
-    }
+    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final MapValidationErrorService mapValidationErrorService;
 
     @Override
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {

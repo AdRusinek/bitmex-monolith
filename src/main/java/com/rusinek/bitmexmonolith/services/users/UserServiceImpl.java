@@ -9,6 +9,7 @@ import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
 import com.rusinek.bitmexmonolith.services.token.TokenService;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,31 +29,16 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private JwtTokenProvider tokenProvider;
-    private AuthenticationManager authenticationManager;
-    private MapValidationErrorService errorService;
-    private UserValidator userValidator;
-    private TokenService tokenService;
-
-
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                           JwtTokenProvider tokenProvider,
-                           AuthenticationManager authenticationManager,
-                           MapValidationErrorService errorService,
-                           UserValidator userValidator,
-                           TokenService tokenService) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.tokenProvider = tokenProvider;
-        this.authenticationManager = authenticationManager;
-        this.errorService = errorService;
-        this.userValidator = userValidator;
-        this.tokenService = tokenService;
-    }
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtTokenProvider tokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final MapValidationErrorService errorService;
+    private final UserValidator userValidator;
+    private final TokenService tokenService;
 
     @Override
     public User saveUser(User user) {

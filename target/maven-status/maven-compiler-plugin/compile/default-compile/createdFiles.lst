@@ -1,8 +1,8 @@
+com\rusinek\bitmexmonolith\model\User$UserBuilder.class
 com\rusinek\bitmexmonolith\validator\UserValidator.class
 com\rusinek\bitmexmonolith\services\exchange\ExchangeService$HTTP_METHOD.class
 com\rusinek\bitmexmonolith\services\positions\PositionServiceImpl.class
 com\rusinek\bitmexmonolith\services\websocket\observers\AlertSender.class
-com\rusinek\bitmexmonolith\exceptions\fileExceptions\FileNotFoundException.class
 com\rusinek\bitmexmonolith\services\websocket\observers\TrailingStopSender.class
 com\rusinek\bitmexmonolith\exceptions\authenticationException\UsernameAlreadyExistsException.class
 com\rusinek\bitmexmonolith\exceptions\authenticationException\InvalidLoginResponse.class
@@ -26,7 +26,6 @@ com\rusinek\bitmexmonolith\repositories\AlertRepository.class
 com\rusinek\bitmexmonolith\services\alerts\AlertServiceImpl.class
 com\rusinek\bitmexmonolith\model\User.class
 com\rusinek\bitmexmonolith\controllers\OrderController.class
-com\rusinek\bitmexmonolith\exceptions\fileExceptions\FileStorageException.class
 com\rusinek\bitmexmonolith\services\orders\OrderServiceImpl.class
 com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNotFoundException.class
 com\rusinek\bitmexmonolith\exceptions\MapValidationErrorService.class

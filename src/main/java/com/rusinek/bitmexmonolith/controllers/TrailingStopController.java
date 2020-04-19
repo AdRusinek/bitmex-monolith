@@ -2,6 +2,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.services.trailings.TrailingStopService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -12,16 +13,13 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 29.02.2020
  **/
-@RestController
-@RequestMapping("/api/trailing-stops")
 @CrossOrigin
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/trailing-stops")
 public class TrailingStopController {
 
-    private TrailingStopService trailingStopService;
-
-    public TrailingStopController(TrailingStopService trailingStopService) {
-        this.trailingStopService = trailingStopService;
-    }
+    private final TrailingStopService trailingStopService;
 
     @PostMapping("/set-trailing/{accountId}")
     public ResponseEntity<?> setTrailingStop(@Valid @RequestBody TrailingStop trailingStop,

@@ -1,5 +1,6 @@
 package com.rusinek.bitmexmonolith.services.mail;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,15 +13,11 @@ import javax.mail.internet.MimeMessage;
  * Created by Adrian Rusinek on 28.03.2020
  **/
 @Service
+@RequiredArgsConstructor
 public class MailService {
 
 
-    private JavaMailSender javaMailSender;
-
-    @Autowired
-    public MailService(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
+    private final JavaMailSender javaMailSender;
 
     public void sendMail(String to,
                          String subject,

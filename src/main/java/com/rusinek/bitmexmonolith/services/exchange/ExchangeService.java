@@ -11,6 +11,7 @@ import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,10 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ExchangeService {
 
-    private AccountRepository accountRepository;
-
-    public ExchangeService(AccountRepository credentialsRepository) {
-        this.accountRepository = credentialsRepository;
-    }
+    private final AccountRepository accountRepository;
 
     @SuppressWarnings("UnstableApiUsage")
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath,

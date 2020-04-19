@@ -4,6 +4,7 @@ import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.services.alerts.AlertService;
 import com.rusinek.bitmexmonolith.services.mail.MailService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.springframework.mail.MailException;
@@ -16,18 +17,14 @@ import javax.mail.MessagingException;
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AlertSender {
 
     private final String ABOVE = "above";
     private final String BELOW = "below";
 
-    private AlertService alertService;
-    private MailService mailService;
-
-    public AlertSender(AlertService alertService, MailService mailService) {
-        this.alertService = alertService;
-        this.mailService = mailService;
-    }
+    private final AlertService alertService;
+    private final MailService mailService;
 
     public void iterateAndSentEmail(Trade trade) {
         alertService.findAll().forEach(alert -> {

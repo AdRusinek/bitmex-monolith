@@ -1,6 +1,8 @@
 package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -10,6 +12,8 @@ import javax.validation.constraints.Positive;
 /**
  * Created by Adrian Rusinek on 19.03.2020
  **/
+@Getter
+@Setter
 @Entity
 public class Alert {
 
@@ -23,59 +27,10 @@ public class Alert {
     private Double alertTriggeringPrice;
     private String alertOwner;
     private String direction;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getAlertOwner() {
-        return alertOwner;
-    }
-
-    public void setAlertOwner(String alertOwner) {
-        this.alertOwner = alertOwner;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAlertMessage() {
-        return alertMessage;
-    }
-
-    public void setAlertMessage(String alertMessage) {
-        this.alertMessage = alertMessage;
-    }
-
-
-    public Double getAlertTriggeringPrice() {
-        return alertTriggeringPrice;
-    }
-
-    public void setAlertTriggeringPrice(Double alertTriggeringPrice) {
-        this.alertTriggeringPrice = alertTriggeringPrice;
-    }
 }
 

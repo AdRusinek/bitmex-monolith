@@ -1,21 +1,16 @@
 package com.rusinek.bitmexmonolith.exceptions.accountExceptions;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by Adrian Rusinek on 08.03.2020
  **/
+@Getter
+@Setter
+@AllArgsConstructor
 public class AccountNotFoundExceptionResponse {
 
     private String accountNotFound;
-
-    public AccountNotFoundExceptionResponse(String accountNotFound) {
-        this.accountNotFound = accountNotFound;
-    }
-
-    public String getAccountNotFound() {
-        return accountNotFound;
-    }
-
-    public void setAccountNotFound(String accountNotFound) {
-        this.accountNotFound = accountNotFound;
-    }
 }
