@@ -3,7 +3,6 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\AccountRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\alerts\AlertService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\PositionController.java
-C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\TokenController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\TrailingStopRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\positions\PositionService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\orders\OrderService.java
@@ -17,12 +16,14 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\users\CustomUserDetailsService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\websocket\observers\TrailingStopSender.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\authenticationException\UsernameAlreadyExistsException.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\mappers\AccountMapper.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\UserRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\AlertController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\JwtAuthenticationFilter.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNotFoundExceptionResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\AlertRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\credentials\AccountService.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\dto\AlertDto.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\payload\JWTLoginSuccessResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\users\CustomUserDetailsServiceImpl.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\UserController.java
@@ -35,7 +36,6 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\websocket\observers\AlertSender.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\CustomResponseEntityExceptionHandler.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\TokenRepository.java
-C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\token\TokenService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountIdExceptionResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\trailings\TrailingStopService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\users\UserService.java
@@ -44,9 +44,11 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\mail\MailService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountIdException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\BitmexMonolithApplication.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\dto\AccountDto.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\SecurityConstants.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\websocket\WebSocketInspector.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\TrailingStopController.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\mappers\AlertMapper.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\authenticationException\InvalidLoginResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\alerts\AlertServiceImpl.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\model\Account.java

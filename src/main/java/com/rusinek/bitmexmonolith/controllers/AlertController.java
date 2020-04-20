@@ -23,7 +23,7 @@ public class AlertController {
     private final AlertService alertService;
 
     @PostMapping("/setAlert")
-    public ResponseEntity<?> setAlert(@RequestBody @Valid Alert alert,
+    public ResponseEntity<?> postAlert(@RequestBody @Valid Alert alert,
                                       BindingResult result,
                                       Principal principal) {
         return alertService.saveAlertToAccount(alert,result, principal);

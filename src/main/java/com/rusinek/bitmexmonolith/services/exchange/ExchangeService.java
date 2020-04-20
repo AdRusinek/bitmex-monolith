@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
 import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.POST;
@@ -45,10 +46,10 @@ public class ExchangeService {
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath,
                              Map<String, Object> params, Long id, String userName) {
 
-        final Account account;
+        final Optional<Account> account;
         try {
             account = accountRepository.findByAccountOwnerAndId(userName, Long.valueOf(id));
-            if (account == null) {
+            if (!account.isPresent()) {
                 log.debug("Element does not exist or does not belong to your account");
                 throw new AccountNotFoundException("Element does not exist or does not belong to your account");
             }
@@ -72,13 +73,13 @@ public class ExchangeService {
         }
 
         // set apiSignature
-        HashFunction hashFunc = Hashing.hmacSha256(account.getApiKeySecret().getBytes(Charset.forName("UTF-8")));
+        HashFunction hashFunc = Hashing.hmacSha256(account.get().getApiKeySecret().getBytes(Charset.forName("UTF-8")));
         HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
         String apiSignature = hashCode.toString();
 
         // get headers
         Map<String, String> headers = new HashMap<>();
-        headers.put("api-key", account.getApiKey());
+        headers.put("api-key", account.get().getApiKey());
         headers.put("api-expires", apiExpires);
         headers.put("api-signature", apiSignature);
 

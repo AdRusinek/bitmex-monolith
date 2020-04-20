@@ -4,10 +4,12 @@ import com.rusinek.bitmexmonolith.model.Alert;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Created by Adrian Rusinek on 19.03.2020
  **/
 public interface AlertRepository extends JpaRepository<Alert,Long> {
 
-    Iterable<Alert> findAllByAlertOwner(String alertOwner);
+    List<Alert> findAllByAlertOwner(String alertOwner);
 }

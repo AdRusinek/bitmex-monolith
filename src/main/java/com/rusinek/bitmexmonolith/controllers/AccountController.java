@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.controllers;
 
 
+import com.rusinek.bitmexmonolith.dto.AccountDto;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.services.credentials.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Created by Adrian Rusinek on 08.03.2020
@@ -30,7 +32,7 @@ public class AccountController {
     }
 
     @GetMapping("/get-accounts")
-    public Iterable<Account> getAccounts(Principal principal) {
+    public List<AccountDto> getAccountNames(Principal principal) {
         return accountService.getAllAccounts(principal.getName());
     }
 }

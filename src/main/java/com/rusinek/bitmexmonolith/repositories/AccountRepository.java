@@ -4,6 +4,7 @@ import com.rusinek.bitmexmonolith.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,10 +12,8 @@ import java.util.Optional;
  **/
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Iterable<Account> findAllByAccountOwner(String username);
+    List<Account> findAllByAccountOwner(String username);
 
-    Account findByAccountOwnerAndId(String credentialsOwner, Long id);
-
-    Optional<Account> getById(Long id);
+    Optional<Account> findByAccountOwnerAndId(String credentialsOwner, Long id);
 
 }

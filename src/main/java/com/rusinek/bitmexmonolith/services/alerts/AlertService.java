@@ -1,5 +1,6 @@
 package com.rusinek.bitmexmonolith.services.alerts;
 
+import com.rusinek.bitmexmonolith.dto.AlertDto;
 import com.rusinek.bitmexmonolith.model.Alert;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,7 +15,7 @@ public interface AlertService {
 
    ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal);
 
-   List<Alert> getAllAlerts(Principal alertOwner);
+   List<AlertDto> getAllAlerts(Principal alertOwner);
 
    Iterable<Alert> findAll();
 

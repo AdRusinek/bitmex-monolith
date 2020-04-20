@@ -1,6 +1,8 @@
 package com.rusinek.bitmexmonolith.services.alerts;
 
 
+import com.rusinek.bitmexmonolith.controllers.mappers.AlertMapper;
+import com.rusinek.bitmexmonolith.dto.AlertDto;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
@@ -14,6 +16,7 @@ import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Adrian Rusinek on 19.03.2020
@@ -25,6 +28,7 @@ public class AlertServiceImpl implements AlertService{
     private final AlertRepository alertRepository;
     private final MapValidationErrorService errorService;
     private final UserRepository userRepository;
+    private final AlertMapper alertMapper;
 
     @Override
     public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {
@@ -42,8 +46,9 @@ public class AlertServiceImpl implements AlertService{
     }
 
     @Override
-    public List<Alert> getAllAlerts(Principal alertOwner) {
-        return (List<Alert>) alertRepository.findAllByAlertOwner(alertOwner.getName());
+    public List<AlertDto> getAllAlerts(Principal alertOwner) {
+        return alertRepository.findAllByAlertOwner(alertOwner.getName()).stream()
+                .map(alertMapper::alertToDto).collect(Collectors.toList());
     }
 
     @Override

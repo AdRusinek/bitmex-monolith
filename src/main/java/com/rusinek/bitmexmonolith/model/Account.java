@@ -20,7 +20,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    private String credentialsName;
+    private String accountName;
     @NotBlank(message = "Api key must not be blank")
     private String apiKey;
     @NotBlank(message = "Secret must not be blank")
