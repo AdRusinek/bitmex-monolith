@@ -1,9 +1,10 @@
-package com.rusinek.bitmexmonolith.services.users;
+package com.rusinek.bitmexmonolith.services;
 
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  **/
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -24,7 +25,6 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
         return user;
     }
 
-    @Override
     @Transactional
     public User loadUserById(Long id) {
         User user = userRepository.getById(id);

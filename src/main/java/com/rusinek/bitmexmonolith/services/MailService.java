@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.mail;
+package com.rusinek.bitmexmonolith.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

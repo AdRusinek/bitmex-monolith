@@ -1,6 +1,5 @@
 package com.rusinek.bitmexmonolith.security;
 
-import com.rusinek.bitmexmonolith.services.users.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

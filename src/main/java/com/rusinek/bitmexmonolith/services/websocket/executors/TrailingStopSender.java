@@ -1,8 +1,8 @@
-package com.rusinek.bitmexmonolith.services.websocket.observers;
+package com.rusinek.bitmexmonolith.services.websocket.executors;
 
 import com.rusinek.bitmexmonolith.model.TrailingStop;
-import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
-import com.rusinek.bitmexmonolith.services.trailings.TrailingStopService;
+import com.rusinek.bitmexmonolith.services.ExchangeService;
+import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.POST;
+import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.POST;
 
 /**
  * Created by Adrian Rusinek on 22.03.2020

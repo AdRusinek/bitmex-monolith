@@ -1,12 +1,14 @@
 package com.rusinek.bitmexmonolith.controllers;
 
 
-import com.rusinek.bitmexmonolith.services.positions.PositionService;
+import com.rusinek.bitmexmonolith.services.PositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+
+import static com.rusinek.bitmexmonolith.services.ExchangeConstants.POSITION;
 
 /**
  * Created by Adrian Rusinek on 23.02.2020
@@ -21,6 +23,6 @@ public class PositionController {
 
     @GetMapping("/get-positions/{accountId}")
     public ResponseEntity<?> getOrders(@PathVariable String accountId, Principal principal) {
-        return positionService.requestPositions(accountId, principal);
+        return positionService.requestPositions(accountId, principal, POSITION);
     }
 }

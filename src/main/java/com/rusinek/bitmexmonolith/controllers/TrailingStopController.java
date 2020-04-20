@@ -1,7 +1,7 @@
 package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.TrailingStop;
-import com.rusinek.bitmexmonolith.services.trailings.TrailingStopService;
+import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

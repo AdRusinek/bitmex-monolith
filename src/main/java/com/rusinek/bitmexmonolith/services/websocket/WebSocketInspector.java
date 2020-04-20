@@ -1,18 +1,16 @@
 package com.rusinek.bitmexmonolith.services.websocket;
 
-import com.rusinek.bitmexmonolith.services.websocket.observers.AlertSender;
-import com.rusinek.bitmexmonolith.services.websocket.observers.TrailingStopSender;
+import com.rusinek.bitmexmonolith.services.websocket.executors.AlertSender;
+import com.rusinek.bitmexmonolith.services.websocket.executors.TrailingStopSender;
 import info.bitrich.xchangestream.bitmex.BitmexStreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;

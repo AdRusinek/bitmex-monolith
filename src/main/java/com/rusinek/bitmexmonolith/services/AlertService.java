@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.alerts;
+package com.rusinek.bitmexmonolith.services;
 
 
 import com.rusinek.bitmexmonolith.controllers.mappers.AlertMapper;
@@ -23,14 +23,13 @@ import java.util.stream.Collectors;
  **/
 @Service
 @RequiredArgsConstructor
-public class AlertServiceImpl implements AlertService{
+public class AlertService {
 
     private final AlertRepository alertRepository;
     private final MapValidationErrorService errorService;
     private final UserRepository userRepository;
     private final AlertMapper alertMapper;
 
-    @Override
     public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {
         ResponseEntity<?> errorMap = errorService.validateErrors(result);
         if (errorMap != null) return errorMap;
@@ -45,18 +44,15 @@ public class AlertServiceImpl implements AlertService{
         return new ResponseEntity<>("Alert already exists.", HttpStatus.BAD_REQUEST);
     }
 
-    @Override
     public List<AlertDto> getAllAlerts(Principal alertOwner) {
         return alertRepository.findAllByAlertOwner(alertOwner.getName()).stream()
                 .map(alertMapper::alertToDto).collect(Collectors.toList());
     }
 
-    @Override
     public Iterable<Alert> findAll() {
         return alertRepository.findAll();
     }
 
-    @Override
     public void delete(Alert alert) {
         alertRepository.delete(alert);
     }

@@ -1,9 +1,9 @@
-package com.rusinek.bitmexmonolith.services.websocket.observers;
+package com.rusinek.bitmexmonolith.services.websocket.executors;
 
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.services.alerts.AlertService;
-import com.rusinek.bitmexmonolith.services.mail.MailService;
+import com.rusinek.bitmexmonolith.services.AlertService;
+import com.rusinek.bitmexmonolith.services.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;

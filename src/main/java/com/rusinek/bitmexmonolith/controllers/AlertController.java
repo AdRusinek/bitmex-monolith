@@ -2,7 +2,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 
 import com.rusinek.bitmexmonolith.model.Alert;
-import com.rusinek.bitmexmonolith.services.alerts.AlertService;
+import com.rusinek.bitmexmonolith.services.AlertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

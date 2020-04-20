@@ -1,7 +1,6 @@
 package com.rusinek.bitmexmonolith.security;
 
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.services.users.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

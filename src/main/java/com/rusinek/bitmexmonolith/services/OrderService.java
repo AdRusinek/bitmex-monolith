@@ -1,8 +1,6 @@
-package com.rusinek.bitmexmonolith.services.orders;
+package com.rusinek.bitmexmonolith.services;
 
-import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -13,11 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
+import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
 
 
 /**
@@ -26,7 +22,7 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderService {
 
     private final ExchangeService exchangeService;
 
@@ -45,24 +41,11 @@ public class OrderServiceImpl implements OrderService {
         return array;
     }
 
-    @Override
-    public ResponseEntity<?> requestOrders(String status, String type, String accountId, Principal principal) {
-
-        Gson gson = new Gson();
-        Map<String, Object> params = new HashMap<>();
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("ordType", type);
-        if (status.equalsIgnoreCase("filled")) {
-            filterMap.put("ordStatus", "Filled");
-        } else if (status.equalsIgnoreCase("new")) {
-            filterMap.put("ordStatus", "New");
-        }
-        params.put("filter", gson.toJson(filterMap));
-
+    public ResponseEntity<?> requestOrders(Principal principal, String accountId, String orderType) {
         try {
-            @SuppressWarnings("unchecked")
-            List<LinkedTreeMap> orders = (List<LinkedTreeMap>) exchangeService.requestApi(GET, "/order", params, Long.valueOf(accountId), principal.getName());
+            ArrayList orders = (ArrayList) exchangeService.requestApi(GET, orderType, Long.valueOf(accountId), principal.getName());
             if (orders == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            log.debug("Getting orders from BitMEX.");
             return new ResponseEntity<>(setCorrectPrice(orders).toString(), HttpStatus.OK);
         } catch (ClassCastException ex) {
             log.error("Failure requesting orders from BitMEX.");

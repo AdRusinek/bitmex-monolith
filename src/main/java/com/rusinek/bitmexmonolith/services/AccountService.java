@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.credentials;
+package com.rusinek.bitmexmonolith.services;
 
 import com.rusinek.bitmexmonolith.controllers.mappers.AccountMapper;
 import com.rusinek.bitmexmonolith.dto.AccountDto;
@@ -25,14 +25,13 @@ import java.util.stream.Collectors;
  **/
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService {
+public class AccountService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final MapValidationErrorService mapValidationErrorService;
     private final AccountMapper accountMapper;
 
-    @Override
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
         ResponseEntity<?> errorMap = mapValidationErrorService.validateErrors(result);
@@ -48,14 +47,11 @@ public class AccountServiceImpl implements AccountService {
         return new ResponseEntity<>("Account already exists.", HttpStatus.BAD_REQUEST);
     }
 
-    @Override
     public List<AccountDto> getAllAccounts(String username) {
        return accountRepository.findAllByAccountOwner(username)
                .stream().map(accountMapper::accountToDto).collect(Collectors.toList());
     }
 
-
-    @Override
     public Account findByAccountId(Long id, String userName) {
         Optional<Account> credential = accountRepository.findByAccountOwnerAndId(userName, id);
 

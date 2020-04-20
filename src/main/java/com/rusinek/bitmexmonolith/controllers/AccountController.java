@@ -3,7 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.dto.AccountDto;
 import com.rusinek.bitmexmonolith.model.Account;
-import com.rusinek.bitmexmonolith.services.credentials.AccountService;
+import com.rusinek.bitmexmonolith.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.trailings;
+package com.rusinek.bitmexmonolith.services;
 
 
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
@@ -7,7 +7,7 @@ import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
-import com.rusinek.bitmexmonolith.services.credentials.AccountService;
+import com.rusinek.bitmexmonolith.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,14 +25,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TrailingStopServiceImpl implements TrailingStopService {
+public class TrailingStopService {
 
     private final TrailingStopRepository trailingStopRepository;
     private final UserRepository userRepository;
     private final AccountService accountService;
     private final MapValidationErrorService errorService;
 
-    @Override
     public ResponseEntity<?> saveTrailingStop(TrailingStop trailingStop, BindingResult result, Principal principal, String accountId) {
 
         ResponseEntity<?> errorMap = errorService.validateErrors(result);
@@ -50,19 +49,16 @@ public class TrailingStopServiceImpl implements TrailingStopService {
         return new ResponseEntity<>(new TrailingStop(), HttpStatus.BAD_REQUEST);
     }
 
-    @Override
     public List<TrailingStop> getAllTrailingStops(String trailingStopOwner) {
         return (List<TrailingStop>) trailingStopRepository.findAllByTrailingStopOwner(trailingStopOwner);
     }
 
-    @Override
     public void deleteTrailingStop(TrailingStop trailingStop) {
         trailingStopRepository.delete(trailingStop);
     }
 
 
     //teraz przechwytywanie zlych credentiali
-    @Override
     public ResponseEntity<List<TrailingStop>> getAllTrailingStopsByCredentialsId(Principal principal, String credentialsId) {
         List<TrailingStop> allByTrailingStopOwner = (List<TrailingStop>)
                 trailingStopRepository.findAllByTrailingStopOwner(principal.getName());
@@ -72,7 +68,6 @@ public class TrailingStopServiceImpl implements TrailingStopService {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @Override
     public Iterable<TrailingStop> findAll() {
         return trailingStopRepository.findAll();
     }

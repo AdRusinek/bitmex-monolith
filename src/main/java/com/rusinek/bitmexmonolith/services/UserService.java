@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.users;
+package com.rusinek.bitmexmonolith.services;
 
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
@@ -9,7 +9,6 @@ import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
-import com.rusinek.bitmexmonolith.services.mail.MailService;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -53,7 +52,6 @@ public class UserServiceImpl implements UserService {
     @Value("${bitmex-monolith.default-url}")
     private String defaultUrl;
 
-    @Override
     public User saveUser(User user) {
         try {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -70,7 +68,6 @@ public class UserServiceImpl implements UserService {
         //dont persist or show confirm password
     }
 
-    @Override
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
         ResponseEntity<?> errorMap = errorService.validateErrors(result);
         if (errorMap != null) return errorMap;
@@ -87,7 +84,6 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(new JWTLoginSuccessResponse(true, jwt));
     }
 
-    @Override
     public ResponseEntity<?> registerUser(User user, BindingResult result) {
         // validate passwords match
         userValidator.validate(user, result);
@@ -101,7 +97,6 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
-    @Override
     public RedirectView verifyToken(String value) {
         Token token = tokenRepository.findByValue(value);
         User user = token.getUser();
