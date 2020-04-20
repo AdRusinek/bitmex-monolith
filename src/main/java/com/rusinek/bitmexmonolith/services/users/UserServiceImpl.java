@@ -2,15 +2,18 @@ package com.rusinek.bitmexmonolith.services.users;
 
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
+import com.rusinek.bitmexmonolith.model.Token;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.payload.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
+import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
-import com.rusinek.bitmexmonolith.services.token.TokenService;
+import com.rusinek.bitmexmonolith.services.mail.MailService;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +23,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.mail.MessagingException;
+
+import java.util.UUID;
 
 import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX;
 
@@ -38,7 +46,12 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final MapValidationErrorService errorService;
     private final UserValidator userValidator;
-    private final TokenService tokenService;
+    private final MailService mailService;
+    private final TokenRepository tokenRepository;
+    @Value("${bitmex-monolith.token-redirection-url}")
+    private String tokenRedirectionUrl;
+    @Value("${bitmex-monolith.default-url}")
+    private String defaultUrl;
 
     @Override
     public User saveUser(User user) {
@@ -83,8 +96,35 @@ public class UserServiceImpl implements UserService {
         if (errorMap != null) return errorMap;
 
         User newUser = saveUser(user);
-        tokenService.sendToken(user);
+        sendToken(user);
 
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    }
+
+    @Override
+    public RedirectView verifyToken(String value) {
+        Token token = tokenRepository.findByValue(value);
+        User user = token.getUser();
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        return new RedirectView(tokenRedirectionUrl + "/login");
+    }
+
+    private void sendToken(User user) {
+        String tokenValue = UUID.randomUUID().toString();
+        Token token = new Token();
+        token.setValue(tokenValue);
+        token.setUser(user);
+        tokenRepository.save(token);
+
+        String url = defaultUrl + "/api/users/token?value=" + tokenValue;
+
+        try {
+            log.info("Sending registration email to user: " + user.getUsername());
+            mailService.sendMail(user.getUsername(), "Confirm account", url, "bitmexprogram@gmail.com", false);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

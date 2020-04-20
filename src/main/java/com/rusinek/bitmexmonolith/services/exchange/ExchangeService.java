@@ -12,8 +12,11 @@ import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundEx
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,6 +38,8 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_
 public class ExchangeService {
 
     private final AccountRepository accountRepository;
+    @Value("${bitmex-monolith.exchange-url}")
+    private String exchangeUrl;
 
     @SuppressWarnings("UnstableApiUsage")
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath,
@@ -60,7 +65,7 @@ public class ExchangeService {
         if ((method == GET) && !paramsEncodedStr.isEmpty()) {
             path += "?" + paramsEncodedStr;
         }
-        String url = "https://testnet.bitmex.com/" + path;
+        String url = exchangeUrl + path;
         String signContent = method.toString() + path + apiExpires;
         if (method == POST) {
             signContent += paramsEncodedStr;

@@ -6,10 +6,8 @@ import com.rusinek.bitmexmonolith.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 
@@ -33,5 +31,10 @@ public class UserController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user,
                                           BindingResult result) {
         return userService.registerUser(user, result);
+    }
+
+    @GetMapping("/token")
+    public RedirectView verifyToken(@RequestParam String value) {
+        return userService.verifyToken(value);
     }
 }
