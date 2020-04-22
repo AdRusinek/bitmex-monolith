@@ -4,16 +4,18 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -24,16 +26,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPENED_LIMIT_ORDERS;
 
 /**
  * Created by Adrian Rusinek on 20.04.2020
  **/
+@Slf4j
 public class BitMexUtil {
     private static final String basePath = "/api/v1";
     private static final int expireSeconds = 20;
@@ -61,8 +60,7 @@ public class BitMexUtil {
     //todo zmien zanim pushniesz
     private static BitMexUtil testInstance() {
         return new BitMexUtil("https://testnet.bitmex.com",
-                "G1AsSffAD543JsRF6XyOuwXL",
-                "etgpyewzmxriXs1rHUXOLOTq99lFicRNeo6h8EAGfYziH_3W");
+
     }
 
     private String host = null;
@@ -157,7 +155,32 @@ public class BitMexUtil {
                         .headers(headers)
                         .asString();
             }
+            //todo zrob z tymi limitami porzadnie
+//            System.out.println("***************************************************************************");
+//            System.out.println(response.getHeaders().get("X-RateLimit-Remaining"));
+//
+//            String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
+//            Integer limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
+//            System.out.println(limit);
+//
+//
+//            String seconds = String.valueOf(response.getHeaders().get("X-RateLimit-Reset"));
+//            Integer actualSeconds = Integer.valueOf(seconds.substring(1, seconds.length() - 1));
+//            System.out.println(actualSeconds);
+//            Date currentTime = new Date(actualSeconds*1000);
+//            System.out.println(currentTime);
+//
+//            System.out.println(response.getHeaders().get("X-RateLimit-Reset"));
+//            System.out.println("***************************************************************************");
+            if (response.getBody().contains("error")) {
+                log.error("Error occurred while requesting BitMEX API. Status code: '"
+                        + response.getStatus() + "' with description: " + response.getBody());
+                return new ResponseEntity<>(response.getBody(), HttpStatus.valueOf(response.getStatus()));
+            }
+            System.out.println("Headers" + response.getHeaders());
+            System.out.println("Status" + response.getStatus());
             return gson.fromJson(response.getBody(), Object.class);
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -218,12 +241,13 @@ public class BitMexUtil {
 //        Map<String, Object> wallet = (Map<String, Object>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/user/wallet", params);
 //        System.out.println(wallet);
 //
-        System.out.println("====================================================");
-        // get positions
-        ArrayList positionList = (ArrayList) bitMexUtil.requestApi(HTTP_METHOD.GET, "/position?filter=%7B%22symbol%22%3A%20%22XBTUSD%22%7D&columns=%5B%22currentQty%22%2C%22avgEntryPrice%22%2C%22maintMargin%22%5D");
-        System.out.println(positionList);
 
         System.out.println("====================================================");
+        // get positions
+        Object positionList = bitMexUtil.requestApi(HTTP_METHOD.GET, "/position?filter=%7B%22symbol%22%3A%20%22XBTUSD%22%7D&columns=%5B%22currentQty%22%2C%22avgEntryPrice%22%2C%22maintMargin%22%5D");
+        System.out.println(positionList);
+
+        System.out.println("===================================================");
 //        // get api key
 //        params.clear();
 //        params.put("reverse",true);

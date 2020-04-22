@@ -29,14 +29,14 @@ public class TrailingStopSender {
             if (Double.valueOf(trailingStop.getTrialValue()) > 0) {
                 if (trade.getPrice().doubleValue() <= trailingStop.getStartingPrice()) {
                     Map response = sentTrailingStop(trailingStop);
-                    if (isTrailingStopIsSent(response)) {
+                    if (isTrailingStopSent(response)) {
                         trailingStopService.deleteTrailingStop(trailingStop);
                     }
                 }
             } else if (Double.valueOf(trailingStop.getTrialValue()) < 0) {
                 if (trade.getPrice().doubleValue() >= trailingStop.getStartingPrice()) {
                     Map response = sentTrailingStop(trailingStop);
-                    if (isTrailingStopIsSent(response)) {
+                    if (isTrailingStopSent(response)) {
                         trailingStopService.deleteTrailingStop(trailingStop);
                     }
                 }
@@ -66,7 +66,7 @@ public class TrailingStopSender {
         return null;
     }
 
-    private boolean isTrailingStopIsSent(Map response) {
+    private boolean isTrailingStopSent(Map response) {
         try {
             String orderId = response.get("orderID").toString();
             return !orderId.isEmpty();

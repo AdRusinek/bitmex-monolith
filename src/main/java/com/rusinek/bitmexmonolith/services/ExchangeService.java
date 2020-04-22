@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.rusinek.bitmexmonolith.services.ExchangeConstants.TIME_TO_RESET_REQUEST_LIMIT;
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.POST;
 
@@ -88,6 +91,9 @@ public class ExchangeService {
             }
             if (response != null) {
                 Gson gson = new GsonBuilder().setLenient().create();
+                ResponseEntity errors = checkRequestForErrors(response);
+                if (errors != null) return errors;
+                manageLimits(response, account);
                 return gson.fromJson(response.getBody(), Object.class);
             }
 
@@ -97,7 +103,6 @@ public class ExchangeService {
 
         return null;
     }
-
 
     @SuppressWarnings("UnstableApiUsage")
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath, Long id, String userName) {
@@ -138,6 +143,10 @@ public class ExchangeService {
             }
             if (response != null) {
                 Gson gson = new GsonBuilder().setLenient().create();
+                ResponseEntity errors = checkRequestForErrors(response);
+                //todo sprawdzic czy to errors jest dobrze przekazywane do serwisow
+                if (errors != null) return errors;
+                manageLimits(response, account);
                 return gson.fromJson(response.getBody(), Object.class);
             }
 
@@ -148,9 +157,29 @@ public class ExchangeService {
         return null;
     }
 
+    private ResponseEntity checkRequestForErrors(HttpResponse<String> response) {
+        if (response.getBody().contains("error")) {
+            log.error("Error occurred while requesting BitMEX API. Status code: '"
+                    + response.getStatus() + "' with description: " + response.getBody());
+            return new ResponseEntity<>(response.getBody(), HttpStatus.valueOf(response.getStatus()));
+        }
+        return null;
+    }
+
+    private void manageLimits(HttpResponse<String> response, Account account) throws InterruptedException {
+        String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
+        Integer limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
+        account.setRequestLimit(limit);
+        if (limit == 1) {
+            account.setRequestLimit(limit);
+            wait(TIME_TO_RESET_REQUEST_LIMIT);
+            log.debug("Requests left: " + limit);
+        }
+    }
+
     private Account getAccount(Long id, String userName) {
         try {
-           Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, Long.valueOf(id));
+            Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, Long.valueOf(id));
             if (!account.isPresent()) {
                 log.error("Element does not exist or does not belong to your account");
                 throw new AccountNotFoundException("Element does not exist or does not belong to your account");
@@ -160,7 +189,6 @@ public class ExchangeService {
             throw new AccountNotFoundException("Element '" + id + "' can't be cast to type Long");
         }
     }
-
 
     private String getEncodedStrOfParams(Map<String, Object> params) {
         MultipartBody body = Unirest.post("")

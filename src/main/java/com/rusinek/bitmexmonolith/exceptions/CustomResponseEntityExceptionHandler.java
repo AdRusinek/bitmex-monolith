@@ -30,13 +30,13 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler
-    public final ResponseEntity<Object> handleCredentialIdException(AccountIdException ex) {
+    public final ResponseEntity<Object> handleAccountIdException(AccountIdException ex) {
         return new ResponseEntity<>(new AccountIdExceptionResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    public final ResponseEntity<Object> handleCredentialNotFoundException(AccountNotFoundException ex) {
+    public final ResponseEntity<Object> handleAccountNotFoundException(AccountNotFoundException ex) {
         return new ResponseEntity<>(new AccountNotFoundExceptionResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

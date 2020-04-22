@@ -22,7 +22,7 @@ public class AlertController {
 
     private final AlertService alertService;
 
-    @PostMapping("/setAlert")
+    @PostMapping("/set-alert")
     public ResponseEntity<?> postAlert(@RequestBody @Valid Alert alert,
                                       BindingResult result,
                                       Principal principal) {

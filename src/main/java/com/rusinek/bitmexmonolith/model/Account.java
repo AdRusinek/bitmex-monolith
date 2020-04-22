@@ -33,5 +33,6 @@ public class Account {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
     @JsonIgnore
     private List<TrailingStop> trailingStops = new ArrayList<>();
-
+    @Transient
+    private Integer requestLimit;
 }
