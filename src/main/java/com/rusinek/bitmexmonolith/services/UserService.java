@@ -69,8 +69,8 @@ public class UserService {
     }
 
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
-        ResponseEntity<?> errorMap = errorService.validateErrors(result);
-        if (errorMap != null) return errorMap;
+
+        if(result.hasErrors()) return errorService.validateErrors(result);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -88,8 +88,7 @@ public class UserService {
         // validate passwords match
         userValidator.validate(user, result);
 
-        ResponseEntity<?> errorMap = errorService.validateErrors(result);
-        if (errorMap != null) return errorMap;
+        if(result.hasErrors()) return errorService.validateErrors(result);
 
         User newUser = saveUser(user);
         sendToken(user);

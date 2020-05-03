@@ -34,8 +34,7 @@ public class TrailingStopService {
 
     public ResponseEntity<?> saveTrailingStop(TrailingStop trailingStop, BindingResult result, Principal principal, String accountId) {
 
-        ResponseEntity<?> errorMap = errorService.validateErrors(result);
-        if (errorMap != null) return errorMap;
+        if(result.hasErrors()) return errorService.validateErrors(result);
 
         if (!getAllTrailingStops(principal.getName()).contains(trailingStop)) {
             User user = userRepository.findByUsername(principal.getName());

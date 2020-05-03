@@ -26,6 +26,7 @@
         <org.projectlombok.version>1.18.10</org.projectlombok.version>
         <httpclient.version>4.5.10</httpclient.version>
         <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
+        <telegram.bot.version>4.8.1</telegram.bot.version>
     </properties>
 
     <dependencies>
@@ -52,6 +53,13 @@
             <version>${exchange.version}</version>
         </dependency>
         <!-- Exchange -->
+        <!-- Telegram Bot-->
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegram.bot.version}</version>
+        </dependency>
+        <!-- Telegram Bot-->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>

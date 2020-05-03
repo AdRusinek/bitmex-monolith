@@ -157,6 +157,53 @@ public class ExchangeService {
         return null;
     }
 
+    public int testConnection(ExchangeService.HTTP_METHOD method, String varPath, String apiKey, String apiKeySecret) {
+
+        log.debug("Testing connection");
+
+        // set api-expires
+        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 300);
+
+        // get signContent
+        String path = basePath + varPath;
+        String url = exchangeUrl + path;
+
+        String signContent = method.toString() + path + apiExpires;
+
+        // set apiSignature
+        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
+        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+        String apiSignature = hashCode.toString();
+
+        // get headers
+        Map<String, String> headers = new HashMap<>();
+        headers.put("api-key", apiKey);
+        headers.put("api-expires", apiExpires);
+        headers.put("api-signature", apiSignature);
+
+        try {
+            HttpResponse<String> response = null;
+            if (method == GET) {
+                response = Unirest.get(url)
+                        .headers(headers)
+                        .asString();
+
+            } else if (method == POST) {
+                response = Unirest.post(url)
+                        .headers(headers)
+                        .asString();
+            }
+            if (response != null) {
+                return response.getStatus();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
     private ResponseEntity checkRequestForErrors(HttpResponse<String> response) {
         if (response.getBody().contains("error")) {
             log.error("Error occurred while requesting BitMEX API. Status code: '"

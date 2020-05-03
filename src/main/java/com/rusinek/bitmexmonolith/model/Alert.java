@@ -20,7 +20,6 @@ public class Alert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank(message = "What you want to see being sent to your mail.")
     private String alertMessage;
     @NotNull(message = "You have to provide triggering price")
     @Positive(message = "This has to be positive value")

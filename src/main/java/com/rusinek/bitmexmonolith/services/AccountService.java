@@ -9,6 +9,7 @@ import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,30 +30,33 @@ public class AccountService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-    private final MapValidationErrorService mapValidationErrorService;
+    private final MapValidationErrorService errorService;
     private final AccountMapper accountMapper;
+    private final AccountValidator accountValidator;
 
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
-        ResponseEntity<?> errorMap = mapValidationErrorService.validateErrors(result);
-        if (errorMap != null) return errorMap;
+        accountValidator.validate(account, result);
+
+        if (result.hasErrors()) return errorService.validateErrors(result);
 
         if (!getAllAccounts(principal.getName()).contains(account)) {
             User user = userRepository.findByUsername(principal.getName());
             account.setAccountOwner(user.getUsername());
             account.setUser(user);
 
-            return new ResponseEntity<>(accountRepository.save(account), HttpStatus.CREATED);
+
+            return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);
         }
         return new ResponseEntity<>("Account already exists.", HttpStatus.BAD_REQUEST);
     }
 
     public List<AccountDto> getAllAccounts(String username) {
-       return accountRepository.findAllByAccountOwner(username)
-               .stream().map(accountMapper::accountToDto).collect(Collectors.toList());
+        return accountRepository.findAllByAccountOwner(username)
+                .stream().map(accountMapper::accountToDto).collect(Collectors.toList());
     }
 
-    public Account findByAccountId(Long id, String userName) {
+    Account findByAccountId(Long id, String userName) {
         Optional<Account> credential = accountRepository.findByAccountOwnerAndId(userName, id);
 
         if (!credential.isPresent()) {

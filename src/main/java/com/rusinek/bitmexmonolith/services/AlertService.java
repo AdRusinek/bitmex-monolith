@@ -31,8 +31,8 @@ public class AlertService {
     private final AlertMapper alertMapper;
 
     public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {
-        ResponseEntity<?> errorMap = errorService.validateErrors(result);
-        if (errorMap != null) return errorMap;
+
+        if(result.hasErrors()) return errorService.validateErrors(result);
 
         if (!getAllAlerts(principal).contains(alert)) {
             User user = userRepository.findByUsername(principal.getName());

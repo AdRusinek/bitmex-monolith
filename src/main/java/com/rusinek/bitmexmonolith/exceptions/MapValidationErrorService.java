@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +17,12 @@ public class MapValidationErrorService {
 
     public ResponseEntity<?> validateErrors(BindingResult result) {
 
-        if (result.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
+        HashMap<Object,Object> errorM = new HashMap<>();
 
-            result.getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
-            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+        for(FieldError error: result.getFieldErrors()){
+            errorM.put(error.getField(),error.getDefaultMessage());
         }
-        return null;
+
+        return new ResponseEntity<>(errorM, HttpStatus.BAD_REQUEST);
     }
 }

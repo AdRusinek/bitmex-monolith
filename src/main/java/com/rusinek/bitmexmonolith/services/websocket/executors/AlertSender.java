@@ -45,12 +45,17 @@ public class AlertSender {
 
     private void sendAndDecideIfDelete(Alert alert, Trade trade) {
         int sendAlert = sendAlert(alert.getUser(), alert, trade);
-        if (isEmailIsSent(sendAlert)) {
+        if (isEmailSent(sendAlert)) {
             alertService.delete(alert);
         }
     }
 
     private int sendAlert(User user, Alert alert, Trade trade) {
+
+        if (alert.getAlertMessage().isEmpty()) {
+            alert.setAlertMessage("Powiadomienie o cenie.");
+        }
+
         try {
             log.debug("Attempting to sent mail to user: " + user.getUsername());
             mailService.sendMail(user.getUsername(),
@@ -65,7 +70,7 @@ public class AlertSender {
         return 0;
     }
 
-    private boolean isEmailIsSent(int response) {
+    private boolean isEmailSent(int response) {
         return response == 0;
     }
 }

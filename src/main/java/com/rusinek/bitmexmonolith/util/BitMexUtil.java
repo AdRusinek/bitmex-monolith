@@ -39,28 +39,33 @@ public class BitMexUtil {
     private static final Charset charset = Charset.forName("UTF-8");
     private static final Gson gson = new Gson();
 
-    private static BitMexUtil instance = null;
+    private static BitMexUtil instance1 = null;
+    private static BitMexUtil instance2 = null;
 
-    public static BitMexUtil getInstance() {
-        if (instance == null) {
-            instance = testInstance();
+    public static BitMexUtil getInstance1() {
+        if (instance1 == null) {
+            instance1 = testInstance1();
 
             // This can be removed if you don't have the ssl connection problem
 //            Unirest.setHttpClient(getUnsafeHttpClient());
         }
-        return instance;
+        return instance1;
+    }
+
+    public static BitMexUtil getInstance2() {
+        if (instance2 == null) {
+            instance2 = testInstance2();
+
+            // This can be removed if you don't have the ssl connection problem
+//            Unirest.setHttpClient(getUnsafeHttpClient());
+        }
+        return instance2;
     }
 
     private static BitMexUtil realInstance() {
         return new BitMexUtil("https://www.bitmex.com",
                 "your real public key (short one)",
                 "your real secret key (long one)");
-    }
-
-    //todo zmien zanim pushniesz
-    private static BitMexUtil testInstance() {
-        return new BitMexUtil("https://testnet.bitmex.com",
-
     }
 
     private String host = null;
@@ -122,7 +127,7 @@ public class BitMexUtil {
         return null;
     }
 
-    public Object requestApi(HTTP_METHOD method, String varPath) {
+    public Integer requestApi(HTTP_METHOD method, String varPath) {
         // set api-expires
         String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
 
@@ -175,11 +180,11 @@ public class BitMexUtil {
             if (response.getBody().contains("error")) {
                 log.error("Error occurred while requesting BitMEX API. Status code: '"
                         + response.getStatus() + "' with description: " + response.getBody());
-                return new ResponseEntity<>(response.getBody(), HttpStatus.valueOf(response.getStatus()));
+//                return new ResponseEntity(response.getBody(), HttpStatus.valueOf(response.getStatus()));
             }
             System.out.println("Headers" + response.getHeaders());
             System.out.println("Status" + response.getStatus());
-            return gson.fromJson(response.getBody(), Object.class);
+            return response.getStatus();
 
 
         } catch (Exception e) {
@@ -234,20 +239,39 @@ public class BitMexUtil {
     public static void main(String[] args) {
 // get money
 
-        BitMexUtil bitMexUtil = BitMexUtil.getInstance();
+            BitMexUtil bitMexUtil = BitMexUtil.getInstance1();
 
-        Map<String, Object> params = new HashMap<>();
+//        Map<String, Object> params = new HashMap<>();
 //        params.put("currency", "XBt");
 //        Map<String, Object> wallet = (Map<String, Object>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/user/wallet", params);
 //        System.out.println(wallet);
 //
 
-        System.out.println("====================================================");
-        // get positions
-        Object positionList = bitMexUtil.requestApi(HTTP_METHOD.GET, "/position?filter=%7B%22symbol%22%3A%20%22XBTUSD%22%7D&columns=%5B%22currentQty%22%2C%22avgEntryPrice%22%2C%22maintMargin%22%5D");
-        System.out.println(positionList);
+            System.out.println("====================================================");
+            // get positions
+            int status = bitMexUtil.requestApi(HTTP_METHOD.GET, "/apiKey?reverse=false");
+            System.out.println(status == HttpStatus.OK.value());
 
-        System.out.println("===================================================");
+
+
+            System.out.println("===================================================");
+
+
+//            BitMexUtil bitMexUtil2 = BitMexUtil.getInstance2();
+//
+////        Map<String, Object> params2 = new HashMap<>();
+////        params.put("currency", "XBt");
+////        Map<String, Object> wallet = (Map<String, Object>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/user/wallet", params);
+////        System.out.println(wallet);
+////
+//
+//            System.out.println("====================================================");
+//            // get positions
+//            Object positionList2 = bitMexUtil2.requestApi(HTTP_METHOD.GET, "/position?filter=%7B%22symbol%22%3A%20%22XBTUSD%22%7D&columns=%5B%22currentQty%22%2C%22avgEntryPrice%22%2C%22maintMargin%22%5D");
+//            System.out.println(positionList2);
+//
+//            System.out.println("===================================================");
+//
 //        // get api key
 //        params.clear();
 //        params.put("reverse",true);
