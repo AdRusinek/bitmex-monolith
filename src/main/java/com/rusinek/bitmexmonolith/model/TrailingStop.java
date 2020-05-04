@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -22,8 +24,10 @@ public class TrailingStop {
     private Double startingPrice;
     @NotNull(message = "Quantity is required.")
     private Double quantity;
-    @NotNull(message = "Trial Value is required.")
+    @NotEmpty(message = "Trial Value is required.")
     private String trialValue;
+    private String execInst;
+    private Boolean closeOnTrigger;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore

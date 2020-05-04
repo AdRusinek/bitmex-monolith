@@ -46,6 +46,7 @@ public class TrailingStopSender {
 
     @SuppressWarnings("unchecked")
     private Map sentTrailingStop(TrailingStop trailingStop) {
+
         log.debug("Attempting to sent trailing stop for user: " + trailingStop.getTrailingStopOwner());
 
         Map<String, Object> params = new HashMap<>();
@@ -54,6 +55,7 @@ public class TrailingStopSender {
         params.put("pegPriceType ", "TrailingStopPeg");
         params.put("pegOffsetValue", trailingStop.getTrialValue());
         params.put("orderQty", trailingStop.getQuantity());
+        params.put("execInst", extractInstructions(trailingStop));
 
         try {
             return (Map<String, Object>) exchangeService
@@ -66,11 +68,31 @@ public class TrailingStopSender {
         return null;
     }
 
+    private String extractInstructions(TrailingStop trailingStop) {
+        String finalInstructions = "";
+
+        // jesli dasz samo Mark bez close on trigger to exactInst na gieldzie jest puste
+        // jesli dasz  Mark z close on trigger to exactInst na gieldzie jest "Close"
+        if (trailingStop.getExecInst().equals("MarkPrice") && !trailingStop.getCloseOnTrigger()) {
+            finalInstructions = "";
+        }
+        if (trailingStop.getExecInst().equals("MarkPrice") && trailingStop.getCloseOnTrigger()) {
+            finalInstructions = "Close";
+        }
+        if (trailingStop.getCloseOnTrigger()) {
+            finalInstructions = "Close, " + trailingStop.getExecInst();
+        }
+        if (!trailingStop.getCloseOnTrigger()) {
+            finalInstructions = trailingStop.getExecInst();
+        }
+        return finalInstructions;
+    }
+
     private boolean isTrailingStopSent(Map response) {
         try {
             String orderId = response.get("orderID").toString();
             return !orderId.isEmpty();
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
             log.debug("Null pointer due to not existing response");
         }
         return false;

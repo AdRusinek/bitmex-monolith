@@ -4,6 +4,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
@@ -67,6 +68,7 @@ public class BitMexUtil {
                 "your real public key (short one)",
                 "your real secret key (long one)");
     }
+
 
     private String host = null;
     private String apiKey = null;
@@ -239,7 +241,7 @@ public class BitMexUtil {
     public static void main(String[] args) {
 // get money
 
-            BitMexUtil bitMexUtil = BitMexUtil.getInstance1();
+        BitMexUtil bitMexUtil = BitMexUtil.getInstance1();
 
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("currency", "XBt");
@@ -247,16 +249,28 @@ public class BitMexUtil {
 //        System.out.println(wallet);
 //
 
-            System.out.println("====================================================");
-            // get positions
-            int status = bitMexUtil.requestApi(HTTP_METHOD.GET, "/apiKey?reverse=false");
-            System.out.println(status == HttpStatus.OK.value());
+        System.out.println("====================================================");
+        // get positions
+        int status = bitMexUtil.requestApi(HTTP_METHOD.GET, "/apiKey?reverse=false");
+        System.out.println(status == HttpStatus.OK.value());
 
 
+        System.out.println("===================================================");
 
-            System.out.println("===================================================");
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("symbol", "XBTUSD");
+        params.put("ordType", "Stop");
+        params.put("pegPriceType ", "TrailingStopPeg");
+        params.put("pegOffsetValue", "-40");
+        params.put("orderQty", "30");
+        params.put("execInst", "Close, MarkPrice");
 
+        LinkedTreeMap o = (LinkedTreeMap) bitMexUtil.requestApi(HTTP_METHOD.POST, "/order", params);
+        System.out.println("**************");
+        System.out.println(o);
+        System.out.println("**************");
+        System.out.println("===================================================");
 //            BitMexUtil bitMexUtil2 = BitMexUtil.getInstance2();
 //
 ////        Map<String, Object> params2 = new HashMap<>();
