@@ -4,6 +4,7 @@ import com.rusinek.bitmexmonolith.controllers.mappers.AccountMapper;
 import com.rusinek.bitmexmonolith.dto.AccountDto;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountIdException;
+import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
@@ -40,23 +41,32 @@ public class AccountService {
 
         if (result.hasErrors()) return errorService.validateErrors(result);
 
-        if (!getAllAccounts(principal.getName()).contains(account)) {
-            User user = userRepository.findByUsername(principal.getName());
-            account.setAccountOwner(user.getUsername());
-            account.setUser(user);
+        // checks if account with provided name already exists
+        boolean matched = accountRepository.findAllByAccountOwner(principal.getName()).stream()
+                .anyMatch(acc -> acc.getAccountName().equals(account.getAccountName()));
 
-
-            return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);
+        // if account exists throw and error
+        if (matched) {
+            throw new AccountNameAlreadyExistsException("Account '" + account.getAccountName() + "' already exists.");
         }
-        return new ResponseEntity<>("Account already exists.", HttpStatus.BAD_REQUEST);
+
+        // else save to the db and return dto
+        User user = userRepository.findByUsername(principal.getName());
+        account.setAccountOwner(user.getUsername());
+        account.setUser(user);
+
+        return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);
     }
 
     public List<AccountDto> getAllAccounts(String username) {
+        // returns all accounts but without some not necessary properties
         return accountRepository.findAllByAccountOwner(username)
-                .stream().map(accountMapper::accountToDto).collect(Collectors.toList());
+                .stream().map(accountMapper::accountToDto)
+                .collect(Collectors.toList());
     }
 
     Account findByAccountId(Long id, String userName) {
+        // validating if exchange account belongs to your user account
         Optional<Account> credential = accountRepository.findByAccountOwnerAndId(userName, id);
 
         if (!credential.isPresent()) {

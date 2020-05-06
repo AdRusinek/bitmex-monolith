@@ -52,7 +52,7 @@ public class UserService {
     @Value("${bitmex-monolith.default-url}")
     private String defaultUrl;
 
-    public User saveUser(User user) {
+    private User saveUser(User user) {
         try {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             user.setConfirmPassword("");
@@ -60,17 +60,11 @@ public class UserService {
         } catch (Exception e) {
             throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists.");
         }
-
-        //username has to be unique(Exception)
-
-        //make sure that password and confirmPassword match
-
-        //dont persist or show confirm password
     }
 
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
 
-        if(result.hasErrors()) return errorService.validateErrors(result);
+        if (result.hasErrors()) return errorService.validateErrors(result);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -88,7 +82,7 @@ public class UserService {
         // validate passwords match
         userValidator.validate(user, result);
 
-        if(result.hasErrors()) return errorService.validateErrors(result);
+        if (result.hasErrors()) return errorService.validateErrors(result);
 
         User newUser = saveUser(user);
         sendToken(user);
@@ -102,7 +96,7 @@ public class UserService {
         user.setEnabled(true);
         userRepository.save(user);
 
-        return new RedirectView(tokenRedirectionUrl + "/login");
+        return new RedirectView(tokenRedirectionUrl + "/");
     }
 
     private void sendToken(User user) {

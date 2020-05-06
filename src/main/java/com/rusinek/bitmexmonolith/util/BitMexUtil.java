@@ -69,6 +69,8 @@ public class BitMexUtil {
                 "your real secret key (long one)");
     }
 
+    //todo zmien zanim pushniesz
+
 
     private String host = null;
     private String apiKey = null;

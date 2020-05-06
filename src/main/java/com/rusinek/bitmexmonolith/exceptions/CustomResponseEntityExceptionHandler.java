@@ -1,10 +1,7 @@
 package com.rusinek.bitmexmonolith.exceptions;
 
 
-import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountIdException;
-import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountIdExceptionResponse;
-import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
-import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundExceptionResponse;
+import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
 import org.springframework.http.HttpStatus;
@@ -12,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
@@ -24,19 +20,24 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
 
     @ExceptionHandler
-    public final ResponseEntity<Object> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest request) {
-        UsernameAlreadyExistsResponse existsResponse = new UsernameAlreadyExistsResponse(ex.getMessage());
+    public final ResponseEntity<Object> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
+        UsernameAlreadyExistsResponse existsResponse = new UsernameAlreadyExistsResponse(e.getMessage());
         return new ResponseEntity<>(existsResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public final ResponseEntity<Object> handleAccountIdException(AccountIdException ex) {
-        return new ResponseEntity<>(new AccountIdExceptionResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    public final ResponseEntity<Object> handleAccountIdException(AccountIdException e) {
+        return new ResponseEntity<>(new AccountIdExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    public final ResponseEntity<Object> handleAccountNotFoundException(AccountNotFoundException ex) {
-        return new ResponseEntity<>(new AccountNotFoundExceptionResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    public final ResponseEntity<Object> handleAccountNotFoundException(AccountNotFoundException e) {
+        return new ResponseEntity<>(new AccountNotFoundExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleAccountNameAlreadyExistsException(AccountNameAlreadyExistsException e) {
+        return new ResponseEntity<>(new AccountNameAlreadyExistsResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }
