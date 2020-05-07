@@ -31,6 +31,6 @@ public class AlertController {
 
     @GetMapping("/get-alerts")
     public Iterable<?> getAlerts(Principal principal) {
-        return alertService.getAllAlerts(principal);
+        return alertService.getAllAlertsByAlertOwner(principal);
     }
 }

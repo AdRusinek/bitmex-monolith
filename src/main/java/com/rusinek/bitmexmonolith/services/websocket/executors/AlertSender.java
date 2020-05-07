@@ -2,6 +2,7 @@ package com.rusinek.bitmexmonolith.services.websocket.executors;
 
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
+import com.rusinek.bitmexmonolith.repositories.AlertRepository;
 import com.rusinek.bitmexmonolith.services.AlertService;
 import com.rusinek.bitmexmonolith.services.MailService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,11 @@ public class AlertSender {
     private final String ABOVE = "above";
     private final String BELOW = "below";
 
-    private final AlertService alertService;
     private final MailService mailService;
+    private final AlertRepository alertRepository;
 
     public void iterateAndSentEmail(Trade trade) {
-        alertService.findAll().forEach(alert -> {
+        alertRepository.findAll().forEach(alert -> {
             if (alert.getDirection().equals(ABOVE)) {
                 if (trade.getPrice().doubleValue() == alert.getAlertTriggeringPrice() ||
                         trade.getPrice().doubleValue() > alert.getAlertTriggeringPrice()) {
@@ -46,7 +47,7 @@ public class AlertSender {
     private void sendAndDecideIfDelete(Alert alert, Trade trade) {
         int sendAlert = sendAlert(alert.getUser(), alert, trade);
         if (isEmailSent(sendAlert)) {
-            alertService.delete(alert);
+            alertRepository.delete(alert);
         }
     }
 

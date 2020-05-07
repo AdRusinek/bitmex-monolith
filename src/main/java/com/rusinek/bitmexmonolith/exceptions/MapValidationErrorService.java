@@ -17,10 +17,10 @@ public class MapValidationErrorService {
 
     public ResponseEntity<?> validateErrors(BindingResult result) {
 
-        HashMap<Object,Object> errorM = new HashMap<>();
+        HashMap<Object, Object> errorM = new HashMap<>();
 
-        for(FieldError error: result.getFieldErrors()){
-            errorM.put(error.getField(),error.getDefaultMessage());
+        for (FieldError error : result.getFieldErrors()) {
+            errorM.put(error.getField(), error.getDefaultMessage());
         }
 
         return new ResponseEntity<>(errorM, HttpStatus.BAD_REQUEST);

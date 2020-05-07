@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.services.websocket.executors;
 
 import com.rusinek.bitmexmonolith.model.TrailingStop;
+import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.services.ExchangeService;
 import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
@@ -21,23 +22,23 @@ import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.PO
 @RequiredArgsConstructor
 public class TrailingStopSender {
 
-    private final TrailingStopService trailingStopService;
+    private final TrailingStopRepository trailingStopRepository;
     private final ExchangeService exchangeService;
 
     public void iterateAndSentTrailing(Trade trade) {
-        trailingStopService.findAll().forEach(trailingStop -> {
+        trailingStopRepository.findAll().forEach(trailingStop -> {
             if (Double.valueOf(trailingStop.getTrialValue()) > 0) {
                 if (trade.getPrice().doubleValue() <= trailingStop.getStartingPrice()) {
                     Map response = sentTrailingStop(trailingStop);
                     if (isTrailingStopSent(response)) {
-                        trailingStopService.deleteTrailingStop(trailingStop);
+                        trailingStopRepository.delete(trailingStop);
                     }
                 }
             } else if (Double.valueOf(trailingStop.getTrialValue()) < 0) {
                 if (trade.getPrice().doubleValue() >= trailingStop.getStartingPrice()) {
                     Map response = sentTrailingStop(trailingStop);
                     if (isTrailingStopSent(response)) {
-                        trailingStopService.deleteTrailingStop(trailingStop);
+                        trailingStopRepository.delete(trailingStop);
                     }
                 }
             }

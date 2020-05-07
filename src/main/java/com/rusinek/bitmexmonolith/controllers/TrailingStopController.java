@@ -32,6 +32,6 @@ public class TrailingStopController {
     @GetMapping("/get-waiting-trailing-stops/{accountId}")
     public ResponseEntity<?> getWaitingTrailingStops(Principal principal,
                                                      @PathVariable String accountId) {
-        return trailingStopService.getAllTrailingStopsByCredentialsId(principal, accountId);
+        return trailingStopService.getAllByOwnerAndAccountId(principal, accountId);
     }
 }

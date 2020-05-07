@@ -7,7 +7,6 @@ import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountIdExceptio
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
-import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.validator.AccountValidator;
@@ -37,6 +36,7 @@ public class AccountService {
 
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
+        //validates if it is possible to make connection with provided credentials
         accountValidator.validate(account, result);
 
         if (result.hasErrors()) return errorService.validateErrors(result);
@@ -51,9 +51,10 @@ public class AccountService {
         }
 
         // else save to the db and return dto
-        User user = userRepository.findByUsername(principal.getName());
-        account.setAccountOwner(user.getUsername());
-        account.setUser(user);
+        userRepository.findByUsername(principal.getName()).ifPresent(user -> {
+            account.setAccountOwner(user.getUsername());
+            account.setUser(user);
+        });
 
         return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);
     }
@@ -65,19 +66,18 @@ public class AccountService {
                 .collect(Collectors.toList());
     }
 
-    Account findByAccountId(Long id, String userName) {
+    Account findByAccountIdAndOwner(Long id, String userName) {
         // validating if exchange account belongs to your user account
-        Optional<Account> credential = accountRepository.findByAccountOwnerAndId(userName, id);
+        Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        if (!credential.isPresent()) {
+        if (!account.isPresent()) {
             throw new AccountIdException("Account ID '" + id + "' does not exist");
         }
 
-        if (!credential.get().getAccountOwner().equals(userName)) {
-            throw new AccountNotFoundException("Account not found on your User Page");
+        if (!account.get().getAccountOwner().equals(userName)) {
+            throw new AccountNotFoundException("Account not found on your User");
         }
-
-        return credential.get();
+        return account.get();
     }
 
 }

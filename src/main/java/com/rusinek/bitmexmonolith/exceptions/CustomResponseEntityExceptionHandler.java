@@ -2,6 +2,8 @@ package com.rusinek.bitmexmonolith.exceptions;
 
 
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
+import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsException;
+import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsResponse;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,6 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler
     public final ResponseEntity<Object> handleAccountIdException(AccountIdException e) {
         return new ResponseEntity<>(new AccountIdExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-
     }
 
     @ExceptionHandler
@@ -38,6 +39,11 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler
     public final ResponseEntity<Object> handleAccountNameAlreadyExistsException(AccountNameAlreadyExistsException e) {
-        return new ResponseEntity<>(new AccountNameAlreadyExistsResponse(e.getMessage()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AccountNameAlreadyExistsResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleAlertAlreadyExistsException(AlertAlreadyExistsException e) {
+        return new ResponseEntity<>(new AlertAlreadyExistsResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

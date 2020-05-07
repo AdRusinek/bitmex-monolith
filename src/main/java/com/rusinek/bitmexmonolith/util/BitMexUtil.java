@@ -11,6 +11,8 @@ import com.mashape.unirest.request.body.MultipartBody;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
@@ -27,7 +29,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +40,7 @@ import java.util.Map;
 @Slf4j
 public class BitMexUtil {
     private static final String basePath = "/api/v1";
-    private static final int expireSeconds = 20;
+    private static final int expireSeconds = 10;
     private static final Charset charset = Charset.forName("UTF-8");
     private static final Gson gson = new Gson();
 
@@ -69,7 +73,6 @@ public class BitMexUtil {
                 "your real secret key (long one)");
     }
 
-    //todo zmien zanim pushniesz
 
 
     private String host = null;
@@ -81,19 +84,26 @@ public class BitMexUtil {
         this.apiKey = apiKey;
         this.apiKeySecret = apiKeySecret;
     }
-
     public Object requestApi(HTTP_METHOD method, String varPath, Map<String, Object> params) {
+
+        HttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                .build();
+
 // set api-expires
         String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
+
+        System.out.println(apiExpires);
 
         // get signContent
         String paramsEncodedStr = getEncodedStrOfParams(params);
         String path = basePath + varPath;
-        if ((method == HTTP_METHOD.GET) && !paramsEncodedStr.isEmpty()) {
+        if ((method == HTTP_METHOD.GET) && !paramsEncodedStr.equals("")) {
             path += "?" + paramsEncodedStr;
         }
         String url = host + path;
-        String signContent = method.toString() + path + apiExpires;
+        String signContent = method.toString() + path + String.valueOf(apiExpires);
         if (method == HTTP_METHOD.POST) {
             signContent += paramsEncodedStr;
         }
@@ -249,30 +259,42 @@ public class BitMexUtil {
 //        params.put("currency", "XBt");
 //        Map<String, Object> wallet = (Map<String, Object>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/user/wallet", params);
 //        System.out.println(wallet);
-//
-
-        System.out.println("====================================================");
         // get positions
-        int status = bitMexUtil.requestApi(HTTP_METHOD.GET, "/apiKey?reverse=false");
-        System.out.println(status == HttpStatus.OK.value());
-
-
-        System.out.println("===================================================");
-
-
+// get money
         Map<String, Object> params = new HashMap<>();
-        params.put("symbol", "XBTUSD");
-        params.put("ordType", "Stop");
-        params.put("pegPriceType ", "TrailingStopPeg");
-        params.put("pegOffsetValue", "-40");
-        params.put("orderQty", "30");
-        params.put("execInst", "Close, MarkPrice");
+        params.put("currency", "XBt");
+        Map<String, Object> wallet = (Map<String, Object>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/user/wallet", params);
+        System.out.println(wallet);
 
-        LinkedTreeMap o = (LinkedTreeMap) bitMexUtil.requestApi(HTTP_METHOD.POST, "/order", params);
-        System.out.println("**************");
-        System.out.println(o);
-        System.out.println("**************");
-        System.out.println("===================================================");
+        // get positions
+        params.clear();
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("isOpen", true);
+        params.put("filter", gson.toJson(filterMap));
+        List<Map> positionList = (List<Map>) bitMexUtil.requestApi(HTTP_METHOD.GET, "/position", params);
+        System.out.println(positionList);
+
+//        System.out.println("====================================================");
+//        // get positions
+//        int status = bitMexUtil.requestApi(HTTP_METHOD.GET, "/apiKey?reverse=false");
+//        System.out.println(status == HttpStatus.OK.value());
+
+//        System.out.println("===================================================");
+//
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("symbol", "XBTUSD");
+//        params.put("ordType", "Stop");
+//        params.put("pegPriceType ", "TrailingStopPeg");
+//        params.put("pegOffsetValue", "-40");
+//        params.put("orderQty", "30");
+//        params.put("execInst", "Close, MarkPrice");
+//
+//        LinkedTreeMap o = (LinkedTreeMap) bitMexUtil.requestApi(HTTP_METHOD.POST, "/order", params);
+//        System.out.println("**************");
+//        System.out.println(o);
+//        System.out.println("**************");
+//        System.out.println("===================================================");
 //            BitMexUtil bitMexUtil2 = BitMexUtil.getInstance2();
 //
 ////        Map<String, Object> params2 = new HashMap<>();
