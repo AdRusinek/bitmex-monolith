@@ -65,7 +65,7 @@ public class AlertSender {
                     "bitmexprogram@gmail.com",
                     false);
         } catch (MailException | MessagingException ex) {
-            log.debug("Mail not sent");
+            log.error("Mail for user '" + user.getUsername() + "' not sent");
             return 1;
         }
         return 0;

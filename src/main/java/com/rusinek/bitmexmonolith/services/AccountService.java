@@ -11,6 +11,7 @@ import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Adrian Rusinek on 21.02.2020
  **/
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountService {
@@ -31,13 +33,17 @@ public class AccountService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final MapValidationErrorService errorService;
+    private final RequestLimitService requestLimitService;
     private final AccountMapper accountMapper;
     private final AccountValidator accountValidator;
 
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
         //validates if it is possible to make connection with provided credentials
+        // temporarily set account owner (it is unset in AccountValidator)
+        account.setAccountOwner(principal.getName());
         accountValidator.validate(account, result);
+
 
         if (result.hasErrors()) return errorService.validateErrors(result);
 
@@ -54,6 +60,7 @@ public class AccountService {
         userRepository.findByUsername(principal.getName()).ifPresent(user -> {
             account.setAccountOwner(user.getUsername());
             account.setUser(user);
+            account.setAccountRequestLimit(requestLimitService.saveAccountRequestLimit());
         });
 
         return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);

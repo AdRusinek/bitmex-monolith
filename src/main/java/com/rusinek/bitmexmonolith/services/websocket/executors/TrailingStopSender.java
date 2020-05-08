@@ -3,7 +3,6 @@ package com.rusinek.bitmexmonolith.services.websocket.executors;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.services.ExchangeService;
-import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
@@ -45,7 +44,6 @@ public class TrailingStopSender {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private Map sentTrailingStop(TrailingStop trailingStop) {
 
         log.debug("Attempting to sent trailing stop for user: " + trailingStop.getTrailingStopOwner());
@@ -72,11 +70,11 @@ public class TrailingStopSender {
     private String extractInstructions(TrailingStop trailingStop) {
         String finalInstructions = "";
 
-        // jesli dasz samo Mark bez close on trigger to exactInst na gieldzie jest puste
-        // jesli dasz  Mark z close on trigger to exactInst na gieldzie jest "Close"
+        //if you only set Mark without close on trigger the exactInst on BitMEX is empty
         if (trailingStop.getExecInst().equals("MarkPrice") && !trailingStop.getCloseOnTrigger()) {
             finalInstructions = "";
         }
+        //if you set Mark with close on trigger with close on trigger then on BitMEX exactInst is "Close"
         if (trailingStop.getExecInst().equals("MarkPrice") && trailingStop.getCloseOnTrigger()) {
             finalInstructions = "Close";
         }
@@ -94,7 +92,7 @@ public class TrailingStopSender {
             String orderId = response.get("orderID").toString();
             return !orderId.isEmpty();
         } catch (Exception ex) {
-            log.debug("Null pointer due to not existing response");
+            log.error("Null pointer due to not existing response");
         }
         return false;
     }

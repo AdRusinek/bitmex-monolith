@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,6 +17,8 @@ import java.util.List;
 @Entity
 public class Account {
 
+    //todo [1] zabezpieczenie account przed przekroczeniem limitu [2] hmac i dodatkowy algorytm przy wsadzaniu do bazy [3] castowanie odpowiedzi od mexa
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,9 +33,9 @@ public class Account {
     @JsonIgnore
     private User user;
     private String accountOwner;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
     @JsonIgnore
     private List<TrailingStop> trailingStops = new ArrayList<>();
-    @Transient
-    private Integer requestLimit;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private AccountRequestLimit accountRequestLimit;
 }

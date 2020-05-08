@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +17,12 @@ import java.util.List;
 /**
  * Created by Adrian Rusinek on 01.03.2020
  **/
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 public class User implements UserDetails {
 
     @Id
@@ -39,11 +40,12 @@ public class User implements UserDetails {
     private String confirmPassword;
     private boolean isEnabled;
     private Date createdAt;
-    private Date updatedAt;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private List<Alert> alerts = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserRequestLimit userRequestLimit;
 
     @JsonIgnore
     @Override
@@ -79,10 +81,4 @@ public class User implements UserDetails {
     protected void onCreate() {
         this.createdAt = new Date();
     }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
-    }
-
 }

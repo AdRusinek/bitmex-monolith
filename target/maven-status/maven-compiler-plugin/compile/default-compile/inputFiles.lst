@@ -1,8 +1,10 @@
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\ExchangeConstants.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\AccountRepository.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNameAlreadyExistsException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\PositionController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\TrailingStopRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\websocket\executors\TrailingStopSender.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\alertException\AlertAlreadyExistsException.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\JwtAuthenticationEntryPoint.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\AccountController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\SecurityConfig.java
@@ -19,12 +21,15 @@ C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bi
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\repositories\AlertRepository.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\dto\AlertDto.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\dto\TrailingStopDto.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNameAlreadyExistsResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\payload\JWTLoginSuccessResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\controllers\UserController.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\payload\LoginRequest.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNotFoundException.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\util\TestingPurposes.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\TrailingStopService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\model\User.java
+C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\exceptions\alertException\AlertAlreadyExistsResponse.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\services\CustomUserDetailsService.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\model\Alert.java
 C:\Users\Adrian\Desktop\Bitmex-INŻ\bitmex-monolith\src\main\java\com\rusinek\bitmexmonolith\security\JwtTokenProvider.java

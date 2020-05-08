@@ -10,7 +10,9 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
+import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
+import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -22,11 +24,11 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.TIME_TO_RESET_REQUEST_LIMIT;
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.POST;
 
@@ -40,11 +42,68 @@ import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.PO
 public class ExchangeService {
 
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     @Value("${bitmex-monolith.exchange-url}")
     private String exchangeUrl;
     private static final String basePath = "/api/v1";
+    private static final int expireSeconds = 10;
 
-    @SuppressWarnings("UnstableApiUsage")
+
+    public int testConnection(ExchangeService.HTTP_METHOD method, String varPath, String apiKey, String apiKeySecret, String username) {
+
+        log.debug("Testing connection");
+
+        // set api-expires
+        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
+
+        // get signContent
+        String path = basePath + varPath;
+        String url = exchangeUrl + path;
+
+        String signContent = method.toString() + path + apiExpires;
+
+        // set apiSignature
+        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
+        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+        String apiSignature = hashCode.toString();
+
+        // get headers
+        Map<String, String> headers = new HashMap<>();
+        headers.put("api-key", apiKey);
+        headers.put("api-expires", apiExpires);
+        headers.put("api-signature", apiSignature);
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isPresent()) {
+            if (user.get().getUserRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                try {
+                    HttpResponse<String> response = null;
+                    if (method == GET) {
+                        response = Unirest.get(url)
+                                .headers(headers)
+                                .asString();
+
+                    } else if (method == POST) {
+                        response = Unirest.post(url)
+                                .headers(headers)
+                                .asString();
+                    }
+                    if (response != null) {
+                        System.out.println("manage");
+                        manageUserLimits(username);
+                        return response.getStatus();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return 0;
+    }
+
+
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath,
                              Map<String, Object> params, Long id, String userName) {
 
@@ -76,35 +135,37 @@ public class ExchangeService {
         headers.put("api-expires", apiExpires);
         headers.put("api-signature", apiSignature);
 
-        try {
-            HttpResponse<String> response = null;
-            if (method == GET) {
-                response = Unirest.get(url)
-                        .headers(headers)
-                        .asString();
 
-            } else if (method == POST) {
-                response = Unirest.post(url)
-                        .headers(headers)
-                        .fields(params)
-                        .asString();
-            }
-            if (response != null) {
-                Gson gson = new GsonBuilder().setLenient().create();
-                ResponseEntity errors = checkRequestForErrors(response);
-                if (errors != null) return errors;
-                manageLimits(response, account);
-                return gson.fromJson(response.getBody(), Object.class);
-            }
+        if (account.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+            try {
+                HttpResponse<String> response = null;
+                if (method == GET) {
+                    response = Unirest.get(url)
+                            .headers(headers)
+                            .asString();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                } else if (method == POST) {
+                    response = Unirest.post(url)
+                            .headers(headers)
+                            .fields(params)
+                            .asString();
+                }
+                if (response != null) {
+                    Gson gson = new GsonBuilder().setLenient().create();
+                    ResponseEntity errors = checkRequestForErrors(response);
+                    if (errors != null) return errors;
+                    manageAccountLimits(response, account);
+                    return gson.fromJson(response.getBody(), Object.class);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return null;
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath, Long id, String userName) {
 
         Account account = getAccount(id, userName);
@@ -129,80 +190,35 @@ public class ExchangeService {
         headers.put("api-expires", apiExpires);
         headers.put("api-signature", apiSignature);
 
-        try {
-            HttpResponse<String> response = null;
-            if (method == GET) {
-                response = Unirest.get(url)
-                        .headers(headers)
-                        .asString();
+        if (account.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+            try {
+                HttpResponse<String> response = null;
+                if (method == GET) {
+                    response = Unirest.get(url)
+                            .headers(headers)
+                            .asString();
 
-            } else if (method == POST) {
-                response = Unirest.post(url)
-                        .headers(headers)
-                        .asString();
-            }
-            if (response != null) {
-                Gson gson = new GsonBuilder().setLenient().create();
-                ResponseEntity errors = checkRequestForErrors(response);
-                //todo sprawdzic czy to errors jest dobrze przekazywane do serwisow
-                if (errors != null) return errors;
-                manageLimits(response, account);
-                return gson.fromJson(response.getBody(), Object.class);
-            }
+                } else if (method == POST) {
+                    response = Unirest.post(url)
+                            .headers(headers)
+                            .asString();
+                }
+                if (response != null) {
+                    Gson gson = new GsonBuilder().setLenient().create();
+                    ResponseEntity errors = checkRequestForErrors(response);
+                    //todo sprawdzic czy to errors jest dobrze przekazywane do serwisow
+                    if (errors != null) return errors;
+                    manageAccountLimits(response, account);
+                    return gson.fromJson(response.getBody(), Object.class);
+                }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                log.error("Error occurred when calling BitMEX api [Stack trace:] " + Arrays.toString(e.getStackTrace()));
+            }
         }
 
         return null;
     }
-
-    public int testConnection(ExchangeService.HTTP_METHOD method, String varPath, String apiKey, String apiKeySecret) {
-
-        log.debug("Testing connection");
-
-        // set api-expires
-        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 300);
-
-        // get signContent
-        String path = basePath + varPath;
-        String url = exchangeUrl + path;
-
-        String signContent = method.toString() + path + apiExpires;
-
-        // set apiSignature
-        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
-        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
-        String apiSignature = hashCode.toString();
-
-        // get headers
-        Map<String, String> headers = new HashMap<>();
-        headers.put("api-key", apiKey);
-        headers.put("api-expires", apiExpires);
-        headers.put("api-signature", apiSignature);
-
-        try {
-            HttpResponse<String> response = null;
-            if (method == GET) {
-                response = Unirest.get(url)
-                        .headers(headers)
-                        .asString();
-
-            } else if (method == POST) {
-                response = Unirest.post(url)
-                        .headers(headers)
-                        .asString();
-            }
-            if (response != null) {
-                return response.getStatus();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
 
     private ResponseEntity checkRequestForErrors(HttpResponse<String> response) {
         if (response.getBody().contains("error")) {
@@ -213,15 +229,44 @@ public class ExchangeService {
         return null;
     }
 
-    private void manageLimits(HttpResponse<String> response, Account account) throws InterruptedException {
+    private void manageAccountLimits(HttpResponse<String> response, Account account) {
+        // reads how many request are left to exceed limit
         String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
-        Integer limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
-        account.setRequestLimit(limit);
-        if (limit == 1) {
-            account.setRequestLimit(limit);
-            wait(TIME_TO_RESET_REQUEST_LIMIT);
-            log.debug("Requests left: " + limit);
+        int limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
+
+        //
+        System.out.println(limit);
+        //
+
+        // limit 2 just to play it safer
+        if (limit <= 5) {
+            // from this time it will check if 60 seconds have passed
+            account.getAccountRequestLimit().setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
+            account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 60);
+
+            accountRepository.save(account);
+            log.error("User '" + account.getAccountOwner() + "' with account Id + '" + account.getId() + "'almost exceeded limit.");
         }
+    }
+
+
+    private void manageUserLimits(String username) {
+        userRepository.findByUsername(username).ifPresent(user -> {
+
+            user.getUserRequestLimit().setConnectionTestLimit(user.getUserRequestLimit().getConnectionTestLimit() + 1);
+            userRepository.save(user);
+
+            if (user.getUserRequestLimit().getConnectionTestLimit() >= 5) {
+                // it has to wait 90 seconds if the limit is exceeded
+                user.getUserRequestLimit().setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
+                user.getUserRequestLimit().setApiReadyToUse(user.getUserRequestLimit().getBlockadeActivatedAt() + 120);
+                // set limit back to 0
+                user.getUserRequestLimit().setConnectionTestLimit(0);
+
+                userRepository.save(user);
+                log.error("User '" + user.getUsername() + "' almost exceeded limit by testing connection.");
+            }
+        });
     }
 
     private Account getAccount(Long id, String userName) {
@@ -229,7 +274,6 @@ public class ExchangeService {
             Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, Long.valueOf(id));
             if (!account.isPresent()) {
                 log.error("Element does not exist or does not belong to your account");
-                throw new AccountNotFoundException("Element does not exist or does not belong to your account");
             }
             return account.get();
         } catch (NumberFormatException ex) {

@@ -1,3 +1,4 @@
+com\rusinek\bitmexmonolith\util\TestingPurposes.class
 com\rusinek\bitmexmonolith\dto\AlertDto$AlertDtoBuilder.class
 com\rusinek\bitmexmonolith\model\User$UserBuilder.class
 com\rusinek\bitmexmonolith\util\BitMexUtil.class
@@ -17,11 +18,13 @@ com\rusinek\bitmexmonolith\services\TrailingStopService.class
 com\rusinek\bitmexmonolith\controllers\mappers\AccountMapper.class
 com\rusinek\bitmexmonolith\model\Alert.class
 com\rusinek\bitmexmonolith\repositories\AccountRepository.class
+com\rusinek\bitmexmonolith\exceptions\alertException\AlertAlreadyExistsException.class
 com\rusinek\bitmexmonolith\exceptions\authenticationException\UsernameAlreadyExistsResponse.class
 com\rusinek\bitmexmonolith\BitmexMonolithApplication.class
 com\rusinek\bitmexmonolith\payload\JWTLoginSuccessResponse.class
 com\rusinek\bitmexmonolith\dto\TrailingStopDto.class
 com\rusinek\bitmexmonolith\controllers\mappers\AccountMapperImpl.class
+com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNameAlreadyExistsException.class
 com\rusinek\bitmexmonolith\controllers\mappers\TrailingStopMapper.class
 com\rusinek\bitmexmonolith\repositories\TokenRepository.class
 com\rusinek\bitmexmonolith\util\BitMexUtil$1.class
@@ -33,6 +36,7 @@ com\rusinek\bitmexmonolith\telbot\KryptomadradBot.class
 com\rusinek\bitmexmonolith\controllers\OrderController.class
 com\rusinek\bitmexmonolith\services\ExchangeConstants.class
 com\rusinek\bitmexmonolith\controllers\mappers\AlertMapperImpl.class
+com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNameAlreadyExistsResponse.class
 com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountNotFoundException.class
 com\rusinek\bitmexmonolith\exceptions\MapValidationErrorService.class
 com\rusinek\bitmexmonolith\security\JwtAuthenticationEntryPoint.class
@@ -46,6 +50,7 @@ com\rusinek\bitmexmonolith\exceptions\CustomResponseEntityExceptionHandler.class
 com\rusinek\bitmexmonolith\controllers\PositionController.class
 com\rusinek\bitmexmonolith\services\websocket\executors\TrailingStopSender.class
 com\rusinek\bitmexmonolith\exceptions\accountExceptions\AccountIdExceptionResponse.class
+com\rusinek\bitmexmonolith\exceptions\alertException\AlertAlreadyExistsResponse.class
 com\rusinek\bitmexmonolith\util\BitMexUtil$HTTP_METHOD.class
 com\rusinek\bitmexmonolith\model\Token.class
 com\rusinek\bitmexmonolith\security\JwtAuthenticationFilter.class

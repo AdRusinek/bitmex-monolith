@@ -29,10 +29,23 @@ public class AccountValidator implements Validator {
         Account account = (Account) target;
 
         if (!account.getApiKey().isEmpty() && !account.getApiKeySecret().isEmpty()) {
-            int status = exchangeService.testConnection(ExchangeService.HTTP_METHOD.GET, API_KEY, account.getApiKey(), account.getApiKeySecret());
+            // look for status
+            int status = exchangeService.testConnection(ExchangeService.HTTP_METHOD.GET, API_KEY, account.getApiKey(), account.getApiKeySecret(),
+                    account.getAccountOwner());
+
+            // it unset it because is no longer needed here, it is set in Account Service
+            account.setAccountOwner(null);
+            //returns errors if status not 200
             if (status != HttpStatus.OK.value()) {
                 errors.rejectValue("apiKey","Connection","Given credentials are not valid.");
                 errors.rejectValue("apiKeySecret","Connection","Given credentials are not valid.");
+                // status is zero if limits are exceeded
+                if (status == 0) {
+                    errors.rejectValue("apiKey", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
+                            " administration has been notified about your attempts.");
+                    errors.rejectValue("apiKeySecret", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
+                            " administration has been notified about your attempts.");
+                }
             }
         }
     }

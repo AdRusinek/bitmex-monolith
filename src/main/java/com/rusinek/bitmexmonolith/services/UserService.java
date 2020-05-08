@@ -4,10 +4,12 @@ import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.model.Token;
 import com.rusinek.bitmexmonolith.model.User;
+import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
 import com.rusinek.bitmexmonolith.payload.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.repositories.UserRequestLimitRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.mail.MessagingException;
-
 import java.util.UUID;
 
 import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX;
@@ -40,6 +40,7 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RequestLimitService requestLimitService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -56,6 +57,8 @@ public class UserService {
         try {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             user.setConfirmPassword("");
+
+            user.setUserRequestLimit(requestLimitService.saveUserRequestLimit());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists.");
@@ -91,11 +94,12 @@ public class UserService {
     }
 
     public RedirectView verifyToken(String value) {
-        Token token = tokenRepository.findByValue(value);
-        User user = token.getUser();
-        user.setEnabled(true);
-        userRepository.save(user);
-
+        tokenRepository.findByValue(value).ifPresent(token -> {
+            User user = token.getUser();
+            user.setEnabled(true);
+            userRepository.save(user);
+            log.debug("Validating verify token for user " + user.getUsername());
+        });
         return new RedirectView(tokenRedirectionUrl + "/");
     }
 
@@ -109,10 +113,10 @@ public class UserService {
         String url = defaultUrl + "/api/users/token?value=" + tokenValue;
 
         try {
-            log.info("Sending registration email to user: " + user.getUsername());
+            log.debug("Sending registration email to user: " + user.getUsername());
             mailService.sendMail(user.getUsername(), "Confirm account", url, "bitmexprogram@gmail.com", false);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("Error occurred while sending mail to " + user.getUsername());
         }
     }
 }
