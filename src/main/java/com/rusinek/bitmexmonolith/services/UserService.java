@@ -4,12 +4,10 @@ import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.model.Token;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
 import com.rusinek.bitmexmonolith.payload.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
-import com.rusinek.bitmexmonolith.repositories.UserRequestLimitRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX;
@@ -40,7 +39,7 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RequestLimitService requestLimitService;
+    private final LimitService limitService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -58,7 +57,7 @@ public class UserService {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             user.setConfirmPassword("");
 
-            user.setUserRequestLimit(requestLimitService.saveUserRequestLimit());
+            user.setUserRequestLimit(limitService.saveUserRequestLimit());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists.");
@@ -118,5 +117,9 @@ public class UserService {
         } catch (Exception e) {
             log.error("Error occurred while sending mail to " + user.getUsername());
         }
+    }
+
+    Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

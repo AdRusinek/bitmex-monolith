@@ -73,6 +73,7 @@ public class BitMexUtil {
                 "your real secret key (long one)");
     }
 
+
     private String host = null;
     private String apiKey = null;
     private String apiKeySecret = null;
@@ -246,7 +247,6 @@ public class BitMexUtil {
         POST
     }
 
-    ;
 
     public static void main(String[] args) {
 // get money

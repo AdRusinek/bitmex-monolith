@@ -33,7 +33,7 @@ public class AccountService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final MapValidationErrorService errorService;
-    private final RequestLimitService requestLimitService;
+    private final LimitService limitService;
     private final AccountMapper accountMapper;
     private final AccountValidator accountValidator;
 
@@ -60,7 +60,7 @@ public class AccountService {
         userRepository.findByUsername(principal.getName()).ifPresent(user -> {
             account.setAccountOwner(user.getUsername());
             account.setUser(user);
-            account.setAccountRequestLimit(requestLimitService.saveAccountRequestLimit());
+            account.setAccountRequestLimit(limitService.saveAccountRequestLimit());
         });
 
         return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);

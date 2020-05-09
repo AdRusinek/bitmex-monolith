@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
-import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
@@ -41,6 +40,8 @@ import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.PO
 @RequiredArgsConstructor
 public class ExchangeService {
 
+
+    private final RequestService requestService;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     @Value("${bitmex-monolith.exchange-url}")
@@ -91,7 +92,7 @@ public class ExchangeService {
                     }
                     if (response != null) {
                         System.out.println("manage");
-                        manageUserLimits(username);
+                        requestService.manageUserLimits(username);
                         return response.getStatus();
                     }
 
@@ -107,117 +108,124 @@ public class ExchangeService {
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath,
                              Map<String, Object> params, Long id, String userName) {
 
-        Account account = getAccount(id, userName);
+        Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        // set api-expires
-        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 300);
+        if (account.isPresent()) {
+            // set api-expires
+            String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 5);
 
-        // get signContent
-        String paramsEncodedStr = getEncodedStrOfParams(params);
-        String path = "/api/v1" + varPath;
-        if ((method == GET) && !paramsEncodedStr.isEmpty()) {
-            path += "?" + paramsEncodedStr;
-        }
-        String url = exchangeUrl + path;
-        String signContent = method.toString() + path + apiExpires;
-        if (method == POST) {
-            signContent += paramsEncodedStr;
-        }
-
-        // set apiSignature
-        HashFunction hashFunc = Hashing.hmacSha256(account.getApiKeySecret().getBytes(Charset.forName("UTF-8")));
-        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
-        String apiSignature = hashCode.toString();
-
-        // get headers
-        Map<String, String> headers = new HashMap<>();
-        headers.put("api-key", account.getApiKey());
-        headers.put("api-expires", apiExpires);
-        headers.put("api-signature", apiSignature);
-
-
-        if (account.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
-            try {
-                HttpResponse<String> response = null;
-                if (method == GET) {
-                    response = Unirest.get(url)
-                            .headers(headers)
-                            .asString();
-
-                } else if (method == POST) {
-                    response = Unirest.post(url)
-                            .headers(headers)
-                            .fields(params)
-                            .asString();
-                }
-                if (response != null) {
-                    Gson gson = new GsonBuilder().setLenient().create();
-                    ResponseEntity errors = checkRequestForErrors(response);
-                    if (errors != null) return errors;
-                    manageAccountLimits(response, account);
-                    return gson.fromJson(response.getBody(), Object.class);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            // get signContent
+            String paramsEncodedStr = getEncodedStrOfParams(params);
+            String path = "/api/v1" + varPath;
+            if ((method == GET) && !paramsEncodedStr.isEmpty()) {
+                path += "?" + paramsEncodedStr;
             }
-        }
+            String url = exchangeUrl + path;
+            String signContent = method.toString() + path + apiExpires;
+            if (method == POST) {
+                signContent += paramsEncodedStr;
+            }
 
-        return null;
+            // set apiSignature
+            HashFunction hashFunc = Hashing.hmacSha256(account.get().getApiKeySecret().getBytes(Charset.forName("UTF-8")));
+            HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+            String apiSignature = hashCode.toString();
+
+            // get headers
+            Map<String, String> headers = new HashMap<>();
+            headers.put("api-key", account.get().getApiKey());
+            headers.put("api-expires", apiExpires);
+            headers.put("api-signature", apiSignature);
+
+
+            if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                try {
+                    HttpResponse<String> response = null;
+                    if (method == GET) {
+                        response = Unirest.get(url)
+                                .headers(headers)
+                                .asString();
+
+                    } else if (method == POST) {
+                        response = Unirest.post(url)
+                                .headers(headers)
+                                .fields(params)
+                                .asString();
+                    }
+                    if (response != null) {
+                        Gson gson = new GsonBuilder().setLenient().create();
+                        ResponseEntity errors = checkRequestForErrors(response);
+                        if (errors != null) return errors;
+                        requestService.manageAccountLimits(response, account.get());
+                        return gson.fromJson(response.getBody(), Object.class);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new Object();
+                }
+            }
+            //returns empty object only if error occurred or limits exceeded
+            return new Object();
+        }
+        return new Object();
     }
 
     public Object requestApi(ExchangeService.HTTP_METHOD method, String varPath, Long id, String userName) {
 
-        Account account = getAccount(id, userName);
+        Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        // set api-expires
-        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 300);
+        if (account.isPresent()) {
+            // set api-expires
+            String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + 300);
 
-        // get signContent
-        String path = basePath + varPath;
-        String url = exchangeUrl + path;
+            // get signContent
+            String path = basePath + varPath;
+            String url = exchangeUrl + path;
 
-        String signContent = method.toString() + path + apiExpires;
+            String signContent = method.toString() + path + apiExpires;
 
-        // set apiSignature
-        HashFunction hashFunc = Hashing.hmacSha256(account.getApiKeySecret().getBytes(Charset.forName("UTF-8")));
-        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
-        String apiSignature = hashCode.toString();
+            // set apiSignature
+            HashFunction hashFunc = Hashing.hmacSha256(account.get().getApiKeySecret().getBytes(Charset.forName("UTF-8")));
+            HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+            String apiSignature = hashCode.toString();
 
-        // get headers
-        Map<String, String> headers = new HashMap<>();
-        headers.put("api-key", account.getApiKey());
-        headers.put("api-expires", apiExpires);
-        headers.put("api-signature", apiSignature);
+            // get headers
+            Map<String, String> headers = new HashMap<>();
+            headers.put("api-key", account.get().getApiKey());
+            headers.put("api-expires", apiExpires);
+            headers.put("api-signature", apiSignature);
 
-        if (account.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
-            try {
-                HttpResponse<String> response = null;
-                if (method == GET) {
-                    response = Unirest.get(url)
-                            .headers(headers)
-                            .asString();
+            if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                try {
+                    HttpResponse<String> response = null;
+                    if (method == GET) {
+                        response = Unirest.get(url)
+                                .headers(headers)
+                                .asString();
 
-                } else if (method == POST) {
-                    response = Unirest.post(url)
-                            .headers(headers)
-                            .asString();
+                    } else if (method == POST) {
+                        response = Unirest.post(url)
+                                .headers(headers)
+                                .asString();
+                    }
+                    if (response != null) {
+                        Gson gson = new GsonBuilder().setLenient().create();
+                        ResponseEntity errors = checkRequestForErrors(response);
+                        //todo sprawdzic czy to errors jest dobrze przekazywane do serwisow
+                        if (errors != null) return errors;
+                        requestService.manageAccountLimits(response, account.get());
+                        return gson.fromJson(response.getBody(), Object.class);
+                    }
+
+                } catch (Exception e) {
+                    log.error("Error occurred when calling BitMEX api [Stack trace:] " + Arrays.toString(e.getStackTrace()));
                 }
-                if (response != null) {
-                    Gson gson = new GsonBuilder().setLenient().create();
-                    ResponseEntity errors = checkRequestForErrors(response);
-                    //todo sprawdzic czy to errors jest dobrze przekazywane do serwisow
-                    if (errors != null) return errors;
-                    manageAccountLimits(response, account);
-                    return gson.fromJson(response.getBody(), Object.class);
-                }
-
-            } catch (Exception e) {
-                log.error("Error occurred when calling BitMEX api [Stack trace:] " + Arrays.toString(e.getStackTrace()));
             }
+            //returns empty object only if error occurred or limits exceeded
+            return new Object();
         }
-
-        return null;
+        return new Object();
     }
 
     private ResponseEntity checkRequestForErrors(HttpResponse<String> response) {
@@ -229,57 +237,6 @@ public class ExchangeService {
         return null;
     }
 
-    private void manageAccountLimits(HttpResponse<String> response, Account account) {
-        // reads how many request are left to exceed limit
-        String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
-        int limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
-
-        //
-        System.out.println(limit);
-        //
-
-        // limit 2 just to play it safer
-        if (limit <= 5) {
-            // from this time it will check if 60 seconds have passed
-            account.getAccountRequestLimit().setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
-            account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 60);
-
-            accountRepository.save(account);
-            log.error("User '" + account.getAccountOwner() + "' with account Id + '" + account.getId() + "'almost exceeded limit.");
-        }
-    }
-
-
-    private void manageUserLimits(String username) {
-        userRepository.findByUsername(username).ifPresent(user -> {
-
-            user.getUserRequestLimit().setConnectionTestLimit(user.getUserRequestLimit().getConnectionTestLimit() + 1);
-            userRepository.save(user);
-
-            if (user.getUserRequestLimit().getConnectionTestLimit() >= 5) {
-                // it has to wait 90 seconds if the limit is exceeded
-                user.getUserRequestLimit().setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
-                user.getUserRequestLimit().setApiReadyToUse(user.getUserRequestLimit().getBlockadeActivatedAt() + 120);
-                // set limit back to 0
-                user.getUserRequestLimit().setConnectionTestLimit(0);
-
-                userRepository.save(user);
-                log.error("User '" + user.getUsername() + "' almost exceeded limit by testing connection.");
-            }
-        });
-    }
-
-    private Account getAccount(Long id, String userName) {
-        try {
-            Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, Long.valueOf(id));
-            if (!account.isPresent()) {
-                log.error("Element does not exist or does not belong to your account");
-            }
-            return account.get();
-        } catch (NumberFormatException ex) {
-            throw new AccountNotFoundException("Element '" + id + "' can't be cast to type Long");
-        }
-    }
 
     private String getEncodedStrOfParams(Map<String, Object> params) {
         MultipartBody body = Unirest.post("")
