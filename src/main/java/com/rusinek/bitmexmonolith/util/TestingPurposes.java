@@ -1,5 +1,8 @@
 package com.rusinek.bitmexmonolith.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -7,22 +10,16 @@ import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
+import com.rusinek.bitmexmonolith.model.response.ApiKeyResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +55,7 @@ public class TestingPurposes {
     }
 
 
+
     private static String getEncodedStrOfParams(Map<String, Object> params) {
         MultipartBody body = Unirest.post("")
                 .fields(params);
@@ -75,7 +73,7 @@ public class TestingPurposes {
         POST
     }
 
-    public HttpResponse<String> requestApi(BitMexUtil.HTTP_METHOD method, String varPath, Map<String, Object> params) {
+    public HttpResponse<?> requestApi(BitMexUtil.HTTP_METHOD method, String varPath, Map<String, Object> params) {
 
         // set api-expires
         long apiExpires = System.currentTimeMillis() / 1000 + expireSeconds;
@@ -138,18 +136,30 @@ public class TestingPurposes {
         return null;
     }
 
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws JsonProcessingException {
 
         TestingPurposes testingPurposes = TestingPurposes.getInstance();
 
         Map<String, Object> params = new HashMap<>();
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("isOpen", true);
-        params.put("filter", gson.toJson(filterMap));
-        List<Map> positionList = null;
+//        Map<String, Object> filterMap = new HashMap<>();
+//        filterMap.put("isOpen", true);
+//        params.put("filter", gson.toJson(filterMap));
+//        List<Map> positionList = null;
+//
+//        HttpResponse<?> response = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
+//
+//        System.out.println(response.getBody());
 
-        HttpResponse<String> response = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
+        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
+        System.out.println(apiKeyResponse2.getStatus());
+        ObjectMapper m = new ObjectMapper();
+        List<ApiKeyResponse> responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKeyResponse>>() {
+        });
+        System.out.println(responses);
 
-        System.out.println(response.getBody());
+//        ApiKeyResponse apiKeyResponse  = (ApiKeyResponse) testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params).getBody();
+//        System.out.println(apiKeyResponse);
+
     }
 }

@@ -30,21 +30,27 @@ public class AccountValidator implements Validator {
 
         if (!account.getApiKey().isEmpty() && !account.getApiKeySecret().isEmpty()) {
             // look for status
-            int status = exchangeService.testConnection(ExchangeService.HTTP_METHOD.GET, API_KEY, account.getApiKey(), account.getApiKeySecret(),
-                    account.getAccountOwner());
+            int response = exchangeService
+                    .testConnection(ExchangeService.HTTP_METHOD.GET, API_KEY, account.getApiKey(), account.getApiKeySecret(), account.getAccountOwner());
+
 
             // it unset it because is no longer needed here, it is set in Account Service
             account.setAccountOwner(null);
             //returns errors if status not 200
-            if (status != HttpStatus.OK.value()) {
-                errors.rejectValue("apiKey","Connection","Given credentials are not valid.");
-                errors.rejectValue("apiKeySecret","Connection","Given credentials are not valid.");
-                // status is zero if limits are exceeded
-                if (status == 0) {
+            if (response != HttpStatus.OK.value()) {
+                errors.rejectValue("apiKey", "Connection", "Given credentials are not valid.");
+                errors.rejectValue("apiKeySecret", "Connection", "Given credentials are not valid.");
+                // response is 0 if limits are exceeded
+                if (response == 0) {
                     errors.rejectValue("apiKey", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
                             " administration has been notified about your attempts.");
                     errors.rejectValue("apiKeySecret", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
                             " administration has been notified about your attempts.");
+                }
+                // response is 1 if key permissions not order
+                if (response == 1) {
+                    errors.rejectValue("apiKey", "Permission", "Set 'Order' key permission to allow the placement and cancellation of orders.");
+                    errors.rejectValue("apiKeySecret", "Permission", "Set 'Order' key permission to allow the placement and cancellation of orders.");
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.rusinek.bitmexmonolith.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -10,6 +12,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
+import com.rusinek.bitmexmonolith.model.response.ApiKeyResponse;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +26,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
 import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.POST;
@@ -50,6 +50,8 @@ public class ExchangeService {
     private static final int expireSeconds = 10;
 
 
+    // returns 0 if limits exceeded
+    // returns 1 if key does not have permission to place orders
     public int testConnection(ExchangeService.HTTP_METHOD method, String varPath, String apiKey, String apiKeySecret, String username) {
 
         log.debug("Testing connection");
@@ -91,8 +93,16 @@ public class ExchangeService {
                                 .asString();
                     }
                     if (response != null) {
-                        System.out.println("manage");
+                        ObjectMapper objectMapper = new ObjectMapper();
                         requestService.manageUserLimits(username);
+                        List<ApiKeyResponse> apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<List<ApiKeyResponse>>() {});
+                        for (ApiKeyResponse key: apiKeys) {
+                            for (String permission: key.getPermissions()) {
+                                if (apiKey.equals(key.getId()) && !permission.equals("order")) {
+                                    return 1;
+                                }
+                            }
+                        }
                         return response.getStatus();
                     }
 
