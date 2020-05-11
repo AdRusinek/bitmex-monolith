@@ -32,7 +32,7 @@ public class AlertService {
 
     public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {
 
-        // validate possible errors that may come from model annotations
+        // processErrorResponse possible errors that may come from model annotations
         if (result.hasErrors()) return errorService.validateErrors(result);
 
         // checks if alert with provided triggering price already exists

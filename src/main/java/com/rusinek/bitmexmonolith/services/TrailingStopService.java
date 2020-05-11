@@ -35,7 +35,7 @@ public class TrailingStopService {
 
     public ResponseEntity<?> saveTrailingStop(TrailingStop trailingStop, BindingResult result, Principal principal, String accountId) {
 
-        // validate possible errors that may come from model annotations
+        // processErrorResponse possible errors that may come from model annotations
         if (result.hasErrors()) return errorService.validateErrors(result);
 
         // checks if the user exists and after it finds it will bind trailing stop to specific account

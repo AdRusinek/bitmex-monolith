@@ -14,15 +14,15 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ApiKeyResponse {
+public class ApiKey {
 
     private String id;
     private String name;
-    private Integer nonce;
+    private int nonce;
     private String cidr;
     private List<String> permissions = new ArrayList<>();
-    private Boolean enabled;
-    private Integer userId;
+    private boolean enabled;
+    private int userId;
     private Timestamp created;
 
 }

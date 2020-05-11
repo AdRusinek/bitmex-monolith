@@ -19,7 +19,7 @@ public class LimitService {
     private final UserRequestLimitRepository userRequestLimitRepository;
     private final AccountRequestLimitRepository accountRequestLimitRepository;
 
-    public UserRequestLimit saveUserRequestLimit() {
+    UserRequestLimit saveUserRequestLimit() {
         // setting request limits for newly registered users
         UserRequestLimit userRequestLimit = new UserRequestLimit();
         userRequestLimit.setBlockadeActivatedAt(0);
@@ -29,7 +29,7 @@ public class LimitService {
         return userRequestLimitRepository.save(userRequestLimit);
     }
 
-    public AccountRequestLimit saveAccountRequestLimit() {
+    AccountRequestLimit saveAccountRequestLimit() {
 
         AccountRequestLimit accountRequestLimit = new AccountRequestLimit();
         accountRequestLimit.setBlockadeActivatedAt(0);

@@ -9,8 +9,11 @@ import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
-import com.rusinek.bitmexmonolith.model.response.ApiKeyResponse;
+import com.rusinek.bitmexmonolith.model.response.Order;
+import com.rusinek.bitmexmonolith.model.response.Position;
+import javafx.geometry.Pos;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -23,6 +26,10 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPENED_LIMIT_ORDERS;
+import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPEN_POSITION;
+import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
 
 /**
  * Created by Adrian Rusinek on 07.05.2020
@@ -105,13 +112,13 @@ public class TestingPurposes {
         headers.put("api-expires", String.valueOf(apiExpires));
         headers.put("api-signature", apiSignature);
 
+        HttpResponse<String> response = null;
         try {
             RequestConfig globalConfig = RequestConfig.custom()
                     .setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
 
             HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
             Unirest.setHttpClient(httpclient);
-            HttpResponse<String> response = null;
 
             if (method == BitMexUtil.HTTP_METHOD.GET) {
 
@@ -130,18 +137,69 @@ public class TestingPurposes {
 //            return responseEntity;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("ops");
         }
 
         return null;
     }
 
+    HttpResponse<String> requestApiWithGet(BitMexUtil.HTTP_METHOD method, String varPath) {
+
+
+        // set api-expires
+        String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
+
+        // get signContent
+        String path = basePath + varPath;
+        String signContent = GET.toString() + path + apiExpires;
+        String url = "https://testnet.bitmex.com/" + path;
+
+        // set apiSignature
+        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
+        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+        String apiSignature = hashCode.toString();
+
+        // get headers
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("api-key", apiKey);
+        headers.put("api-expires", apiExpires);
+        headers.put("api-signature", apiSignature);
+
+        RequestConfig globalConfig = RequestConfig.custom()
+                .setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+
+        HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
+        Unirest.setHttpClient(httpclient);
+
+        try {
+            HttpResponse<String> response = null;
+            if (method == BitMexUtil.HTTP_METHOD.GET) {
+                response = Unirest.get(url)
+                        .headers(headers)
+                        .asString();
+
+            } else if (method == BitMexUtil.HTTP_METHOD.POST) {
+                response = Unirest.post(url)
+                        .headers(headers)
+                        .asString();
+            }
+            return response;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public static void main(String[] args) throws JsonProcessingException {
-
+        ObjectMapper objectMapper = new ObjectMapper();
         TestingPurposes testingPurposes = TestingPurposes.getInstance();
 
-        Map<String, Object> params = new HashMap<>();
+        HttpResponse<String> response = testingPurposes.requestApiWithGet(BitMexUtil.HTTP_METHOD.GET, OPENED_LIMIT_ORDERS);
+        List<Order> position = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {});
+        System.out.println(position);
+
+//        Map<String, Object> params = new HashMap<>();
 //        Map<String, Object> filterMap = new HashMap<>();
 //        filterMap.put("isOpen", true);
 //        params.put("filter", gson.toJson(filterMap));
@@ -151,12 +209,19 @@ public class TestingPurposes {
 //
 //        System.out.println(response.getBody());
 
-        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
-        System.out.println(apiKeyResponse2.getStatus());
-        ObjectMapper m = new ObjectMapper();
-        List<ApiKeyResponse> responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKeyResponse>>() {
-        });
-        System.out.println(responses);
+//        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
+//        System.out.println(apiKeyResponse2.getStatus());
+//        ObjectMapper m = new ObjectMapper();
+//        try {
+//            List<ApiKey> responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKey>>() {
+//            });
+//            System.out.println(responses);
+//        } catch (Exception e) {
+//            ExchangeError responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<ExchangeError>() {
+//            });
+//            System.out.println(responses.toString());
+//        }
+
 
 //        ApiKeyResponse apiKeyResponse  = (ApiKeyResponse) testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params).getBody();
 //        System.out.println(apiKeyResponse);

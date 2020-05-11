@@ -81,7 +81,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerUser(User user, BindingResult result) {
-        // validate passwords match
+        // processErrorResponse passwords match
         userValidator.validate(user, result);
 
         if (result.hasErrors()) return errorService.validateErrors(result);

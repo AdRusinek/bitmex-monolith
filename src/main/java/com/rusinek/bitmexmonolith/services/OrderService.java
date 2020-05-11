@@ -1,6 +1,13 @@
 package com.rusinek.bitmexmonolith.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.internal.LinkedTreeMap;
+import com.mashape.unirest.http.HttpResponse;
+import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
+import com.rusinek.bitmexmonolith.model.response.Order;
+import com.rusinek.bitmexmonolith.model.response.Position;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -13,8 +20,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
-
 
 /**
  * Created by Adrian Rusinek on 21.02.2020
@@ -25,6 +30,8 @@ import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GE
 public class OrderService {
 
     private final ExchangeService exchangeService;
+    private final BitmexExceptionService bitmexExceptionService;
+    private final ObjectMapper objectMapper;
 
     private JSONArray setCorrectPrice(List<LinkedTreeMap> orders) {
         JSONArray array = new JSONArray();
@@ -41,16 +48,16 @@ public class OrderService {
         return array;
     }
 
+    // todo teraz sprawdz sobie czy buy czy sell i nie daj minusa albo daj ;)
     public ResponseEntity<?> requestOrders(Principal principal, String accountId, String orderType) {
+        HttpResponse<String> response = exchangeService.requestApiWithGet(orderType, Long.valueOf(accountId), principal.getName());
         try {
-            ArrayList orders = (ArrayList) exchangeService.requestApi(GET, orderType, Long.valueOf(accountId), principal.getName());
-            if (orders == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            log.debug("Getting orders from BitMEX.");
-            return new ResponseEntity<>(setCorrectPrice(orders).toString(), HttpStatus.OK);
-        } catch (ClassCastException ex) {
-            log.error("Failure requesting orders from BitMEX.");
-            ex.getMessage();
+            List<Order> orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
+            });
+            return new ResponseEntity<>(orders, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            bitmexExceptionService.processErrorResponse(objectMapper, response);
         }
-        return new ResponseEntity<>(new ArrayList<LinkedTreeMap>().toString(), HttpStatus.ACCEPTED);
+        return null;
     }
 }

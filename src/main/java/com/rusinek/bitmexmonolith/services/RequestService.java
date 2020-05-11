@@ -6,6 +6,7 @@ import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,7 +35,6 @@ public class RequestService {
         }
     }
 
-
     void manageUserLimits(String username) {
         userRepository.findByUsername(username).ifPresent(user -> {
 
@@ -53,4 +53,12 @@ public class RequestService {
             }
         });
     }
+
+    void refreshUserLimits(String username) {
+        userRepository.findByUsername(username).ifPresent(user -> {
+            user.getUserRequestLimit().setConnectionTestLimit(0);
+            userRepository.save(user);
+        });
+    }
+
 }

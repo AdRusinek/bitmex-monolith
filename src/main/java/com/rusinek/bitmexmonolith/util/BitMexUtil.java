@@ -74,7 +74,6 @@ public class BitMexUtil {
     }
 
 
-
     private String host = null;
     private String apiKey = null;
     private String apiKeySecret = null;

@@ -58,7 +58,7 @@ public class TrailingStopSender {
 
         try {
             return (Map<String, Object>) exchangeService
-                    .requestApi(POST, "/order", params,
+                    .requestApiWithPost("/order", params,
                             trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
         } catch (ClassCastException ex) {
             log.debug("Could not sent trailing stop to Exchange.");

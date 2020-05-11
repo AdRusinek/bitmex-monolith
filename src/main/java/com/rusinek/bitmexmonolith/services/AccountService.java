@@ -40,10 +40,10 @@ public class AccountService {
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
         //validates if it is possible to make connection with provided credentials
-        // temporarily set account owner (it is unset in AccountValidator)
+        // temporarily set account owner
         account.setAccountOwner(principal.getName());
         accountValidator.validate(account, result);
-
+        account.setAccountOwner(null);
 
         if (result.hasErrors()) return errorService.validateErrors(result);
 
