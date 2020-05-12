@@ -3,7 +3,6 @@ package com.rusinek.bitmexmonolith.services.exchange;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.OrderLimitMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
@@ -15,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -26,30 +23,19 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderLimitService {
+public class LimitOrderService {
 
     private final ExchangeService exchangeService;
     private final BitmexExceptionService bitmexExceptionService;
+    private final ParameterService parameterService;
     private final ObjectMapper objectMapper;
     private final ResponseModifier responseModifier;
     private final OrderLimitMapper orderLimitMapper;
 
     public ResponseEntity<?> requestLimitOrders(Principal principal, String accountId) {
 
-        Gson gson = new Gson();
-        Map<String, Object> params = new HashMap<>();
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("symbol", "XBTUSD");
-        filterMap.put("ordType", "Limit");
-        filterMap.put("open", true);
-
-        params.put("symbol", "XBT");
-        params.put("filter", gson.toJson(filterMap));
-        params.put("count", 20);
-        params.put("reverse", false);
-
-        HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HTTP_METHOD.GET,
-               "/order", params, Long.valueOf(accountId), principal.getName());
+        HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET,
+                "/order", parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_LIMIT_ORDERS), Long.valueOf(accountId), principal.getName());
         try {
             List<Order> orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
             });

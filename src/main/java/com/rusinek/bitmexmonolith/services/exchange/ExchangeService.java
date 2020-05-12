@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.POST;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpMethod.GET;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpMethod.POST;
 
 
 /**
@@ -54,6 +54,7 @@ public class ExchangeService {
     // returns 0 if limits exceeded
     // returns 1 if key does not have permission to place orders
     // returns 2 if all good
+    // returns 3 if permission contains withdraw
     // returns different status if BitMEX has a problem
     public int testConnection(String varPath, Map<String, Object> params, String apiKey, String apiKeySecret, String username) {
         // set api-expires
@@ -94,8 +95,7 @@ public class ExchangeService {
         return 0;
     }
 
-
-    HttpResponse<String> requestApi(HTTP_METHOD method, String varPath, Map<String, Object> params, Long id, String userName) {
+    public HttpResponse<String> requestApi(HttpMethod method, String varPath, Map<String, Object> params, Long id, String userName) {
 
         Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
@@ -106,12 +106,12 @@ public class ExchangeService {
             // get signContent
             String paramsEncodedStr = getEncodedStrOfParams(params);
             String path = basePath + varPath;
-            if (paramsEncodedStr != null && (method == HTTP_METHOD.GET) && !paramsEncodedStr.equals("")) {
+            if (paramsEncodedStr != null && (method == HttpMethod.GET) && !paramsEncodedStr.equals("")) {
                 path += "?" + paramsEncodedStr;
             }
             String url = exchangeUrl + path;
             String signContent = method.toString() + path + apiExpires;
-            if (method == HTTP_METHOD.POST) {
+            if (method == HttpMethod.POST) {
                 signContent += paramsEncodedStr;
             }
             // set apiSignature
@@ -135,7 +135,7 @@ public class ExchangeService {
         return null;
     }
 
-    private HttpResponse<String> callApi(HTTP_METHOD method, String url, HashMap<String, String> headers) throws UnirestException {
+    private HttpResponse<String> callApi(HttpMethod method, String url, HashMap<String, String> headers) throws UnirestException {
         HttpResponse<String> response = null;
         ignoreCookies();
         if (method == GET) {
@@ -185,7 +185,7 @@ public class ExchangeService {
         return null;
     }
 
-    public enum HTTP_METHOD {
+    public enum HttpMethod {
         GET,
         POST,
     }

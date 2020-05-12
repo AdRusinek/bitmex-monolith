@@ -21,21 +21,18 @@ import javax.mail.MessagingException;
 @RequiredArgsConstructor
 public class AlertSender {
 
-    private final String ABOVE = "above";
-    private final String BELOW = "below";
-
     private final MailService mailService;
     private final AlertRepository alertRepository;
 
     public void iterateAndSentEmail(Trade trade) {
         alertRepository.findAll().forEach(alert -> {
-            if (alert.getDirection().equals(ABOVE)) {
+            if (alert.getDirection().equals("above")) {
                 if (trade.getPrice().doubleValue() == alert.getAlertTriggeringPrice() ||
                         trade.getPrice().doubleValue() > alert.getAlertTriggeringPrice()) {
                     sendAndDecideIfDelete(alert, trade);
                 }
             }
-            if (alert.getDirection().equals(BELOW)) {
+            if (alert.getDirection().equals("below")) {
                 if (trade.getPrice().doubleValue() == alert.getAlertTriggeringPrice() ||
                         trade.getPrice().doubleValue() < alert.getAlertTriggeringPrice()) {
                     sendAndDecideIfDelete(alert, trade);

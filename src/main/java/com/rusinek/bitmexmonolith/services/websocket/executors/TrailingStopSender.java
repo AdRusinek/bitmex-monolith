@@ -1,15 +1,21 @@
 package com.rusinek.bitmexmonolith.services.websocket.executors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
+import com.rusinek.bitmexmonolith.model.response.Order;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
+import com.rusinek.bitmexmonolith.services.exchange.ParameterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Adrian Rusinek on 22.03.2020
@@ -20,48 +26,41 @@ import java.util.Map;
 public class TrailingStopSender {
 
     private final TrailingStopRepository trailingStopRepository;
+    private final ParameterService parameterService;
+    private final BitmexExceptionService bitmexExceptionService;
+    private final ObjectMapper objectMapper;
     private final ExchangeService exchangeService;
 
     public void iterateAndSentTrailing(Trade trade) {
         trailingStopRepository.findAll().forEach(trailingStop -> {
             if (Double.valueOf(trailingStop.getTrialValue()) > 0) {
                 if (trade.getPrice().doubleValue() <= trailingStop.getStartingPrice()) {
-                    Map response = sentTrailingStop(trailingStop);
-                    if (isTrailingStopSent(response)) {
-                        trailingStopRepository.delete(trailingStop);
-                    }
+                    decideIfDelete(trailingStop);
                 }
             } else if (Double.valueOf(trailingStop.getTrialValue()) < 0) {
                 if (trade.getPrice().doubleValue() >= trailingStop.getStartingPrice()) {
-                    Map response = sentTrailingStop(trailingStop);
-                    if (isTrailingStopSent(response)) {
-                        trailingStopRepository.delete(trailingStop);
-                    }
+                    decideIfDelete(trailingStop);
                 }
             }
         });
     }
 
-    private Map sentTrailingStop(TrailingStop trailingStop) {
+    private Order sentTrailingStop(TrailingStop trailingStop) {
 
-        log.debug("Attempting to sent trailing stop for user: " + trailingStop.getTrailingStopOwner());
+        log.debug("Attempting to sent trailing stop for user: " + trailingStop.getTrailingStopOwner() +
+                " for account with id: " + trailingStop.getAccount().getId());
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("symbol", "XBTUSD");
-        params.put("ordType", "Stop");
-        params.put("pegPriceType ", "TrailingStopPeg");
-        params.put("pegOffsetValue", trailingStop.getTrialValue());
-        params.put("orderQty", trailingStop.getQuantity());
-        params.put("execInst", extractInstructions(trailingStop));
-
-//        try {
-//            return (Map<String, Object>) exchangeService
-//                    .requestApiWithPost("/order", params,
-//                            trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
-//        } catch (ClassCastException ex) {
-//            log.debug("Could not sent trailing stop to Exchange.");
-//            ex.printStackTrace();
-//        }
+        HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.POST, "/order",
+                parameterService.fillParamsForPostRequest(ParameterService.RequestContent.POST_TRAILING_STOP,
+                        trailingStop, extractInstructions(trailingStop)),
+                trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
+        try {
+            return objectMapper.readValue(response.getBody(), new TypeReference<Order>() {
+            });
+        } catch (JsonProcessingException e) {
+            bitmexExceptionService.processErrorResponse(objectMapper, response, trailingStop.getTrailingStopOwner(),
+                    String.valueOf(trailingStop.getAccount().getId()));
+        }
         return null;
     }
 
@@ -85,13 +84,13 @@ public class TrailingStopSender {
         return finalInstructions;
     }
 
-    private boolean isTrailingStopSent(Map response) {
-        try {
-            String orderId = response.get("orderID").toString();
-            return !orderId.isEmpty();
-        } catch (Exception ex) {
-            log.error("Null pointer due to not existing response");
+    private boolean isTrailingStopSent(Order order) {
+        return order.getOrderID() != null;
+    }
+
+    private void decideIfDelete(TrailingStop trailingStop) {
+        if (isTrailingStopSent(Objects.requireNonNull(sentTrailingStop(trailingStop)))) {
+            trailingStopRepository.delete(trailingStop);
         }
-        return false;
     }
 }

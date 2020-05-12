@@ -12,5 +12,7 @@ import java.util.List;
 @Mapper
 public interface OrderStopMapper {
 
-    List<OrderStopDto> orderStopToDto(List<Order> position);
+    List<OrderStopDto> orderStopsToDtos(List<Order> position);
+
+    OrderStopDto orderStopToDto(Order order);
 }

@@ -1,5 +1,7 @@
 package com.rusinek.bitmexmonolith.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -9,6 +11,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
+import com.rusinek.bitmexmonolith.model.response.ApiKey;
+import com.rusinek.bitmexmonolith.model.response.ExchangeError;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
@@ -24,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpMethod.GET;
 
 /**
  * Created by Adrian Rusinek on 07.05.2020
@@ -48,7 +52,7 @@ public class TestingPurposes {
 
     public static TestingPurposes getInstance() {
         if (instance == null) {
-            instance = testInstance();
+            instance = testInstance3();
 
             // This can be removed if you don't have the ssl connection problem
 //            Unirest.setHttpClient(getUnsafeHttpClient());
@@ -193,7 +197,7 @@ public class TestingPurposes {
         }).collect(Collectors.toList());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         TestingPurposes testingPurposes = TestingPurposes.getInstance();
 //
@@ -219,43 +223,56 @@ public class TestingPurposes {
 //        });
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put("isOpen", true);
-        filterMap.put("symbol", "XBTUSD");
-        params.put("filter", gson.toJson(filterMap));
-        HttpResponse<?> responsePosition = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
-        System.out.println(responsePosition.getBody());
+//        filterMap.put("isOpen", true);
+//        filterMap.put("symbol", "XBTUSD");
+//        params.put("filter", gson.toJson(filterMap));
+//        HttpResponse<?> responsePosition = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
+//        System.out.println(responsePosition.getBody());
+//
+//        params.clear();
+//        filterMap.clear();
 
-        params.clear();
-        filterMap.clear();
+//        filterMap.put("symbol", "XBTUSD");
+//        filterMap.put("ordType", "Limit");
+//        filterMap.put("open", true);
+//
+//        params.put("symbol", "XBTUSD");
+//        params.put("ordType", "Stop");
+//        params.put("pegPriceType ", "TrailingStopPeg");
+//        params.put("pegOffsetValue", 20);
+//        params.put("orderQty", 20);
+//        params.put("execInst", "MarkPrice, Close");
+//
+//        HttpResponse<?> responseOrderLimits = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.POST, "/order", params);
+//        Order responses = objectMapper.readValue(responseOrderLimits.getBody().toString(), new TypeReference<Order>() {
+//        });
+//        System.out.println(responseOrderLimits.getBody());
+//        String limitHeader = String.valueOf(responseOrderLimits.getHeaders().get("X-RateLimit-Remaining"));
+//        System.out.println(limitHeader);
+//        System.out.println(responses.getOrderID());
+        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
+        System.out.println(apiKeyResponse2.getStatus());
+        ObjectMapper m = new ObjectMapper();
+        try {
+            List<ApiKey> apiKeys = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKey>>() {
+            });
+            System.out.println(apiKeys);
+            for (ApiKey key : apiKeys) {
+                for (String permission : key.getPermissions()) {
+                    if ("LgzGvg0WOVCUlEtcE5WUMAJv".equals(key.getId()) && permission.equals("withdraw")) {
+                        System.out.println("w");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExchangeError responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<ExchangeError>() {
+            });
+            System.out.println(responses.toString());
+        }
 
-        filterMap.put("symbol", "XBTUSD");
-        filterMap.put("ordType", "Limit");
-        filterMap.put("open", true);
 
-        params.put("symbol", "XBT");
-        params.put("filter", gson.toJson(filterMap));
-        params.put("count", 20);
-        params.put("reverse", false);
-
-        HttpResponse<?> responseOrderLimits = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/order", params);
-        System.out.println(responseOrderLimits.getBody());
-
-//        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
-//        System.out.println(apiKeyResponse2.getStatus());
-//        ObjectMapper m = new ObjectMapper();
-//        try {
-//            List<ApiKey> responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKey>>() {
-//            });
-//            System.out.println(responses);
-//        } catch (Exception e) {
-//            ExchangeError responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<ExchangeError>() {
-//            });
-//            System.out.println(responses.toString());
-//        }
-
-
-//        ApiKeyResponse apiKeyResponse  = (ApiKeyResponse) testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params).getBody();
-//        System.out.println(apiKeyResponse);
+//        HttpResponse<String> apiKeyResponse  = (HttpResponse<String>) testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params).getBody();
+//        System.out.println(apiKeyResponse.getBody());
 
     }
 }

@@ -22,6 +22,7 @@ public class ApiKeyService {
     private final BitmexExceptionService bitmexExceptionService;
     private final RequestService requestService;
 
+
     int requestApiForApiKey(HttpResponse<String> response, ObjectMapper objectMapper, String username, String apiKey) throws UnirestException {
 
         // casting to model object and excluding permissions list to check if it has order capability
@@ -37,6 +38,9 @@ public class ApiKeyService {
         }
         for (ApiKey key : apiKeys) {
             for (String permission : key.getPermissions()) {
+                if (apiKey.equals(key.getId()) && permission.equals("withdraw")) {
+                    return 3;
+                }
                 if (apiKey.equals(key.getId()) && !permission.equals("order")) {
                     return 1;
                 }

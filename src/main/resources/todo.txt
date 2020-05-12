@@ -1,0 +1,4 @@
+hashowanie
+withdraw / disabled
+ilosc kont trailingow, alertow
+smieciowe zlecenia
