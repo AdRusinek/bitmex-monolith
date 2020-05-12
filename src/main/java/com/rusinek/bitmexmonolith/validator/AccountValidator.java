@@ -1,13 +1,13 @@
 package com.rusinek.bitmexmonolith.validator;
 
 import com.rusinek.bitmexmonolith.model.Account;
-import com.rusinek.bitmexmonolith.services.ExchangeService;
+import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.GET_APIKEY_URL;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.GET_APIKEY_URL;
 
 /**
  * Created by Adrian Rusinek on 03.05.2020

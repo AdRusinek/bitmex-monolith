@@ -12,8 +12,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.model.response.Order;
-import com.rusinek.bitmexmonolith.model.response.Position;
-import javafx.geometry.Pos;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -26,10 +24,11 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPENED_LIMIT_ORDERS;
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPEN_POSITION;
-import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_LIMIT_ORDERS;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_STOP_ORDERS;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
 
 /**
  * Created by Adrian Rusinek on 07.05.2020
@@ -60,7 +59,6 @@ public class TestingPurposes {
         }
         return instance;
     }
-
 
 
     private static String getEncodedStrOfParams(Map<String, Object> params) {
@@ -190,15 +188,39 @@ public class TestingPurposes {
         return null;
     }
 
+    private List<Order> extractAndSetNewPrice(List<Order> orders) {
+        return orders.stream().peek(order -> {
+            if (order.getSide().equals("Sell")) {
+                order.setOrderQty(-order.getOrderQty());
+            }
+        }).collect(Collectors.toList());
+    }
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) {
         ObjectMapper objectMapper = new ObjectMapper();
         TestingPurposes testingPurposes = TestingPurposes.getInstance();
 
-        HttpResponse<String> response = testingPurposes.requestApiWithGet(BitMexUtil.HTTP_METHOD.GET, OPENED_LIMIT_ORDERS);
-        List<Order> position = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {});
-        System.out.println(position);
+        HttpResponse<String> response = testingPurposes.requestApiWithGet(BitMexUtil.HTTP_METHOD.GET, OPENED_STOP_ORDERS);
 
+        List<Order> orders = null;
+        try {
+            orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
+            });
+        } catch (JsonProcessingException e) {
+
+        }
+
+        System.out.println(orders);
+
+
+
+//        orders.forEach(order -> {
+//            System.out.println(order.getOrderQty());
+//        });
+//
+//        testingPurposes.extractAndSetNewPrice(orders).forEach(order -> {
+//            System.out.println(order.getOrderQty());
+//        });
 //        Map<String, Object> params = new HashMap<>();
 //        Map<String, Object> filterMap = new HashMap<>();
 //        filterMap.put("isOpen", true);

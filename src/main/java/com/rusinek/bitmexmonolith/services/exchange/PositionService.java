@@ -1,9 +1,10 @@
-package com.rusinek.bitmexmonolith.services;
+package com.rusinek.bitmexmonolith.services.exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mashape.unirest.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rusinek.bitmexmonolith.controllers.mappers.PositionMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
 import com.rusinek.bitmexmonolith.model.response.Position;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PositionService {
 
     private final ExchangeService exchangeService;
     private final BitmexExceptionService bitmexExceptionService;
+    private final PositionMapper positionMapper;
     private final ObjectMapper objectMapper;
 
     // returns position but if there is some kind of error in deserialization then it tries to bind it to the BitMEX error model response
@@ -34,9 +36,9 @@ public class PositionService {
         try {
             List<Position> positions = objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
             });
-            return new ResponseEntity<>(positions, HttpStatus.OK);
+            return new ResponseEntity<>(positionMapper.positionsToDto(positions), HttpStatus.OK);
         } catch (JsonProcessingException e) {
-            bitmexExceptionService.processErrorResponse(objectMapper, response);
+            bitmexExceptionService.processErrorResponse(objectMapper, response, principal.getName(), accountId);
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services;
+package com.rusinek.bitmexmonolith.services.exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,6 +16,7 @@ import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.model.response.ApiKey;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.services.RequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -34,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.GET;
-import static com.rusinek.bitmexmonolith.services.ExchangeService.HTTP_METHOD.POST;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.POST;
 
 
 /**
@@ -128,7 +129,7 @@ public class ExchangeService {
         return new Object();
     }
 
-    HttpResponse<String> requestApiWithGet(String varPath, Long id, String userName) {
+    public HttpResponse<String> requestApiWithGet(String varPath, Long id, String userName) {
 
         Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
@@ -192,7 +193,7 @@ public class ExchangeService {
             apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<List<ApiKey>>() {
             });
         } catch (JsonProcessingException e) {
-            bitmexExceptionService.processErrorResponse(objectMapper, response);
+            bitmexExceptionService.processErrorResponse(objectMapper, response, username, null);
             return 2;
         }
         for (ApiKey key : apiKeys) {

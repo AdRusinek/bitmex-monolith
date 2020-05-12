@@ -1,14 +1,14 @@
 package com.rusinek.bitmexmonolith.controllers;
 
 
-import com.rusinek.bitmexmonolith.services.PositionService;
+import com.rusinek.bitmexmonolith.services.exchange.PositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-import static com.rusinek.bitmexmonolith.services.ExchangeConstants.OPEN_POSITION;
+import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPEN_POSITION;
 
 /**
  * Created by Adrian Rusinek on 23.02.2020

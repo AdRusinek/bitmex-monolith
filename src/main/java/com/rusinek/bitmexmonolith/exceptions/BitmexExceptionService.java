@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BitmexExceptionService {
 
-    public void processErrorResponse(ObjectMapper objectMapper, HttpResponse<String> response) {
+    public void processErrorResponse(ObjectMapper objectMapper, HttpResponse<String> response, String username, String accountId) {
         //if error occurred BitMEX sends message in this format
         ExchangeError exchangeError = null;
         try {
@@ -25,9 +25,18 @@ public class BitmexExceptionService {
             log.error("Cannot deserialize properties.");
             e.getMessage();
         }
+        // if BitMEX returned error get properties from it and print log
         if (exchangeError != null) {
-            log.error("BitMEX returned error with message '" + exchangeError.getError().getMessage() + "', Type of error: '" +
-                    exchangeError.getError().getName() + "'. Status: " + response.getStatus() + ". ");
+         String errorResponse;
+
+         errorResponse = "BitMEX returned error with message '" + exchangeError.getError().getMessage() + "', Type of error: '" +
+                 exchangeError.getError().getName() + "'. Status: " + response.getStatus() + ". Error happened to user '" + username + "'";
+         if (accountId != null) {
+            errorResponse += " on account with id '" + accountId + "'. ";
+         } else {
+             errorResponse += ".";
+         }
+            log.error(errorResponse);
         }
     }
 }
