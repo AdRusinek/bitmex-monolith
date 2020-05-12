@@ -1,7 +1,5 @@
 package com.rusinek.bitmexmonolith.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -26,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_LIMIT_ORDERS;
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_STOP_ORDERS;
 import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HTTP_METHOD.GET;
 
 /**
@@ -59,6 +55,7 @@ public class TestingPurposes {
         }
         return instance;
     }
+
 
 
     private static String getEncodedStrOfParams(Map<String, Object> params) {

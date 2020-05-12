@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services;
+package com.rusinek.bitmexmonolith.services.exchange;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.model.Account;
@@ -19,7 +19,7 @@ public class RequestService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
-    public void manageAccountLimits(HttpResponse<String> response, Account account) {
+    void manageAccountLimits(HttpResponse<String> response, Account account) {
         // reads how many request are left to exceed limit
         String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
         int limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
@@ -35,7 +35,7 @@ public class RequestService {
         }
     }
 
-    public void manageUserLimits(String username) {
+    void manageUserLimits(String username) {
         userRepository.findByUsername(username).ifPresent(user -> {
 
             user.getUserRequestLimit().setConnectionTestLimit(user.getUserRequestLimit().getConnectionTestLimit() + 1);
@@ -49,12 +49,12 @@ public class RequestService {
                 user.getUserRequestLimit().setConnectionTestLimit(0);
 
                 userRepository.save(user);
-                log.error("User '" + user.getUsername() + "' almost exceeded limit by testing connection.");
+                log.error("User '" + user.getUsername() + "' exceeded limit by testing connection.");
             }
         });
     }
 
-    public void refreshUserLimits(String username) {
+    void refreshUserLimits(String username) {
         userRepository.findByUsername(username).ifPresent(user -> {
             user.getUserRequestLimit().setConnectionTestLimit(0);
             userRepository.save(user);

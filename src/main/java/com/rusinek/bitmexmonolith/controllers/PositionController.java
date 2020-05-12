@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPEN_POSITION;
-
 /**
  * Created by Adrian Rusinek on 23.02.2020
  **/

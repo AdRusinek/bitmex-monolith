@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_LIMIT_ORDERS;
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.OPENED_STOP_ORDERS;
-
 /**
  * Created by Adrian Rusinek on 19.02.2020
  **/

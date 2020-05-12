@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import static com.rusinek.bitmexmonolith.services.exchange.ExchangeConstants.GET_APIKEY_URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Adrian Rusinek on 03.05.2020
@@ -36,8 +37,10 @@ public class AccountValidator implements Validator {
     }
 
     private int verifyConnection(Account account) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("reverse", false);
         return exchangeService
-                .testConnection(GET_APIKEY_URL, account.getApiKey(), account.getApiKeySecret(), account.getAccountOwner());
+                .testConnection("/apiKey", params, account.getApiKey(), account.getApiKeySecret(), account.getAccountOwner());
     }
 
     private void manageStatuses(int response, Errors errors) {
