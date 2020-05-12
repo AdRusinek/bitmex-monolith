@@ -22,7 +22,7 @@ public class PositionController {
     private final PositionService positionService;
 
     @GetMapping("/get-positions/{accountId}")
-    public ResponseEntity<?> getOrders(@PathVariable String accountId, Principal principal) {
-        return positionService.requestPositions(accountId, principal, OPEN_POSITION);
+    public ResponseEntity<?> getPositions(@PathVariable String accountId, Principal principal) {
+        return positionService.requestPositions(accountId, principal);
     }
 }

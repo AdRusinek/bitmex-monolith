@@ -23,6 +23,7 @@ public class RequestService {
         // reads how many request are left to exceed limit
         String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
         int limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
+        System.out.println(limit);
         // limit 5 just to play it safe
         if (limit <= 5) {
             // from this time it will check if 60 seconds have passed

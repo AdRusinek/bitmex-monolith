@@ -199,19 +199,18 @@ public class TestingPurposes {
     public static void main(String[] args) {
         ObjectMapper objectMapper = new ObjectMapper();
         TestingPurposes testingPurposes = TestingPurposes.getInstance();
-
-        HttpResponse<String> response = testingPurposes.requestApiWithGet(BitMexUtil.HTTP_METHOD.GET, OPENED_STOP_ORDERS);
-
-        List<Order> orders = null;
-        try {
-            orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
-            });
-        } catch (JsonProcessingException e) {
-
-        }
-
-        System.out.println(orders);
-
+//
+//        HttpResponse<String> response = testingPurposes.requestApiWithGet(BitMexUtil.HTTP_METHOD.GET, OPENED_STOP_ORDERS);
+//
+//        List<Order> orders = null;
+//        try {
+//            orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
+//            });
+//        } catch (JsonProcessingException e) {
+//
+//        }
+//
+//        System.out.println(orders);
 
 
 //        orders.forEach(order -> {
@@ -221,15 +220,28 @@ public class TestingPurposes {
 //        testingPurposes.extractAndSetNewPrice(orders).forEach(order -> {
 //            System.out.println(order.getOrderQty());
 //        });
-//        Map<String, Object> params = new HashMap<>();
-//        Map<String, Object> filterMap = new HashMap<>();
-//        filterMap.put("isOpen", true);
-//        params.put("filter", gson.toJson(filterMap));
-//        List<Map> positionList = null;
-//
-//        HttpResponse<?> response = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
-//
-//        System.out.println(response.getBody());
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("isOpen", true);
+        filterMap.put("symbol", "XBTUSD");
+        params.put("filter", gson.toJson(filterMap));
+        HttpResponse<?> responsePosition = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/position", params);
+        System.out.println(responsePosition.getBody());
+
+        params.clear();
+        filterMap.clear();
+
+        filterMap.put("symbol", "XBTUSD");
+        filterMap.put("ordType", "Limit");
+        filterMap.put("open", true);
+
+        params.put("symbol", "XBT");
+        params.put("filter", gson.toJson(filterMap));
+        params.put("count", 20);
+        params.put("reverse", false);
+
+        HttpResponse<?> responseOrderLimits = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/order", params);
+        System.out.println(responseOrderLimits.getBody());
 
 //        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
 //        System.out.println(apiKeyResponse2.getStatus());

@@ -26,11 +26,11 @@ public class OrderController {
 
     @GetMapping("/get-limit-orders/{accountId}")
     public ResponseEntity<?> getLimitOrders(@PathVariable String accountId, Principal principal) {
-        return orderLimitService.requestLimitOrders(principal, accountId, OPENED_LIMIT_ORDERS);
+        return orderLimitService.requestLimitOrders(principal, accountId);
     }
 
     @GetMapping("/get-stop-orders/{accountId}")
     public ResponseEntity<?> getStopOrders(Principal principal, @PathVariable String accountId) {
-        return orderStopService.requestStopOrders(principal, accountId, OPENED_STOP_ORDERS);
+        return orderStopService.requestStopOrders(principal, accountId);
     }
 }

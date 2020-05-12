@@ -92,7 +92,7 @@ public class ExchangeService {
     }
 
 
-    public Object requestApiWithPost(String varPath, Map<String, Object> params, Long id, String userName) {
+     HttpResponse<String> requestApi(HTTP_METHOD method, String varPath, Map<String, Object> params, Long id, String userName) {
 
         Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
@@ -103,9 +103,14 @@ public class ExchangeService {
             // get signContent
             String paramsEncodedStr = getEncodedStrOfParams(params);
             String path = basePath + varPath;
+            if (paramsEncodedStr != null && (method == HTTP_METHOD.GET) && !paramsEncodedStr.equals("")) {
+                path += "?" + paramsEncodedStr;
+            }
             String url = exchangeUrl + path;
-            String signContent = POST.toString() + path + apiExpires + paramsEncodedStr;
-
+            String signContent = method.toString() + path + apiExpires;
+            if (method == HTTP_METHOD.POST) {
+                signContent += paramsEncodedStr;
+            }
             // set apiSignature
             String apiSignature = setApiSignature(account.get().getApiKeySecret(), signContent);
 
@@ -115,47 +120,11 @@ public class ExchangeService {
 
             if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 try {
-                    HttpResponse<String> response = requestApi(POST, url, headers);
+                    HttpResponse<String> response = requestApi(method, url, headers);
                     requestService.manageAccountLimits(response, account.get());
                     return response;
                 } catch (UnirestException e) {
                     log.error("Error occurred while sending url.");
-                    e.printStackTrace();
-                }
-            }
-            //returns empty object only if error occurred or limits exceeded
-            return new Object();
-        }
-        return new Object();
-    }
-
-    public HttpResponse<String> requestApiWithGet(String varPath, Long id, String userName) {
-
-        Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
-
-        if (account.isPresent()) {
-
-            // set api-expires
-            String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
-
-            // get signContent
-            String path = basePath + varPath;
-            String signContent = GET.toString() + path + apiExpires;
-            String url = exchangeUrl + path;
-
-            // set apiSignature
-            String apiSignature = setApiSignature(account.get().getApiKeySecret(), signContent);
-
-            // get headers
-            HashMap<String, String> headers = setHeaders(account.get().getApiKey(), apiExpires, apiSignature);
-
-            //check for limits
-            if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
-                try {
-                    HttpResponse<String> response = requestApi(GET, url, headers);
-                    requestService.manageAccountLimits(response, account.get());
-                    return response;
-                } catch (UnirestException e) {
                     e.printStackTrace();
                 }
             }

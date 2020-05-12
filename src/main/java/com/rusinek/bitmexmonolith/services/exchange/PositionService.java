@@ -2,6 +2,7 @@ package com.rusinek.bitmexmonolith.services.exchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rusinek.bitmexmonolith.controllers.mappers.PositionMapper;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Adrian Rusinek on 23.02.2020
@@ -30,9 +33,17 @@ public class PositionService {
     private final ObjectMapper objectMapper;
 
     // returns position but if there is some kind of error in deserialization then it tries to bind it to the BitMEX error model response
-    public ResponseEntity<?> requestPositions(String accountId, Principal principal, String positionUrl) {
+    public ResponseEntity<?> requestPositions(String accountId, Principal principal) {
 
-        HttpResponse<String> response = exchangeService.requestApiWithGet(positionUrl, Long.valueOf(accountId), principal.getName());
+        Gson gson = new Gson();
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> filterMap = new HashMap<>();
+        filterMap.put("isOpen", true);
+        filterMap.put("symbol", "XBTUSD");
+        params.put("filter", gson.toJson(filterMap));
+
+        HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HTTP_METHOD.GET, "/position",
+                params, Long.valueOf(accountId), principal.getName());
         try {
             List<Position> positions = objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
             });

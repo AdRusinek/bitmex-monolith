@@ -54,14 +54,14 @@ public class TrailingStopSender {
         params.put("orderQty", trailingStop.getQuantity());
         params.put("execInst", extractInstructions(trailingStop));
 
-        try {
-            return (Map<String, Object>) exchangeService
-                    .requestApiWithPost("/order", params,
-                            trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
-        } catch (ClassCastException ex) {
-            log.debug("Could not sent trailing stop to Exchange.");
-            ex.printStackTrace();
-        }
+//        try {
+//            return (Map<String, Object>) exchangeService
+//                    .requestApiWithPost("/order", params,
+//                            trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
+//        } catch (ClassCastException ex) {
+//            log.debug("Could not sent trailing stop to Exchange.");
+//            ex.printStackTrace();
+//        }
         return null;
     }
 
