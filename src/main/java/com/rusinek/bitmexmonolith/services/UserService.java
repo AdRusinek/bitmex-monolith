@@ -6,13 +6,14 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
-import com.rusinek.bitmexmonolith.model.Token;
+import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.payload.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
+import com.rusinek.bitmexmonolith.validator.CodeValidator;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
@@ -21,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +34,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Optional;
@@ -58,6 +57,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final MapValidationErrorService errorService;
     private final UserValidator userValidator;
+    private final CodeValidator codeValidator;
     private final MailService mailService;
     private final TokenRepository tokenRepository;
     private final GoogleAuthenticator googleAuthenticator;
@@ -82,7 +82,11 @@ public class UserService {
 
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
 
-        if (result.hasErrors()) return errorService.validateErrors(result);
+        codeValidator.validate(request,result);
+
+        if (result.hasErrors()) {
+            return errorService.validateErrors(result);
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -95,6 +99,7 @@ public class UserService {
 
         return ResponseEntity.ok(new JWTLoginSuccessResponse(true, jwt));
     }
+
 
     @SneakyThrows
     private File sendCode(User user) {
@@ -121,7 +126,9 @@ public class UserService {
         userValidator.validate(user, result);
 
 
-        if (result.hasErrors()) return errorService.validateErrors(result);
+        if (result.hasErrors()) {
+            return errorService.validateErrors(result);
+        }
 
         User newUser = saveUser(user);
         sendTokenAndQRCode(user);
@@ -130,9 +137,9 @@ public class UserService {
     }
 
     public RedirectView verifyToken(String value) {
-        tokenRepository.findByValue(value).ifPresent(token -> {
-            User user = token.getUser();
-            user.setEnabled(true);
+        tokenRepository.findByValue(value).ifPresent(registerToken -> {
+            User user = registerToken.getUser();
+            user.setTokenVerified(true);
             userRepository.save(user);
             log.debug("Validating verify token for user " + user.getUsername());
         });
@@ -141,10 +148,10 @@ public class UserService {
 
     private void sendTokenAndQRCode(User user) {
         String tokenValue = UUID.randomUUID().toString();
-        Token token = new Token();
-        token.setValue(tokenValue);
-        token.setUser(user);
-        tokenRepository.save(token);
+        RegisterToken registerToken = new RegisterToken();
+        registerToken.setValue(tokenValue);
+        registerToken.setUser(user);
+        tokenRepository.save(registerToken);
         File qrFile = sendCode(user);
         String url = defaultUrl + "/api/users/token?value=" + tokenValue;
 

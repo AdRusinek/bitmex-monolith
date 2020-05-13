@@ -1,5 +1,6 @@
-package com.rusinek.bitmexmonolith.controllers.twofactorauth;
+package com.rusinek.bitmexmonolith.security;
 
+import com.rusinek.bitmexmonolith.repositories.CredentialRepository;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

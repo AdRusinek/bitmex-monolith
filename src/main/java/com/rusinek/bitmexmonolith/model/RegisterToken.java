@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-public class Token {
+public class RegisterToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

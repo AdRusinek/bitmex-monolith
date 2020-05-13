@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by Adrian Rusinek on 02.03.2020
@@ -16,4 +18,5 @@ public class LoginRequest {
     private String username;
     @NotBlank(message = "Password cannot be blank.")
     private String password;
+    private Integer code;
 }

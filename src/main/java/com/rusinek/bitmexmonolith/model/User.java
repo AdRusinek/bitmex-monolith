@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private String password;
     @Transient
     private String confirmPassword;
-    private boolean isEnabled;
+    private boolean isTokenVerified;
     private Date createdAt;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
@@ -46,6 +46,8 @@ public class User implements UserDetails {
     private List<Alert> alerts = new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private UserRequestLimit userRequestLimit;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TwoFactorToken twoFactorToken;
 
     @JsonIgnore
     @Override
@@ -72,9 +74,8 @@ public class User implements UserDetails {
     }
 
     @JsonIgnore
-    @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return isTokenVerified;
     }
 
     @PrePersist

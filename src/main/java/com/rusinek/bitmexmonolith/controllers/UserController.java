@@ -21,7 +21,6 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
-    private final GoogleAuthenticator googleAuthenticator;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
