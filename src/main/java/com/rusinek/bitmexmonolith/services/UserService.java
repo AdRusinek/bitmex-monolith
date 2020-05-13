@@ -61,7 +61,7 @@ public class UserService {
     private final MailService mailService;
     private final TokenRepository tokenRepository;
     private final GoogleAuthenticator googleAuthenticator;
-    @Value("${bitmex-monolith.token-redirection-url}")
+    @Value("${bitmex-monolith.registerToken-redirection-url}")
     private String tokenRedirectionUrl;
     @Value("${bitmex-monolith.default-url}")
     private String defaultUrl;

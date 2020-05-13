@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Trade;
+import org.knowm.xchange.exceptions.ExchangeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -37,14 +38,21 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
     }
 
     private void triggerTrailingStop() {
-        ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);
-        specification.setExchangeSpecificParametersItem("Use_Sandbox", useSandbox);
-        StreamingExchange exchange = StreamingExchangeFactory.INSTANCE.createExchange(specification);
-        exchange.connect().blockingAwait();
+        StreamingExchange exchange = null;
+        try {
+            ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);
+            specification.setExchangeSpecificParametersItem("Use_Sandbox", useSandbox);
+            exchange = StreamingExchangeFactory.INSTANCE.createExchange(specification);
+            exchange.connect().blockingAwait();
+        } catch (ExchangeException e) {
+            log.error("BitMEX is down.");
+        }
 
-        exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
-                .subscribe(this::executeActions,
-                throwable -> log.error("Error in subscribing trades.", throwable));
+        if (exchange != null) {
+            exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
+                    .subscribe(this::executeActions,
+                    throwable -> log.error("Error in subscribing trades.", throwable));
+        }
     }
 
     private void executeActions(Trade trade) {

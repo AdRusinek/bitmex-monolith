@@ -42,7 +42,7 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpM
 public class ExchangeService {
 
     private final ApiKeyService apiKeyService;
-    private final LimitService limitService;
+    private final RequestService requestService;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     @Value("${bitmex-monolith.exchange-url}")
@@ -83,7 +83,7 @@ public class ExchangeService {
                     HttpResponse<String> response = callApi(GET, url, headers);
                     ObjectMapper objectMapper = new ObjectMapper();
                     // checking if somebody is trying to many requests
-                    limitService.manageUserLimits(username);
+                    requestService.manageUserLimits(username);
                     return apiKeyService.requestApiForApiKey(response, objectMapper, username, apiKey);
                 } catch (UnirestException e) {
                     log.error("Error occurred while sending url.");
@@ -124,7 +124,7 @@ public class ExchangeService {
             if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 try {
                     HttpResponse<String> response = callApi(method, url, headers);
-                    limitService.manageAccountLimits(response, account.get());
+                    requestService.manageAccountLimits(response, account.get());
                     return response;
                 } catch (UnirestException e) {
                     log.error("Error occurred while sending url.");
