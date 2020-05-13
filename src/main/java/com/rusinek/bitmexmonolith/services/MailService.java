@@ -1,13 +1,13 @@
 package com.rusinek.bitmexmonolith.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 
 /**
  * Created by Adrian Rusinek on 28.03.2020
@@ -23,7 +23,9 @@ public class MailService {
                          String subject,
                          String text,
                          String from,
-                         boolean isHtmlContent) throws MessagingException {
+                         boolean isHtmlContent,
+                         File qrImage) throws MessagingException {
+
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -31,7 +33,11 @@ public class MailService {
         mimeMessage.setFrom(from);
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(text, isHtmlContent);
+        if (qrImage != null) {
+            mimeMessageHelper.addAttachment("TwoFactorAuth.jpg", qrImage);
+        }
         javaMailSender.send(mimeMessage);
+
     }
 }
 

@@ -11,7 +11,6 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 23.02.2020
  **/
-@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/positions")

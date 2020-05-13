@@ -73,7 +73,18 @@ public class BitMexUtil {
                 "your real secret key (long one)");
     }
 
+    //todo zmien zanim pushniesz
+    private static BitMexUtil testInstance1() {
+        return new BitMexUtil("https://testnet.bitmex.com",
+                "G1AsSffAD543JsRF6XyOuwXL",
+                "etgpyewzmxriXs1rHUXOLOTq99lFicRNeo6h8EAGfYziH_3W");
+    }
 
+    private static BitMexUtil testInstance2() {
+        return new BitMexUtil("https://testnet.bitmex.com",
+                "WYbiBY1xNOJjcgJq1zO4ULtV",
+                "6WHtQkFEpNnD_GIyJRcgfp7ahOVCHYW5tnHwyV8wEk9RB5uU");
+    }
 
     private String host = null;
     private String apiKey = null;

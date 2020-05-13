@@ -19,7 +19,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -60,6 +65,23 @@ public class TestingPurposes {
         return instance;
     }
 
+    private static TestingPurposes testInstance() {
+        return new TestingPurposes("https://testnet.bitmex.com",
+                "G1AsSffAD543JsRF6XyOuwXL",
+                "etgpyewzmxriXs1rHUXOLOTq99lFicRNeo6h8EAGfYziH_3W");
+    }
+
+    private static TestingPurposes testInstance2() {
+        return new TestingPurposes("https://testnet.bitmex.com",
+                "LgzGvg0WOVCUlEtcE5WUMAJv",
+                "-yrietGclsp5MPDqyYhDYYR5sTGE81PNNdcmkMEYwHEQyL_G");
+    }
+
+    private static TestingPurposes testInstance3() {
+        return new TestingPurposes("https://testnet.bitmex.com",
+                "7slStZXVyOMGecSumPoZzOVq",
+                "xIcr_eYECKR7uGrrSHNxg2oo74JRuwFVDB8jZ0NQZpls5s5g");
+    }
 
 
     private static String getEncodedStrOfParams(Map<String, Object> params) {
@@ -250,25 +272,39 @@ public class TestingPurposes {
 //        String limitHeader = String.valueOf(responseOrderLimits.getHeaders().get("X-RateLimit-Remaining"));
 //        System.out.println(limitHeader);
 //        System.out.println(responses.getOrderID());
-        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
-        System.out.println(apiKeyResponse2.getStatus());
-        ObjectMapper m = new ObjectMapper();
+//        HttpResponse<?> apiKeyResponse2 = testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params);
+//        System.out.println(apiKeyResponse2.getStatus());
+//        ObjectMapper m = new ObjectMapper();
+//        try {
+//            List<ApiKey> apiKeys = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKey>>() {
+//            });
+//            System.out.println(apiKeys);
+//            for (ApiKey key : apiKeys) {
+//                for (String permission : key.getPermissions()) {
+//                    if ("LgzGvg0WOVCUlEtcE5WUMAJv".equals(key.getId()) && permission.equals("withdraw")) {
+//                        System.out.println("w");
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            ExchangeError responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<ExchangeError>() {
+//            });
+//            System.out.println(responses.toString());
+//        }
+
+
+            System.out.println(TestingPurposes.class.getResource(".").getFile());
+        FileWriter outputFile = null;
         try {
-            List<ApiKey> apiKeys = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<List<ApiKey>>() {
-            });
-            System.out.println(apiKeys);
-            for (ApiKey key : apiKeys) {
-                for (String permission : key.getPermissions()) {
-                    if ("LgzGvg0WOVCUlEtcE5WUMAJv".equals(key.getId()) && permission.equals("withdraw")) {
-                        System.out.println("w");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            ExchangeError responses = m.readValue(apiKeyResponse2.getBody().toString(), new TypeReference<ExchangeError>() {
-            });
-            System.out.println(responses.toString());
+            Resource resource = new ClassPathResource("tempQR.jpg");
+            System.out.println(resource.toString());
+            outputFile.write("dsds");
+            outputFile.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
 
 //        HttpResponse<String> apiKeyResponse  = (HttpResponse<String>) testingPurposes.requestApi(BitMexUtil.HTTP_METHOD.GET, "/apiKey?reverse=false", params).getBody();

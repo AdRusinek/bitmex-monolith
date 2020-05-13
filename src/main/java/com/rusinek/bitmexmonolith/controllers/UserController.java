@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.payload.LoginRequest;
 import com.rusinek.bitmexmonolith.services.UserService;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final GoogleAuthenticator googleAuthenticator;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,

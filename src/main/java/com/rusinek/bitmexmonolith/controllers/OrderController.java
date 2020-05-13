@@ -12,7 +12,6 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 19.02.2020
  **/
-@CrossOrigin
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/orders")

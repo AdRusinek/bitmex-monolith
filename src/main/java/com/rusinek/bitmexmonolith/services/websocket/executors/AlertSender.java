@@ -60,7 +60,7 @@ public class AlertSender {
                     "Price while sending: " + trade.getPrice().doubleValue(),
                     alert.getAlertMessage(),
                     "bitmexprogram@gmail.com",
-                    false);
+                    false,null);
         } catch (MailException | MessagingException ex) {
             log.error("Mail for user '" + user.getUsername() + "' not sent");
             return 1;

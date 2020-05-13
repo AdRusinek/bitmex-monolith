@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * Created by Adrian Rusinek on 08.03.2020
  **/
-@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/accounts")

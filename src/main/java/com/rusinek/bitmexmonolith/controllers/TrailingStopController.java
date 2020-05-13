@@ -13,7 +13,6 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 29.02.2020
  **/
-@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/trailing-stops")

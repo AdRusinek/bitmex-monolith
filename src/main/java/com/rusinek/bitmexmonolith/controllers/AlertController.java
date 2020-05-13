@@ -14,7 +14,6 @@ import java.security.Principal;
 /**
  * Created by Adrian Rusinek on 19.03.2020
  **/
-@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/alerts")
