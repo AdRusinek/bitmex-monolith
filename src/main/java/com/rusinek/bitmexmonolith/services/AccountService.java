@@ -45,7 +45,9 @@ public class AccountService {
         accountValidator.validate(account, result);
         account.setAccountOwner(null);
 
-        if (result.hasErrors()) return errorService.validateErrors(result);
+        if (result.hasErrors()) {
+            return errorService.validateErrors(result);
+        }
 
         // checks if account with provided name already exists
         boolean matched = accountRepository.findAllByAccountOwner(principal.getName()).stream()

@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.payload;
+package com.rusinek.bitmexmonolith.security;
 
 import lombok.Getter;
 import lombok.Setter;

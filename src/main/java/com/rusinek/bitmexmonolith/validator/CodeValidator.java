@@ -1,7 +1,7 @@
 package com.rusinek.bitmexmonolith.validator;
 
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.payload.LoginRequest;
+import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

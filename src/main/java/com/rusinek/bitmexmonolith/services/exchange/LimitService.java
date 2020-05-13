@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RequestService {
+public class LimitService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;

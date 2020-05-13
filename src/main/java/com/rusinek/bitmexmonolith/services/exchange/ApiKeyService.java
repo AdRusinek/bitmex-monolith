@@ -20,7 +20,7 @@ import java.util.List;
 public class ApiKeyService {
 
     private final BitmexExceptionService bitmexExceptionService;
-    private final RequestService requestService;
+    private final LimitService limitService;
 
 
     int requestApiForApiKey(HttpResponse<String> response, ObjectMapper objectMapper, String username, String apiKey) throws UnirestException {
@@ -46,7 +46,7 @@ public class ApiKeyService {
                 }
                 // if all went perfect it refreshes user limits to zero
                 if (apiKey.equals(key.getId()) && permission.equals("order")) {
-                    requestService.refreshUserLimits(username);
+                    limitService.refreshUserLimits(username);
                 }
             }
         }

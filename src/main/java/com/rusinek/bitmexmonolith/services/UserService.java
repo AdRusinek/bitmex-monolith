@@ -8,8 +8,8 @@ import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.payload.JWTLoginSuccessResponse;
-import com.rusinek.bitmexmonolith.payload.LoginRequest;
+import com.rusinek.bitmexmonolith.security.JWTLoginSuccessResponse;
+import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
@@ -102,7 +102,7 @@ public class UserService {
 
 
     @SneakyThrows
-    private File sendCode(User user) {
+    private File generateQr(User user) {
 
         final GoogleAuthenticatorKey key = googleAuthenticator.createCredentials(user.getUsername());
 
@@ -131,7 +131,7 @@ public class UserService {
         }
 
         User newUser = saveUser(user);
-        sendTokenAndQRCode(user);
+        sendRegistryTokenAndQrImage(user);
 
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
@@ -146,25 +146,31 @@ public class UserService {
         return new RedirectView(tokenRedirectionUrl + "/");
     }
 
-    private void sendTokenAndQRCode(User user) {
-        String tokenValue = UUID.randomUUID().toString();
-        RegisterToken registerToken = new RegisterToken();
-        registerToken.setValue(tokenValue);
-        registerToken.setUser(user);
-        tokenRepository.save(registerToken);
-        File qrFile = sendCode(user);
-        String url = defaultUrl + "/api/users/token?value=" + tokenValue;
+    private void sendRegistryTokenAndQrImage(User user) {
+
+        File qrImage = generateQr(user);
+        String url = defaultUrl + "/api/users/token?value=" + generateRegistryToken(user);
 
         try {
             log.debug("Sending registration email to user: " + user.getUsername());
             mailService.sendMail(user.getUsername(), "Confirm account", url,
-                    "bitmexprogram@gmail.com", false, qrFile);
-            if(!qrFile.delete()) {
+                    "bitmexprogram@gmail.com", false, qrImage);
+            if(!qrImage.delete()) {
              log.error("Couldn't delete qr image");
             }
         } catch (Exception e) {
             log.error("Error occurred while sending mail to " + user.getUsername());
         }
+    }
+
+    private String generateRegistryToken(User user) {
+        String tokenValue = UUID.randomUUID().toString();
+        RegisterToken registerToken = new RegisterToken();
+        registerToken.setValue(tokenValue);
+        registerToken.setUser(user);
+        tokenRepository.save(registerToken);
+
+        return tokenValue;
     }
 
     Optional<User> findByUsername(String username) {
