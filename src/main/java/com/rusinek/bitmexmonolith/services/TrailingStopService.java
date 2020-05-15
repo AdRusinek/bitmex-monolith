@@ -43,7 +43,7 @@ public class TrailingStopService {
             trailingStop.setTrailingStopOwner(user.getUsername());
             Account account = accountService.findByAccountIdAndOwner(Long.valueOf(accountId), principal.getName());
             trailingStop.setAccount(account);
-            trailingStop.setUser(user);
+            trailingStop.setTrailingStopOwner(account.getAccountOwner());
         });
         return new ResponseEntity<>(trailingStopMapper.trailingStopToDto(trailingStopRepository.save(trailingStop)), HttpStatus.CREATED);
     }

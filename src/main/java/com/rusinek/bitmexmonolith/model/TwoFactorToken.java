@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by Adrian Rusinek on 13.05.2020
@@ -25,4 +22,7 @@ public class TwoFactorToken {
     private Long id;
     private String username;
     private String secretKey;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private User user;
 }

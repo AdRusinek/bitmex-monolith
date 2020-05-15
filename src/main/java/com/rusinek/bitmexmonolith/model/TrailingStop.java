@@ -28,14 +28,11 @@ public class TrailingStop {
     private String trialValue;
     private String execInst;
     private Boolean closeOnTrigger;
+    private String trailingStopOwner;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
     @JsonIgnore
     private Account account;
-    private String trailingStopOwner;
+
 
 }

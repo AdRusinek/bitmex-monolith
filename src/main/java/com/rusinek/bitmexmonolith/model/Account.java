@@ -33,9 +33,12 @@ public class Account {
     @JsonIgnore
     private User user;
     private String accountOwner;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<TrailingStop> trailingStops = new ArrayList<>();
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
+    @JsonIgnore
     private AccountRequestLimit accountRequestLimit;
 }

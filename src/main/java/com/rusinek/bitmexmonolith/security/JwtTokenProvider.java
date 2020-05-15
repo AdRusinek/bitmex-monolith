@@ -2,6 +2,7 @@ package com.rusinek.bitmexmonolith.security;
 
 import com.rusinek.bitmexmonolith.model.User;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.SECRET;
 /**
  * Created by Adrian Rusinek on 02.03.2020
  **/
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -47,15 +49,15 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
-            System.out.println("Invalid JWT Signature");
+            log.error("Invalid JWT Signature");
         } catch (MalformedJwtException ex) {
-            System.out.println("Invalid JWT Token");
+            log.error("Invalid JWT Token");
         } catch (ExpiredJwtException ex) {
-            System.out.println("Expired JWT token");
+            log.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            System.out.println("Unsupported JWT token");
+            log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            System.out.println("JWT claims string is empty");
+            log.error("JWT claims string is empty");
         }
         return false;
     }
@@ -64,7 +66,7 @@ public class JwtTokenProvider {
     //Get user Id from token
     Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
-        String id = (String) claims.get("id");
+        String id = String.valueOf(claims.get("id"));
 
         return Long.parseLong(id);
     }

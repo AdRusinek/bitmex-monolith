@@ -26,10 +26,11 @@ public class Alert {
     private Double alertTriggeringPrice;
     private String alertOwner;
     private String direction;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User user;
+
 
 }
 

@@ -17,6 +17,7 @@ public class RegisterToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String value;
+
     @OneToOne
     private User user;
 

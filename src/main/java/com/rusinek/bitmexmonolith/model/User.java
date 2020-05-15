@@ -9,10 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by Adrian Rusinek on 01.03.2020
@@ -40,14 +39,21 @@ public class User implements UserDetails {
     private String confirmPassword;
     private boolean isTokenVerified;
     private Date createdAt;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-    private List<Account> accounts = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
-    private List<Alert> alerts = new ArrayList<>();
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    private Collection<Account> accounts = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Collection<Alert> alerts = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserRequestLimit userRequestLimit;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private TwoFactorToken twoFactorToken;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    private RegisterToken registerToken;
 
     @JsonIgnore
     @Override

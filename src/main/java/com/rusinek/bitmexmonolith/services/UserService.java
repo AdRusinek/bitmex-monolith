@@ -8,11 +8,11 @@ import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.security.JWTLoginSuccessResponse;
-import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.security.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
+import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.rusinek.bitmexmonolith.validator.CodeValidator;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -82,7 +82,7 @@ public class UserService {
 
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
 
-        codeValidator.validate(request,result);
+        codeValidator.validate(request, result);
 
         if (result.hasErrors()) {
             return errorService.validateErrors(result);
@@ -155,8 +155,8 @@ public class UserService {
             log.debug("Sending registration email to user: " + user.getUsername());
             mailService.sendMail(user.getUsername(), "Confirm account", url,
                     "bitmexprogram@gmail.com", false, qrImage);
-            if(!qrImage.delete()) {
-             log.error("Couldn't delete qr image");
+            if (!qrImage.delete()) {
+                log.error("Couldn't delete qr image");
             }
         } catch (Exception e) {
             log.error("Error occurred while sending mail to " + user.getUsername());

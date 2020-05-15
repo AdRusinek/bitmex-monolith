@@ -1,14 +1,12 @@
 package com.rusinek.bitmexmonolith.model.requestlimits;
 
+import com.rusinek.bitmexmonolith.model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by Adrian Rusinek on 08.05.2020
@@ -23,4 +21,7 @@ public class AccountRequestLimit extends RequestLimit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private Account account;
 }

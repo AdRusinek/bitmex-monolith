@@ -38,6 +38,7 @@ public class CredentialRepository implements ICredentialRepository {
             user.get().setTwoFactorToken(new TwoFactorToken());
             user.get().getTwoFactorToken().setUsername(userName);
             user.get().getTwoFactorToken().setSecretKey(secretKey);
+            user.get().getTwoFactorToken().setUser(user.get());
             userRepository.save(user.get());
         }
     }
