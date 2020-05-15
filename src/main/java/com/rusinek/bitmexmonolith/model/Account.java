@@ -3,10 +3,14 @@ package com.rusinek.bitmexmonolith.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
 public class Account {
 
     //todo [1] zabezpieczenie account przed przekroczeniem limitu [2] hmac i dodatkowy algorytm przy wsadzaniu do bazy [3] castowanie odpowiedzi od mexa
@@ -28,11 +33,18 @@ public class Account {
     private String apiKey;
     @NotBlank(message = "Secret must not be blank")
     private String apiKeySecret;
+    private String accountOwner;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-    private String accountOwner;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -41,4 +53,5 @@ public class Account {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
     @JsonIgnore
     private AccountRequestLimit accountRequestLimit;
+
 }

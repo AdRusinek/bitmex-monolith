@@ -2,16 +2,22 @@ package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Adrian Rusinek on 01.03.2020
@@ -20,7 +26,6 @@ import java.util.HashSet;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 public class User implements UserDetails {
 
@@ -38,13 +43,19 @@ public class User implements UserDetails {
     @Transient
     private String confirmPassword;
     private boolean isTokenVerified;
-    private Date createdAt;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
+
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
-    private Collection<Account> accounts = new HashSet<>();
+    private Set<Account> accounts = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Collection<Alert> alerts = new HashSet<>();
+    private Set<Alert> alerts = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserRequestLimit userRequestLimit;
@@ -84,8 +95,4 @@ public class User implements UserDetails {
         return isTokenVerified;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
 }

@@ -2,13 +2,12 @@ package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 
 /**
  * Created by Adrian Rusinek on 24.02.2020
@@ -30,9 +29,12 @@ public class TrailingStop {
     private Boolean closeOnTrigger;
     private String trailingStopOwner;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Account account;
-
 
 }

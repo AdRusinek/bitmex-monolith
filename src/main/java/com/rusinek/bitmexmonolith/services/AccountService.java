@@ -39,11 +39,14 @@ public class AccountService {
 
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
+        userRepository.findByUsername(principal.getName()).ifPresentOrElse(user -> {
+            account.setAccountOwner(user.getUsername());
+            account.setUser(user);
+        }, () -> log.error("Error occurred, could not find user '" + principal.getName() + "' while saving account."));
+
+
         //validates if it is possible to make connection with provided credentials
-        // temporarily set account owner
-        account.setAccountOwner(principal.getName());
         accountValidator.validate(account, result);
-        account.setAccountOwner(null);
 
         if (result.hasErrors()) {
             return errorService.validateErrors(result);
@@ -58,14 +61,10 @@ public class AccountService {
             throw new AccountNameAlreadyExistsException("Account '" + account.getAccountName() + "' already exists.");
         }
 
-        // else save to the db and return dto
-        userRepository.findByUsername(principal.getName()).ifPresent(user -> {
-            account.setAccountOwner(user.getUsername());
-            account.setUser(user);
-            account.setAccountRequestLimit(limitService.saveAccountRequestLimit());
-        });
+        Account savedAccount = accountRepository.save(account);
+        limitService.saveAccountRequestLimit(savedAccount);
 
-        return new ResponseEntity<>(accountMapper.accountToDto(accountRepository.save(account)), HttpStatus.CREATED);
+        return new ResponseEntity<>(accountMapper.accountToDto(savedAccount), HttpStatus.CREATED);
     }
 
     public List<AccountDto> getAllAccounts(String username) {

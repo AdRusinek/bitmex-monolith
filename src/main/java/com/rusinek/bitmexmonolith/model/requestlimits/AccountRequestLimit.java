@@ -1,5 +1,6 @@
 package com.rusinek.bitmexmonolith.model.requestlimits;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rusinek.bitmexmonolith.model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,5 +24,6 @@ public class AccountRequestLimit extends RequestLimit {
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Account account;
 }

@@ -1,9 +1,13 @@
 package com.rusinek.bitmexmonolith.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by Adrian Rusinek on 28.03.2020
@@ -18,7 +22,12 @@ public class RegisterToken {
     private Long id;
     private String value;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+
     @OneToOne
+    @JsonIgnore
     private User user;
 
 }

@@ -73,8 +73,10 @@ public class UserService {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             user.setConfirmPassword("");
 
-            user.setUserRequestLimit(limitService.saveUserRequestLimit());
-            return userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            limitService.saveUserRequestLimit(savedUser);
+
+            return savedUser;
         } catch (Exception e) {
             throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists.");
         }
@@ -82,7 +84,11 @@ public class UserService {
 
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
 
-        codeValidator.validate(request, result);
+        Optional<User> user = userRepository.findByUsername(request.getUsername());
+
+        if (user.isPresent()) {
+            codeValidator.validate(request, result);
+        }
 
         if (result.hasErrors()) {
             return errorService.validateErrors(result);

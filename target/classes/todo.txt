@@ -1,4 +1,4 @@
 hashowanie
-withdraw / disabled
+bulk trailing
 ilosc kont trailingow, alertow
 smieciowe zlecenia

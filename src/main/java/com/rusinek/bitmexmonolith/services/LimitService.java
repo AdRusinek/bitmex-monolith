@@ -1,5 +1,7 @@
 package com.rusinek.bitmexmonolith.services;
 
+import com.rusinek.bitmexmonolith.model.Account;
+import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
 import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRequestLimitRepository;
@@ -19,22 +21,26 @@ public class LimitService {
     private final UserRequestLimitRepository userRequestLimitRepository;
     private final AccountRequestLimitRepository accountRequestLimitRepository;
 
-    UserRequestLimit saveUserRequestLimit() {
+    UserRequestLimit saveUserRequestLimit(User user) {
         // setting request limits for newly registered users
         UserRequestLimit userRequestLimit = new UserRequestLimit();
         userRequestLimit.setBlockadeActivatedAt(0);
         userRequestLimit.setConnectionTestLimit(1);
         userRequestLimit.setApiReadyToUse(System.currentTimeMillis() / 1000L);
+        userRequestLimit.setUser(user);
         log.debug("Setting default limits for new user.");
+
         return userRequestLimitRepository.save(userRequestLimit);
     }
 
-    AccountRequestLimit saveAccountRequestLimit() {
-
+    AccountRequestLimit saveAccountRequestLimit(Account account) {
+        // setting request limits for account
         AccountRequestLimit accountRequestLimit = new AccountRequestLimit();
         accountRequestLimit.setBlockadeActivatedAt(0);
         accountRequestLimit.setApiReadyToUse(System.currentTimeMillis() / 1000L);
+        accountRequestLimit.setAccount(account);
         log.debug("Setting default limits for new account.");
+
         return accountRequestLimitRepository.save(accountRequestLimit);
     }
 
