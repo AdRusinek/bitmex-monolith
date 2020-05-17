@@ -3,7 +3,7 @@ package com.rusinek.bitmexmonolith.validator;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
-import com.rusinek.bitmexmonolith.services.exchange.ParameterService;
+import com.rusinek.bitmexmonolith.util.ParameterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -20,11 +20,13 @@ public class AccountValidator implements Validator {
     private final AccountRepository accountRepository;
     private final ParameterService parameterService;
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean supports(Class<?> aClass) {
         return Account.class.equals(aClass);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void validate(Object target, Errors errors) {
         Account account = (Account) target;
@@ -52,7 +54,7 @@ public class AccountValidator implements Validator {
         System.out.println(account);
         return exchangeService
                 .testConnection("/apiKey", parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_API_KEY),
-                        account.getApiKey(), account.getApiKeySecret(), account.getAccountOwner());
+                        account, account.getAccountOwner());
     }
 
     private void manageStatuses(int response, Errors errors) {

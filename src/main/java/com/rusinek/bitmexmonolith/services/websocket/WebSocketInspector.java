@@ -50,8 +50,7 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
 
         if (exchange != null) {
             exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
-                    .subscribe(this::executeActions,
-                    throwable -> log.error("Error in subscribing trades.", throwable));
+                    .subscribe(this::executeActions, throwable -> log.error("Error in subscribing trades.", throwable));
         }
     }
 

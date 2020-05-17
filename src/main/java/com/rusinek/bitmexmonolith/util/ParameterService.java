@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.exchange;
+package com.rusinek.bitmexmonolith.util;
 
 import com.google.gson.Gson;
 import com.rusinek.bitmexmonolith.model.TrailingStop;

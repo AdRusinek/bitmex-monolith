@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.services.exchange;
+package com.rusinek.bitmexmonolith.util;
 
 import com.rusinek.bitmexmonolith.dto.response.OrderStopDto;
 import com.rusinek.bitmexmonolith.model.response.Order;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class ResponseModifier {
 
-    List<Order> extractAndSetNewQuantity(List<Order> orders) {
+    public List<Order> extractAndSetNewQuantity(List<Order> orders) {
         return orders.stream().peek(order -> {
             if (order.getSide().equals("Sell")) {
                 order.setOrderQty(-order.getOrderQty());
@@ -21,7 +21,7 @@ public class ResponseModifier {
         }).collect(Collectors.toList());
     }
 
-    List<OrderStopDto> extractAndSetNewOrderPrice(List<OrderStopDto> orderStopDtos) {
+    public List<OrderStopDto> extractAndSetNewOrderPrice(List<OrderStopDto> orderStopDtos) {
         return orderStopDtos.stream().peek(orderStopDto -> {
             if (orderStopDto.getPrice() == null) {
                 orderStopDto.setPrice("Market");

@@ -19,7 +19,7 @@ public class BitmexExceptionService {
         //if error occurred BitMEX sends message in this format
         ExchangeError exchangeError = null;
         try {
-            exchangeError = objectMapper.readValue(response.getBody(), new TypeReference<ExchangeError>() {
+            exchangeError = objectMapper.readValue(response.getBody(), new TypeReference<>() {
             });
         } catch (JsonProcessingException e) {
             log.error("Cannot deserialize properties.");

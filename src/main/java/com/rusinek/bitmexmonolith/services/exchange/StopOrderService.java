@@ -7,6 +7,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.OrderStopMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
 import com.rusinek.bitmexmonolith.model.response.Order;
+import com.rusinek.bitmexmonolith.util.ParameterService;
+import com.rusinek.bitmexmonolith.util.ResponseModifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +38,7 @@ public class StopOrderService {
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/order",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_STOP_ORDERS), Long.valueOf(accountId), principal.getName());
         try {
-            List<Order> orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
+            List<Order> orders = objectMapper.readValue(response.getBody(), new TypeReference<>() {
             });
 
             // returns list with modified price and quantity

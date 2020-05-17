@@ -9,7 +9,7 @@ import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
 import com.rusinek.bitmexmonolith.services.exchange.ExchangeService;
-import com.rusinek.bitmexmonolith.services.exchange.ParameterService;
+import com.rusinek.bitmexmonolith.util.ParameterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
@@ -55,7 +55,7 @@ public class TrailingStopSender {
                         trailingStop, extractInstructions(trailingStop)),
                 trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
         try {
-            return objectMapper.readValue(response.getBody(), new TypeReference<Order>() {
+            return objectMapper.readValue(response.getBody(), new TypeReference<>() {
             });
         } catch (JsonProcessingException e) {
             bitmexExceptionService.processErrorResponse(objectMapper, response, trailingStop.getTrailingStopOwner(),

@@ -17,11 +17,13 @@ public class CodeValidator implements Validator {
 
     private final GoogleAuthenticator googleAuthenticator;
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean supports(Class<?> clazz) {
         return User.class.equals(clazz);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void validate(Object target, Errors errors) {
 

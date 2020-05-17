@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestLimit {
+class RequestLimit {
 
     private long blockadeActivatedAt;
     private long apiReadyToUse;

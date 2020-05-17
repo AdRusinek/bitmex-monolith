@@ -22,8 +22,6 @@ import java.util.List;
 @ToString
 public class Account {
 
-    //todo [1] zabezpieczenie account przed przekroczeniem limitu [2] hmac i dodatkowy algorytm przy wsadzaniu do bazy [3] castowanie odpowiedzi od mexa
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

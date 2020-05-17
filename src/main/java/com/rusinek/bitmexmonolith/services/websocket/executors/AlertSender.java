@@ -3,7 +3,6 @@ package com.rusinek.bitmexmonolith.services.websocket.executors;
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AlertRepository;
-import com.rusinek.bitmexmonolith.services.AlertService;
 import com.rusinek.bitmexmonolith.services.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +59,7 @@ public class AlertSender {
                     "Price while sending: " + trade.getPrice().doubleValue(),
                     alert.getAlertMessage(),
                     "bitmexprogram@gmail.com",
-                    false,null);
+                    false, null);
         } catch (MailException | MessagingException ex) {
             log.error("Mail for user '" + user.getUsername() + "' not sent");
             return 1;

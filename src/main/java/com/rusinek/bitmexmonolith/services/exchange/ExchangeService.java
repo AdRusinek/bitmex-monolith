@@ -12,6 +12,7 @@ import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.util.CredentialSecurity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -42,6 +43,7 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpM
 public class ExchangeService {
 
     private final ApiKeyService apiKeyService;
+    private final CredentialSecurity credentialSecurity;
     private final RequestService requestService;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
@@ -56,7 +58,7 @@ public class ExchangeService {
     // returns 2 if all good
     // returns 3 if permission contains withdraw
     // returns different status if BitMEX has a problem
-    public int testConnection(String varPath, Map<String, Object> params, String apiKey, String apiKeySecret, String username) {
+    public int testConnection(String varPath, Map<String, Object> params, Account account, String username) {
         // set api-expires
         String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
 
@@ -70,10 +72,10 @@ public class ExchangeService {
         String signContent = GET.toString() + path + apiExpires;
 
         // set apiSignature
-        String apiSignature = setApiSignature(apiKeySecret, signContent);
+        String apiSignature = setApiSignature(account.getApiKeySecret(), signContent);
 
         // get headers
-        HashMap<String, String> headers = setHeaders(apiKey, apiExpires, apiSignature);
+        HashMap<String, String> headers = setHeaders(account.getApiKey(), apiExpires, apiSignature);
 
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
@@ -84,7 +86,7 @@ public class ExchangeService {
                     ObjectMapper objectMapper = new ObjectMapper();
                     // checking if somebody is trying to many requests
                     requestService.manageUserLimits(username);
-                    return apiKeyService.requestApiForApiKey(response, objectMapper, username, apiKey);
+                    return apiKeyService.requestApiForApiKey(response, objectMapper, username, account.getApiKey());
                 } catch (UnirestException e) {
                     log.error("Error occurred while sending url.");
                     e.printStackTrace();
@@ -97,9 +99,10 @@ public class ExchangeService {
 
     public HttpResponse<String> requestApi(HttpMethod method, String varPath, Map<String, Object> params, Long id, String userName) {
 
-        Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
+        Optional<Account> accountOptional = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        if (account.isPresent()) {
+        if (accountOptional.isPresent()) {
+            Account decodedAccount = credentialSecurity.decodeCredentials(accountOptional.get());
             // set api-expires
             String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
 
@@ -115,16 +118,16 @@ public class ExchangeService {
                 signContent += paramsEncodedStr;
             }
             // set apiSignature
-            String apiSignature = setApiSignature(account.get().getApiKeySecret(), signContent);
+            String apiSignature = setApiSignature(decodedAccount.getApiKeySecret(), signContent);
 
             // get headers
-            HashMap<String, String> headers = setHeaders(account.get().getApiKey(), apiExpires, apiSignature);
+            HashMap<String, String> headers = setHeaders(decodedAccount.getApiKey(), apiExpires, apiSignature);
 
 
-            if (account.get().getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+            if (decodedAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 try {
                     HttpResponse<String> response = callApi(method, url, headers);
-                    requestService.manageAccountLimits(response, account.get());
+                    requestService.manageAccountLimits(response, decodedAccount);
                     return response;
                 } catch (UnirestException e) {
                     log.error("Error occurred while sending url.");
@@ -168,6 +171,7 @@ public class ExchangeService {
         return headers;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private String setApiSignature(String apiKeySecret, String signContent) {
         HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
         HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));

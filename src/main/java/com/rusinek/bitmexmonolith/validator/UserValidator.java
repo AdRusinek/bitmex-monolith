@@ -11,11 +11,13 @@ import org.springframework.validation.Validator;
 @Component
 public class UserValidator implements Validator {
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean supports(Class<?> clazz) {
         return User.class.equals(clazz);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void validate(Object target, Errors errors) {
         User user = (User) target;

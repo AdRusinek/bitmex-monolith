@@ -23,14 +23,14 @@ public class ApiKeyService {
     private final RequestService requestService;
 
 
-    int requestApiForApiKey(HttpResponse<String> response, ObjectMapper objectMapper, String username, String apiKey) throws UnirestException {
+    int requestApiForApiKey(HttpResponse<String> response, ObjectMapper objectMapper, String username, String apiKey) {
 
         // casting to model object and excluding permissions list to check if it has order capability
         // if it is not there returns 1 which causing specific validation response
         List<ApiKey> apiKeys;
         try {
             // trying to get all api keys
-            apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<List<ApiKey>>() {
+            apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<>() {
             });
         } catch (JsonProcessingException e) {
             bitmexExceptionService.processErrorResponse(objectMapper, response, username, null);

@@ -7,6 +7,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.PositionMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
 import com.rusinek.bitmexmonolith.model.response.Position;
+import com.rusinek.bitmexmonolith.util.ParameterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class PositionService {
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/position",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_POSITIONS), Long.valueOf(accountId), principal.getName());
         try {
-            List<Position> positions = objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
+            List<Position> positions = objectMapper.readValue(response.getBody(), new TypeReference<>() {
             });
             return new ResponseEntity<>(positionMapper.positionsToDto(positions), HttpStatus.OK);
         } catch (JsonProcessingException e) {
