@@ -9,6 +9,7 @@ import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundEx
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
+import com.rusinek.bitmexmonolith.util.CredentialSecurity;
 import com.rusinek.bitmexmonolith.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class AccountService {
 
     private final UserRepository userRepository;
+    private final CredentialSecurity credentialSecurity;
     private final AccountRepository accountRepository;
     private final MapValidationErrorService errorService;
     private final LimitService limitService;
@@ -44,24 +46,19 @@ public class AccountService {
             account.setUser(user);
         }, () -> log.error("Error occurred, could not find user '" + principal.getName() + "' while saving account."));
 
-
         //validates if it is possible to make connection with provided credentials
         accountValidator.validate(account, result);
-
         if (result.hasErrors()) {
             return errorService.validateErrors(result);
         }
-
         // checks if account with provided name already exists
         boolean matched = accountRepository.findAllByAccountOwner(principal.getName()).stream()
                 .anyMatch(acc -> acc.getAccountName().equals(account.getAccountName()));
-
         // if account exists throw and error
         if (matched) {
             throw new AccountNameAlreadyExistsException("Account '" + account.getAccountName() + "' already exists.");
         }
-
-        Account savedAccount = accountRepository.save(account);
+        Account savedAccount = accountRepository.save(credentialSecurity.encodeCredentials(account));
         limitService.saveAccountRequestLimit(savedAccount);
 
         return new ResponseEntity<>(accountMapper.accountToDto(savedAccount), HttpStatus.CREATED);
@@ -78,7 +75,7 @@ public class AccountService {
         // validating if exchange account belongs to your user account
         Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        if (!account.isPresent()) {
+        if (account.isEmpty()) {
             throw new AccountIdException("Account ID '" + id + "' does not exist");
         }
 

@@ -5,12 +5,12 @@ import com.rusinek.bitmexmonolith.dto.response.OrderLimitDto.OrderLimitDtoBuilde
 import com.rusinek.bitmexmonolith.model.response.Order;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-05-13T07:31:49+0200",
+    date = "2020-05-15T13:26:55+0200",
     comments = "version: 1.3.1.Final, compiler: javac, environment: Java 11.0.2 (Oracle Corporation)"
 )
 @Component

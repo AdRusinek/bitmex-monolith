@@ -179,7 +179,4 @@ public class UserService {
         return tokenValue;
     }
 
-    Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 }
