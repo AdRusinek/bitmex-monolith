@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
  **/
 @Slf4j
 @Service
-public class BitmexExceptionService {
+public class BitMEXExceptionService {
 
     public void processErrorResponse(ObjectMapper objectMapper, HttpResponse<String> response, String username, String accountId) {
         //if error occurred BitMEX sends message in this format
         ExchangeError exchangeError = null;
         try {
-            exchangeError = objectMapper.readValue(response.getBody(), new TypeReference<>() {
+            exchangeError = objectMapper.readValue(response.getBody(), new TypeReference<ExchangeError>() {
             });
         } catch (JsonProcessingException e) {
             log.error("Cannot deserialize properties.");
@@ -37,6 +37,9 @@ public class BitmexExceptionService {
              errorResponse += ".";
          }
             log.error(errorResponse);
+         if (String.valueOf(response.getStatus()).startsWith("5")) {
+             System.out.println("O CHUJ MEX LEZY");
+         }
         }
     }
 }

@@ -1,4 +1,4 @@
-hashowanie
 bulk trailing
 ilosc kont trailingow, alertow
 smieciowe zlecenia
+sprawdzic czy sie nie zaczyna response od 5 jak tak to walnac flage zeby nie lecialo z requestami

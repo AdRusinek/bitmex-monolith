@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
+import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
 import com.rusinek.bitmexmonolith.model.response.ApiKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApiKeyService {
 
-    private final BitmexExceptionService bitmexExceptionService;
+    private final BitMEXExceptionService bitmexExceptionService;
     private final RequestService requestService;
 
 
@@ -30,7 +29,7 @@ public class ApiKeyService {
         List<ApiKey> apiKeys;
         try {
             // trying to get all api keys
-            apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<>() {
+            apiKeys = objectMapper.readValue(response.getBody(), new TypeReference<List<ApiKey>>() {
             });
         } catch (JsonProcessingException e) {
             bitmexExceptionService.processErrorResponse(objectMapper, response, username, null);

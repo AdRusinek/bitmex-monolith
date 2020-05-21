@@ -23,16 +23,16 @@ public class RequestService {
         // reads how many request are left to exceed limit
         String limitHeader = String.valueOf(response.getHeaders().get("X-RateLimit-Remaining"));
         if (limitHeader == null) {
-            // lock account on 30 seconds if something unexpected happened (idk what BitMEX returns if system overloaded)
-            account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 30);
+            // lock account on 10 seconds if something unexpected happened (idk what BitMEX returns if downtime...)
+            account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 10);
         } else {
             int limit = Integer.valueOf(limitHeader.substring(1, limitHeader.length() - 1));
             System.out.println(limit);
-            // limit 5 just to play it safe
-            if (limit <= 5) {
-                // from this time it will check if 60 seconds have passed
+            // limit 2 just to play it safe
+            if (limit <= 2) {
+                // from this time it will check if 30 seconds have passed
                 account.getAccountRequestLimit().setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
-                account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 60);
+                account.getAccountRequestLimit().setApiReadyToUse(account.getAccountRequestLimit().getBlockadeActivatedAt() + 30);
 
                 accountRepository.save(account);
                 log.error("User '" + account.getAccountOwner() + "' with account Id + '" + account.getId() + "'almost exceeded limit.");

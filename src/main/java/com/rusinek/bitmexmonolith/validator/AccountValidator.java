@@ -60,21 +60,16 @@ public class AccountValidator implements Validator {
     private void manageStatuses(int response, Errors errors) {
         switch (response) {
             case 0:
-                errors.rejectValue("apiKey", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
-                        " administration has been notified about your attempts.");
                 errors.rejectValue("apiKeySecret", "Limit", "Your ability to add account has been blocked for 2 minutes and" +
                         " administration has been notified about your attempts.");
                 break;
             case 1:
-                errors.rejectValue("apiKey", "Permission", "Set 'Order' key permission to allow the placement and cancellation of orders.");
                 errors.rejectValue("apiKeySecret", "Permission", "Set 'Order' key permission to allow the placement and cancellation of orders.");
                 break;
             case 2:
-                errors.rejectValue("apiKey", "Connection", "Given credentials are not valid.");
                 errors.rejectValue("apiKeySecret", "Connection", "Given credentials are not valid.");
                 break;
             case 3:
-                errors.rejectValue("apiKey", "Withdraw", "We do not support keys containing withdraw capability.");
                 errors.rejectValue("apiKeySecret", "Withdraw", "We do not support keys containing withdraw capability.");
                 break;
         }

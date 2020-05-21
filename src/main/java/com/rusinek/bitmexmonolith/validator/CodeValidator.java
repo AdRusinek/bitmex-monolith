@@ -31,12 +31,8 @@ public class CodeValidator implements Validator {
 
         if (loginRequest.getCode() != null) {
             if (!googleAuthenticator.authorizeUser(loginRequest.getUsername(), loginRequest.getCode())) {
-                errors.rejectValue("username", "Wrong", "Credentials are not valid.");
-                errors.rejectValue("password", "Wrong", "Credentials are not valid.");
-                errors.rejectValue("code", "Wrong", "Credentials are not valid.");
+                errors.rejectValue("code", "Wrong", "Podane dane są błędne.");
             }
-        } else {
-            errors.rejectValue("code", "Wrong", "You have to provide Two-Factor token.");
         }
     }
 }

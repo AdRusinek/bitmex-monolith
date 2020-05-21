@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
-import com.rusinek.bitmexmonolith.exceptions.BitmexExceptionService;
+import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
@@ -27,7 +27,7 @@ public class TrailingStopSender {
 
     private final TrailingStopRepository trailingStopRepository;
     private final ParameterService parameterService;
-    private final BitmexExceptionService bitmexExceptionService;
+    private final BitMEXExceptionService bitmexExceptionService;
     private final ObjectMapper objectMapper;
     private final ExchangeService exchangeService;
 
@@ -55,7 +55,7 @@ public class TrailingStopSender {
                         trailingStop, extractInstructions(trailingStop)),
                 trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
         try {
-            return objectMapper.readValue(response.getBody(), new TypeReference<>() {
+            return objectMapper.readValue(response.getBody(), new TypeReference<Order>() {
             });
         } catch (JsonProcessingException e) {
             bitmexExceptionService.processErrorResponse(objectMapper, response, trailingStop.getTrailingStopOwner(),

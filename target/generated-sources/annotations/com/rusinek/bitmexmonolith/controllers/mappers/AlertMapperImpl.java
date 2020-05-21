@@ -3,13 +3,13 @@ package com.rusinek.bitmexmonolith.controllers.mappers;
 import com.rusinek.bitmexmonolith.dto.AlertDto;
 import com.rusinek.bitmexmonolith.dto.AlertDto.AlertDtoBuilder;
 import com.rusinek.bitmexmonolith.model.Alert;
-import javax.annotation.processing.Generated;
+import javax.annotation.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-05-15T13:26:55+0200",
-    comments = "version: 1.3.1.Final, compiler: javac, environment: Java 11.0.2 (Oracle Corporation)"
+    date = "2020-05-21T01:27:28+0200",
+    comments = "version: 1.3.1.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 @Component
 public class AlertMapperImpl implements AlertMapper {

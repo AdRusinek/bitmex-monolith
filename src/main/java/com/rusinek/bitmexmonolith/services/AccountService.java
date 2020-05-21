@@ -7,6 +7,7 @@ import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountIdExceptio
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.AccountNotFoundException;
 import com.rusinek.bitmexmonolith.model.Account;
+import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.util.CredentialSecurity;
@@ -41,10 +42,16 @@ public class AccountService {
 
     public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
 
-        userRepository.findByUsername(principal.getName()).ifPresentOrElse(user -> {
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
+
+        if (!optionalUser.isPresent()) {
+            log.error("Error occurred, could not find user '" + principal.getName() + "' while saving account.");
+        }
+
+        optionalUser.ifPresent(user -> {
             account.setAccountOwner(user.getUsername());
             account.setUser(user);
-        }, () -> log.error("Error occurred, could not find user '" + principal.getName() + "' while saving account."));
+        });
 
         //validates if it is possible to make connection with provided credentials
         accountValidator.validate(account, result);
@@ -75,7 +82,7 @@ public class AccountService {
         // validating if exchange account belongs to your user account
         Optional<Account> account = accountRepository.findByAccountOwnerAndId(userName, id);
 
-        if (account.isEmpty()) {
+        if (!account.isPresent()) {
             throw new AccountIdException("Account ID '" + id + "' does not exist");
         }
 
