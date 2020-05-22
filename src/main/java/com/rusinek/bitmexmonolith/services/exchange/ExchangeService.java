@@ -51,6 +51,7 @@ public class ExchangeService {
     private String exchangeUrl;
     private static final String basePath = "/api/v1";
     private static final int expireSeconds = 5;
+    private static final Charset charset = Charset.forName("UTF-8");
 
 
     // returns 0 if limits exceeded
@@ -82,7 +83,7 @@ public class ExchangeService {
             if (user.get().getUserRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 try {
                     // getting response
-                    HttpResponse<String> response = callApi(GET, url, headers);
+                    HttpResponse<String> response = callApi(GET, url, headers, null);
                     ObjectMapper objectMapper = new ObjectMapper();
                     // checking if somebody is trying to many requests
                     requestService.manageUserLimits(username);
@@ -109,11 +110,12 @@ public class ExchangeService {
             // get signContent
             String paramsEncodedStr = getEncodedStrOfParams(params);
             String path = basePath + varPath;
-            if (paramsEncodedStr != null && (method == HttpMethod.GET) && !paramsEncodedStr.equals("")) {
+            if (paramsEncodedStr != null && method == HttpMethod.GET && !paramsEncodedStr.equals("")) {
                 path += "?" + paramsEncodedStr;
             }
             String url = exchangeUrl + path;
             String signContent = method.toString() + path + apiExpires;
+
             if (method == HttpMethod.POST) {
                 signContent += paramsEncodedStr;
             }
@@ -123,10 +125,9 @@ public class ExchangeService {
             // get headers
             HashMap<String, String> headers = setHeaders(decodedAccount.getApiKey(), apiExpires, apiSignature);
 
-
             if (decodedAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 try {
-                    HttpResponse<String> response = callApi(method, url, headers);
+                    HttpResponse<String> response = callApi(method, url, headers, params);
                     requestService.manageAccountLimits(response, decodedAccount);
                     return response;
                 } catch (UnirestException e) {
@@ -138,7 +139,7 @@ public class ExchangeService {
         return null;
     }
 
-    private HttpResponse<String> callApi(HttpMethod method, String url, HashMap<String, String> headers) throws UnirestException {
+    private HttpResponse<String> callApi(HttpMethod method, String url, HashMap<String, String> headers, Map<String, Object> params) throws UnirestException {
         HttpResponse<String> response = null;
         ignoreCookies();
         if (method == GET) {
@@ -149,6 +150,7 @@ public class ExchangeService {
         } else if (method == POST) {
             response = Unirest.post(url)
                     .headers(headers)
+                    .fields(params)
                     .asString();
         }
         return response;
@@ -173,8 +175,8 @@ public class ExchangeService {
 
     @SuppressWarnings("UnstableApiUsage")
     private String setApiSignature(String apiKeySecret, String signContent) {
-        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(Charset.forName("UTF-8")));
-        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(Charset.forName("UTF-8")));
+        HashFunction hashFunc = Hashing.hmacSha256(apiKeySecret.getBytes(charset));
+        HashCode hashCode = hashFunc.hashBytes(signContent.getBytes(charset));
         return hashCode.toString();
     }
 
@@ -182,7 +184,7 @@ public class ExchangeService {
         MultipartBody body = Unirest.post("").fields(params);
         try {
             InputStream bodyStream = body.getEntity().getContent();
-            return IOUtils.toString(bodyStream, Charset.forName("UTF-8"));
+            return IOUtils.toString(bodyStream, charset);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -35,11 +36,11 @@ public class TrailingStopSender {
         trailingStopRepository.findAll().forEach(trailingStop -> {
             if (Double.valueOf(trailingStop.getTrialValue()) > 0) {
                 if (trade.getPrice().doubleValue() <= trailingStop.getStartingPrice()) {
-                    decideIfDelete(trailingStop);
+                    deleteTrailing(trailingStop);
                 }
             } else if (Double.valueOf(trailingStop.getTrialValue()) < 0) {
                 if (trade.getPrice().doubleValue() >= trailingStop.getStartingPrice()) {
-                    decideIfDelete(trailingStop);
+                        deleteTrailing(trailingStop);
                 }
             }
         });
@@ -88,7 +89,7 @@ public class TrailingStopSender {
         return order.getOrderID() != null;
     }
 
-    private void decideIfDelete(TrailingStop trailingStop) {
+    private void deleteTrailing(TrailingStop trailingStop) {
         if (isTrailingStopSent(Objects.requireNonNull(sentTrailingStop(trailingStop)))) {
             trailingStopRepository.delete(trailingStop);
         }

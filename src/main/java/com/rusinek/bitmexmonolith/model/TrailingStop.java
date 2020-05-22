@@ -2,7 +2,11 @@ package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -12,7 +16,8 @@ import java.sql.Timestamp;
 /**
  * Created by Adrian Rusinek on 24.02.2020
  **/
-@Data
+@Getter
+@Setter
 @Entity
 public class TrailingStop {
 
@@ -33,7 +38,8 @@ public class TrailingStop {
     @Column(updatable = false)
     private Timestamp createdDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="account_id")
     @JsonIgnore
     private Account account;
 

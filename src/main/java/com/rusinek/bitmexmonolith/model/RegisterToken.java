@@ -26,7 +26,7 @@ public class RegisterToken {
     @Column(updatable = false)
     private Timestamp createdDate;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private User user;
 

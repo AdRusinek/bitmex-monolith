@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -19,7 +21,6 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@ToString
 public class Account {
 
     @Id

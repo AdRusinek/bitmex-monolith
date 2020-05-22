@@ -37,7 +37,7 @@ public class Alert {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private User user;
 }

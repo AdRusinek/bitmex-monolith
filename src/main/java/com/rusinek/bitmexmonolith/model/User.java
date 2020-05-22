@@ -51,7 +51,7 @@ public class User implements UserDetails {
     private Timestamp lastModifiedDate;
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Account> accounts = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
