@@ -37,9 +37,6 @@ public class BitMEXExceptionService {
              errorResponse += ".";
          }
             log.error(errorResponse);
-         if (String.valueOf(response.getStatus()).startsWith("5")) {
-             System.out.println("O CHUJ MEX LEZY");
-         }
         }
     }
 }

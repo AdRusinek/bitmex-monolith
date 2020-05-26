@@ -10,7 +10,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
+import com.rusinek.bitmexmonolith.model.requestlimits.ExchangeRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
+import com.rusinek.bitmexmonolith.repositories.ExchangeRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.util.CredentialSecurity;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class ExchangeService {
 
     private final ApiKeyService apiKeyService;
     private final CredentialSecurity credentialSecurity;
+    private final ExchangeRequestLimitRepository exchangeRequestLimitRepository;
     private final RequestService requestService;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
@@ -125,14 +128,20 @@ public class ExchangeService {
             // get headers
             HashMap<String, String> headers = setHeaders(decodedAccount.getApiKey(), apiExpires, apiSignature);
 
-            if (decodedAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
-                try {
-                    HttpResponse<String> response = callApi(method, url, headers, params);
-                    requestService.manageAccountLimits(response, decodedAccount);
-                    return response;
-                } catch (UnirestException e) {
-                    log.error("Error occurred while sending url.");
-                    e.printStackTrace();
+
+            @SuppressWarnings("OptionalGetWithoutIsPresent")
+            ExchangeRequestLimit exchangeRequestLimit = exchangeRequestLimitRepository.findById(1L).get();
+
+            if (exchangeRequestLimit.getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                if (decodedAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                    try {
+                        HttpResponse<String> response = callApi(method, url, headers, params);
+                        requestService.manageAccountLimits(response, decodedAccount);
+                        return response;
+                    } catch (UnirestException e) {
+                        log.error("Error occurred while sending url.");
+                        e.printStackTrace();
+                    }
                 }
             }
         }
