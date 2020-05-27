@@ -32,4 +32,9 @@ public class AlertController {
     public Iterable<?> getAlerts(Principal principal) {
         return alertService.getAllAlertsByAlertOwner(principal);
     }
+
+    @DeleteMapping("/{alertId}")
+    public ResponseEntity<?> deleteAlert(@PathVariable String alertId, Principal principal) {
+        return alertService.deleteAlert(alertId,principal);
+    }
 }

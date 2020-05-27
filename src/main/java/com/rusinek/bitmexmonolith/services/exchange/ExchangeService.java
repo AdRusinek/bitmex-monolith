@@ -14,7 +14,6 @@ import com.rusinek.bitmexmonolith.model.requestlimits.ExchangeRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.ExchangeRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
-import com.rusinek.bitmexmonolith.util.CredentialSecurity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -45,7 +44,6 @@ import static com.rusinek.bitmexmonolith.services.exchange.ExchangeService.HttpM
 public class ExchangeService {
 
     private final ApiKeyService apiKeyService;
-    private final CredentialSecurity credentialSecurity;
     private final ExchangeRequestLimitRepository exchangeRequestLimitRepository;
     private final RequestService requestService;
     private final AccountRepository accountRepository;
@@ -106,7 +104,7 @@ public class ExchangeService {
         Optional<Account> accountOptional = accountRepository.findByAccountOwnerAndId(userName, id);
 
         if (accountOptional.isPresent()) {
-            Account decodedAccount = credentialSecurity.decodeCredentials(accountOptional.get());
+            Account foundAccount = accountOptional.get();
             // set api-expires
             String apiExpires = String.valueOf(System.currentTimeMillis() / 1000 + expireSeconds);
 
@@ -123,20 +121,20 @@ public class ExchangeService {
                 signContent += paramsEncodedStr;
             }
             // set apiSignature
-            String apiSignature = setApiSignature(decodedAccount.getApiKeySecret(), signContent);
+            String apiSignature = setApiSignature(foundAccount.getApiKeySecret(), signContent);
 
             // get headers
-            HashMap<String, String> headers = setHeaders(decodedAccount.getApiKey(), apiExpires, apiSignature);
+            HashMap<String, String> headers = setHeaders(foundAccount.getApiKey(), apiExpires, apiSignature);
 
 
             @SuppressWarnings("OptionalGetWithoutIsPresent")
             ExchangeRequestLimit exchangeRequestLimit = exchangeRequestLimitRepository.findById(1L).get();
 
             if (exchangeRequestLimit.getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
-                if (decodedAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
+                if (foundAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                     try {
                         HttpResponse<String> response = callApi(method, url, headers, params);
-                        requestService.manageAccountLimits(response, decodedAccount);
+                        requestService.manageAccountLimits(response, foundAccount);
                         return response;
                     } catch (UnirestException e) {
                         log.error("Error occurred while sending url.");

@@ -2,8 +2,7 @@ package com.rusinek.bitmexmonolith.exceptions;
 
 
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
-import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsException;
-import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsResponse;
+import com.rusinek.bitmexmonolith.exceptions.alertException.*;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleAccountAmountException(AccountAmountException e) {
+        return new ResponseEntity<>(new AccountAmountExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleAccountCredentialsException(AccountCredentialsException e) {
+        return new ResponseEntity<>(new AccountCredentialsExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler
     public final ResponseEntity<Object> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
@@ -43,7 +52,18 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler
+    public final ResponseEntity<Object> handleAlertAmountException(AlertAmountException e) {
+        return new ResponseEntity<>(new AlertAmountExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public final ResponseEntity<Object> handleAlertAlreadyExistsException(AlertAlreadyExistsException e) {
         return new ResponseEntity<>(new AlertAlreadyExistsResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleAlertIdException(AlertIdException e) {
+        return new ResponseEntity<>(new AlertIdExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }

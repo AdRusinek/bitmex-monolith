@@ -5,6 +5,8 @@ import com.rusinek.bitmexmonolith.controllers.mappers.AlertMapper;
 import com.rusinek.bitmexmonolith.dto.AlertDto;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsException;
+import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAmountException;
+import com.rusinek.bitmexmonolith.exceptions.alertException.AlertIdException;
 import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.repositories.AlertRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
@@ -16,6 +18,7 @@ import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +40,14 @@ public class AlertService {
             return errorService.validateErrors(result);
         }
 
+        List<AlertDto> allAlertsByAlertOwner = getAllAlertsByAlertOwner(principal);
+
+        if (allAlertsByAlertOwner.size() > 1) {
+            throw new AlertAmountException("Alert amount exceeded.");
+        }
+
         // checks if alert with provided triggering price already exists
-        boolean matched = getAllAlertsByAlertOwner(principal).stream()
+        boolean matched = allAlertsByAlertOwner.stream()
                 .anyMatch(user -> user.getAlertTriggeringPrice().equals(alert.getAlertTriggeringPrice()));
 
         // if alert exists throw and error
@@ -61,5 +70,18 @@ public class AlertService {
                 .stream()
                 .map(alertMapper::alertToDto)
                 .collect(Collectors.toList());
+    }
+
+    public ResponseEntity<?> deleteAlert(String alertId, Principal principal) {
+
+        Optional<Alert> optionalAlert = alertRepository.findByIdAndAlertOwner(Long.valueOf(alertId), principal.getName());
+
+        if (!optionalAlert.isPresent()) {
+            throw new AlertIdException("Alert with id '" + alertId + "' does not exists on this account.");
+        }
+
+        optionalAlert.ifPresent(alertRepository::delete);
+
+        return new ResponseEntity<String>("Alert wth id '" + alertId + "' was deleted successfully.", HttpStatus.OK);
     }
 }
