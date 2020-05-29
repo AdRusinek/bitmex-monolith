@@ -20,10 +20,13 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
 
-        ExchangeRequestLimit exchangeRequestLimit = new ExchangeRequestLimit();
-        exchangeRequestLimit.setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
-        exchangeRequestLimit.setApiReadyToUse(System.currentTimeMillis() / 1000L);
+        if(exchangeRequestLimitRepository.findAll().size() == 0) {
 
-        exchangeRequestLimitRepository.save(exchangeRequestLimit);
+            ExchangeRequestLimit exchangeRequestLimit = new ExchangeRequestLimit();
+            exchangeRequestLimit.setBlockadeActivatedAt(System.currentTimeMillis() / 1000L);
+            exchangeRequestLimit.setApiReadyToUse(System.currentTimeMillis() / 1000L);
+
+            exchangeRequestLimitRepository.save(exchangeRequestLimit);
+        }
     }
 }

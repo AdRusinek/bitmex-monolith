@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.PositionMapper;
+import com.rusinek.bitmexmonolith.dto.response.PositionDto;
 import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
 import com.rusinek.bitmexmonolith.model.response.Position;
 import com.rusinek.bitmexmonolith.util.ParameterService;
@@ -26,22 +27,18 @@ import java.util.List;
 public class PositionService {
 
     private final ExchangeService exchangeService;
-    private final BitMEXExceptionService bitmexExceptionService;
     private final PositionMapper positionMapper;
     private final ParameterService parameterService;
     private final ObjectMapper objectMapper;
 
-    // returns position but if there is some kind of error in deserialization then it tries to bind it to the BitMEX error model response
     public ResponseEntity<?> requestPositions(String accountId, Principal principal) {
-
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/position",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_POSITIONS), Long.valueOf(accountId), principal.getName());
         try {
-            List<Position> positions = objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
-            });
-            return new ResponseEntity<>(positionMapper.positionsToDto(positions), HttpStatus.OK);
+            return new ResponseEntity<>(positionMapper.positionsToDto(objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
+            })), HttpStatus.OK);
         } catch (JsonProcessingException e) {
-            bitmexExceptionService.processErrorResponse(objectMapper, response, principal.getName(), accountId);
+            e.printStackTrace();
         }
         return null;
     }

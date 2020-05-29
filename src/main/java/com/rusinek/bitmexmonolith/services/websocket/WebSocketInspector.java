@@ -33,11 +33,12 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        log.debug("Websocket started at: " + new Date(event.getTimestamp()).getTime());
-        triggerTrailingStop();
+        log.debug("Websocket started.");
+        triggerActions();
     }
 
-    private void triggerTrailingStop() {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void triggerActions() {
         StreamingExchange exchange = null;
         try {
             ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);

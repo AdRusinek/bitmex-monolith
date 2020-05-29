@@ -4,6 +4,7 @@ import com.rusinek.bitmexmonolith.controllers.mappers.AccountMapper;
 import com.rusinek.bitmexmonolith.dto.AccountDto;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
+import com.rusinek.bitmexmonolith.exceptions.alertException.AlertIdException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
@@ -60,9 +61,9 @@ public class AccountService {
         }
 
         boolean credentialsExist = allByAccountOwner.stream()
-                .anyMatch(accForCredentials -> {
-                    return accForCredentials.getApiKey().equals(account.getApiKey()) && accForCredentials.getApiKeySecret().equals(account.getApiKeySecret());
-                });
+                .anyMatch(accForCredentials -> accForCredentials.getApiKey()
+                        .equals(account.getApiKey()) && accForCredentials.getApiKeySecret().equals(account.getApiKeySecret()));
+
         if (credentialsExist) {
             throw new AccountCredentialsException("You already provided Credentials with that Api Key and Api Key Secret.");
         }
@@ -105,4 +106,16 @@ public class AccountService {
         return account.get();
     }
 
+    public ResponseEntity<?> deleteAccount(String accountId, Principal principal) {
+
+        Optional<Account> optionalAccount = accountRepository.findByAccountOwnerAndId(principal.getName(), Long.valueOf(accountId));
+
+        if (!optionalAccount.isPresent()) {
+            throw new AccountIdException("Account with id '" + accountId + "' does not exists on this User dashboard.");
+        }
+
+        optionalAccount.ifPresent(accountRepository::delete);
+
+        return new ResponseEntity<String>("Account wth id '" + accountId + "' was deleted successfully.", HttpStatus.OK);
+    }
 }

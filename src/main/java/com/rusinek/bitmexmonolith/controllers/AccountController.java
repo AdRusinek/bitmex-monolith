@@ -34,4 +34,9 @@ public class AccountController {
     public List<AccountDto> getAccountNames(Principal principal) {
         return accountService.getAllAccounts(principal.getName());
     }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<?> deleteAlert(@PathVariable String accountId, Principal principal) {
+        return accountService.deleteAccount(accountId, principal);
+    }
 }

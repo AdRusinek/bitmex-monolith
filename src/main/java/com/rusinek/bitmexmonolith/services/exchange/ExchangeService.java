@@ -128,7 +128,7 @@ public class ExchangeService {
 
 
             @SuppressWarnings("OptionalGetWithoutIsPresent")
-            ExchangeRequestLimit exchangeRequestLimit = exchangeRequestLimitRepository.findById(1L).get();
+            ExchangeRequestLimit exchangeRequestLimit = exchangeRequestLimitRepository.findAll().get(0);
 
             if (exchangeRequestLimit.getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
                 if (foundAccount.getAccountRequestLimit().getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
