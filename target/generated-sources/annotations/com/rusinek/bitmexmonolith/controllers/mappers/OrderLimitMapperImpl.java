@@ -1,7 +1,6 @@
 package com.rusinek.bitmexmonolith.controllers.mappers;
 
 import com.rusinek.bitmexmonolith.dto.response.OrderLimitDto;
-import com.rusinek.bitmexmonolith.dto.response.OrderLimitDto.OrderLimitDtoBuilder;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-05-22T01:13:20+0200",
+    date = "2020-05-29T13:45:00+0200",
     comments = "version: 1.3.1.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 @Component
@@ -35,14 +34,14 @@ public class OrderLimitMapperImpl implements OrderLimitMapper {
             return null;
         }
 
-        OrderLimitDtoBuilder orderLimitDto = OrderLimitDto.builder();
+        OrderLimitDto orderLimitDto = new OrderLimitDto();
 
-        orderLimitDto.timestamp( order.getTimestamp() );
-        orderLimitDto.symbol( order.getSymbol() );
-        orderLimitDto.orderQty( order.getOrderQty() );
-        orderLimitDto.price( order.getPrice() );
-        orderLimitDto.leavesQty( order.getLeavesQty() );
+        orderLimitDto.setSymbol( order.getSymbol() );
+        orderLimitDto.setOrderQty( order.getOrderQty() );
+        orderLimitDto.setTimestamp( order.getTimestamp() );
+        orderLimitDto.setPrice( order.getPrice() );
+        orderLimitDto.setLeavesQty( order.getLeavesQty() );
 
-        return orderLimitDto.build();
+        return orderLimitDto;
     }
 }

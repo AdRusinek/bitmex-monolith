@@ -1,6 +1,5 @@
 package com.rusinek.bitmexmonolith.services.exchange;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
@@ -28,26 +27,24 @@ public class StopOrderService {
 
     private final ExchangeService exchangeService;
     private final ParameterService parameterService;
-    private final BitMEXExceptionService bitmexExceptionService;
     private final ObjectMapper objectMapper;
     private final OrderStopMapper orderStopMapper;
     private final ResponseModifier responseModifier;
+    private final BitMEXExceptionService bitMEXExceptionService;
 
     public ResponseEntity<?> requestStopOrders(Principal principal, String accountId) {
 
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/order",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_STOP_ORDERS), Long.valueOf(accountId), principal.getName());
+
+        // returns list with modified price and quantity
         try {
-            List<Order> orders = objectMapper.readValue(response.getBody(), new TypeReference<List<Order>>() {
-            });
-
-            // returns list with modified price and quantity
             return new ResponseEntity<>(responseModifier.extractAndSetNewOrderPrice(orderStopMapper
-                    .orderStopsToDtos(responseModifier.extractAndSetNewQuantity(orders))), HttpStatus.OK);
-
-        } catch (JsonProcessingException e) {
-            bitmexExceptionService.processErrorResponse(objectMapper, response, principal.getName(), accountId);
+                    .orderStopsToDtos(responseModifier.extractAndSetNewQuantity(objectMapper
+                            .readValue(response.getBody(), new TypeReference<List<Order>>() {
+                            })))), HttpStatus.OK);
+        } catch (Exception e) {
+            return bitMEXExceptionService.respondAndInform();
         }
-        return null;
     }
 }

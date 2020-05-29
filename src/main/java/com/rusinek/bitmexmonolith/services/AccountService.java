@@ -116,6 +116,6 @@ public class AccountService {
 
         optionalAccount.ifPresent(accountRepository::delete);
 
-        return new ResponseEntity<String>("Account wth id '" + accountId + "' was deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Account wth id '" + accountId + "' was deleted successfully.", HttpStatus.OK);
     }
 }

@@ -5,6 +5,8 @@ import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
 import com.rusinek.bitmexmonolith.exceptions.alertException.*;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
+import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountException;
+import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -66,4 +68,8 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         return new ResponseEntity<>(new AlertIdExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleTrailingStopAmountException(TrailingStopAmountException e) {
+        return new ResponseEntity<>(new TrailingStopAmountExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }

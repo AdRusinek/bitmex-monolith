@@ -1,7 +1,6 @@
 package com.rusinek.bitmexmonolith.controllers.mappers;
 
 import com.rusinek.bitmexmonolith.dto.response.PositionDto;
-import com.rusinek.bitmexmonolith.dto.response.PositionDto.PositionDtoBuilder;
 import com.rusinek.bitmexmonolith.model.response.Position;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-05-22T01:13:20+0200",
+    date = "2020-05-29T13:45:00+0200",
     comments = "version: 1.3.1.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 @Component
@@ -35,17 +34,17 @@ public class PositionMapperImpl implements PositionMapper {
             return null;
         }
 
-        PositionDtoBuilder positionDto = PositionDto.builder();
+        PositionDto positionDto = new PositionDto();
 
-        positionDto.openingTimestamp( position.getOpeningTimestamp() );
-        positionDto.symbol( position.getSymbol() );
-        positionDto.openingQty( position.getOpeningQty() );
-        positionDto.homeNotional( position.getHomeNotional() );
-        positionDto.avgEntryPrice( position.getAvgEntryPrice() );
-        positionDto.markPrice( position.getMarkPrice() );
-        positionDto.liquidationPrice( position.getLiquidationPrice() );
-        positionDto.leverage( position.getLeverage() );
+        positionDto.setSymbol( position.getSymbol() );
+        positionDto.setOpeningTimestamp( position.getOpeningTimestamp() );
+        positionDto.setOpeningQty( position.getOpeningQty() );
+        positionDto.setHomeNotional( position.getHomeNotional() );
+        positionDto.setAvgEntryPrice( position.getAvgEntryPrice() );
+        positionDto.setMarkPrice( position.getMarkPrice() );
+        positionDto.setLiquidationPrice( position.getLiquidationPrice() );
+        positionDto.setLeverage( position.getLeverage() );
 
-        return positionDto.build();
+        return positionDto;
     }
 }

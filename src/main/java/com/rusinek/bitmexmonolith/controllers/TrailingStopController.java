@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,11 @@ public class TrailingStopController {
     @GetMapping("/get-waiting-trailing-stops/{accountId}")
     public ResponseEntity<?> getWaitingTrailingStops(Principal principal,
                                                      @PathVariable String accountId) {
-        return trailingStopService.getAllByOwnerAndAccountId(principal, accountId);
+        return new ResponseEntity<>(trailingStopService.getAllByOwnerAndAccountId(principal, accountId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{accountId}/{trailingId}")
+    public ResponseEntity<?> deleteTrailingStop(@PathVariable String accountId, @PathVariable String trailingId, Principal principal) {
+        return trailingStopService.deleteTrailingStop(accountId, trailingId, principal);
     }
 }

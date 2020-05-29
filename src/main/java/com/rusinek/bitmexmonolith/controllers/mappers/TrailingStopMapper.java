@@ -17,6 +17,7 @@ public class TrailingStopMapper {
 
         return TrailingStopDto.builder()
                 .id(trailingStop.getId())
+                .accountId(trailingStop.getAccount().getId())
                 .startingPrice(trailingStop.getStartingPrice())
                 .quantity(trailingStop.getQuantity())
                 .trialValue(trailingStop.getTrialValue())

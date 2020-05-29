@@ -20,6 +20,7 @@ public class TrailingStopDto implements Serializable {
     static final long serialVersionUID = 487441682142195435L;
 
     private Long id;
+    private Long accountId;
     private Double startingPrice;
     private Double quantity;
     private String trialValue;

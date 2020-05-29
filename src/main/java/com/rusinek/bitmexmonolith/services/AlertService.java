@@ -82,6 +82,6 @@ public class AlertService {
 
         optionalAlert.ifPresent(alertRepository::delete);
 
-        return new ResponseEntity<String>("Alert wth id '" + alertId + "' was deleted successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("Alert wth id '" + alertId + "' was deleted successfully.", HttpStatus.OK);
     }
 }

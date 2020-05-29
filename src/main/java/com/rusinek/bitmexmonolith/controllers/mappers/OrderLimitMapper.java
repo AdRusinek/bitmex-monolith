@@ -3,6 +3,7 @@ package com.rusinek.bitmexmonolith.controllers.mappers;
 import com.rusinek.bitmexmonolith.dto.response.OrderLimitDto;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import org.mapstruct.Mapper;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 

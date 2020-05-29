@@ -127,7 +127,6 @@ public class ExchangeService {
             HashMap<String, String> headers = setHeaders(foundAccount.getApiKey(), apiExpires, apiSignature);
 
 
-            @SuppressWarnings("OptionalGetWithoutIsPresent")
             ExchangeRequestLimit exchangeRequestLimit = exchangeRequestLimitRepository.findAll().get(0);
 
             if (exchangeRequestLimit.getApiReadyToUse() <= System.currentTimeMillis() / 1000L) {
