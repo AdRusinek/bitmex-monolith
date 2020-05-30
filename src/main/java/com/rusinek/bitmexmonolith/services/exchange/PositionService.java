@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.PositionMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
+import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsException;
 import com.rusinek.bitmexmonolith.model.response.Position;
 import com.rusinek.bitmexmonolith.util.ParameterService;
 import lombok.RequiredArgsConstructor;
@@ -25,20 +26,18 @@ import java.util.List;
 public class PositionService {
 
     private final ExchangeService exchangeService;
-    private final PositionMapper positionMapper;
     private final ParameterService parameterService;
     private final ObjectMapper objectMapper;
-    private final BitMEXExceptionService bitMEXExceptionService;
 
-    public ResponseEntity<?> requestPositions(String accountId, Principal principal) {
+    public List<Position> requestPositions(String accountId, Principal principal) {
 
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/position",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_POSITIONS), Long.valueOf(accountId), principal.getName());
         try {
-            return new ResponseEntity<>(positionMapper.positionsToDto(objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
-            })), HttpStatus.OK);
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<Position>>() {
+            });
         } catch (Exception e) {
-            return bitMEXExceptionService.respondAndInform();
+            throw new ExchangeLimitsException("BitMEX is currently not ready to use or you exceeded api limits.");
         }
     }
 }

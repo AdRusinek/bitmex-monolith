@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.controllers.mappers.OrderStopMapper;
 import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
+import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsException;
 import com.rusinek.bitmexmonolith.model.response.Order;
 import com.rusinek.bitmexmonolith.util.ParameterService;
 import com.rusinek.bitmexmonolith.util.ResponseModifier;
@@ -28,23 +29,18 @@ public class StopOrderService {
     private final ExchangeService exchangeService;
     private final ParameterService parameterService;
     private final ObjectMapper objectMapper;
-    private final OrderStopMapper orderStopMapper;
-    private final ResponseModifier responseModifier;
-    private final BitMEXExceptionService bitMEXExceptionService;
 
-    public ResponseEntity<?> requestStopOrders(Principal principal, String accountId) {
+    public List<Order> requestStopOrders(Principal principal, String accountId, ResponseModifier responseModifier) {
 
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.GET, "/order",
                 parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_STOP_ORDERS), Long.valueOf(accountId), principal.getName());
 
-        // returns list with modified price and quantity
         try {
-            return new ResponseEntity<>(responseModifier.extractAndSetNewOrderPrice(orderStopMapper
-                    .orderStopsToDtos(responseModifier.extractAndSetNewQuantity(objectMapper
-                            .readValue(response.getBody(), new TypeReference<List<Order>>() {
-                            })))), HttpStatus.OK);
+            return responseModifier.extractAndSetNewQuantity(objectMapper
+                    .readValue(response.getBody(), new TypeReference<List<Order>>() {
+                    }));
         } catch (Exception e) {
-            return bitMEXExceptionService.respondAndInform();
+            throw new ExchangeLimitsException("BitMEX is currently not ready to use or you exceeded api limits.");
         }
     }
 }

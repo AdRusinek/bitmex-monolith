@@ -9,20 +9,20 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-05-29T13:45:00+0200",
+    date = "2020-05-30T02:13:57+0200",
     comments = "version: 1.3.1.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"
 )
 @Component
 public class OrderStopMapperImpl implements OrderStopMapper {
 
     @Override
-    public List<OrderStopDto> orderStopsToDtos(List<Order> position) {
-        if ( position == null ) {
+    public List<OrderStopDto> orderStopsToDtos(List<Order> orders) {
+        if ( orders == null ) {
             return null;
         }
 
-        List<OrderStopDto> list = new ArrayList<OrderStopDto>( position.size() );
-        for ( Order order : position ) {
+        List<OrderStopDto> list = new ArrayList<OrderStopDto>( orders.size() );
+        for ( Order order : orders ) {
             list.add( orderStopToDto( order ) );
         }
 

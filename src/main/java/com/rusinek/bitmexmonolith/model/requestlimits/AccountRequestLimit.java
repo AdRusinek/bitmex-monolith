@@ -19,10 +19,6 @@ import javax.persistence.*;
 @Entity
 public class AccountRequestLimit extends RequestLimit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private Account account;

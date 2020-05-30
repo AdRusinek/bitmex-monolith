@@ -1,10 +1,8 @@
 package com.rusinek.bitmexmonolith.services;
 
 import com.rusinek.bitmexmonolith.controllers.mappers.AccountMapper;
-import com.rusinek.bitmexmonolith.dto.AccountDto;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.accountExceptions.*;
-import com.rusinek.bitmexmonolith.exceptions.alertException.AlertIdException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
@@ -20,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by Adrian Rusinek on 21.02.2020
@@ -32,12 +29,11 @@ public class AccountService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-    private final MapValidationErrorService errorService;
     private final LimitService limitService;
-    private final AccountMapper accountMapper;
     private final AccountValidator accountValidator;
+    private final MapValidationErrorService errorService;
 
-    public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal) {
+    public ResponseEntity<?> saveAccount(Account account, BindingResult result, Principal principal, AccountMapper accountMapper) {
 
         Optional<User> optionalUser = userRepository.findByUsername(principal.getName());
 
@@ -85,11 +81,8 @@ public class AccountService {
         return new ResponseEntity<>(accountMapper.accountToDto(savedAccount), HttpStatus.CREATED);
     }
 
-    public List<AccountDto> getAllAccounts(String username) {
-        // returns all accounts but without some not necessary properties
-        return accountRepository.findAllByAccountOwner(username)
-                .stream().map(accountMapper::accountToDto)
-                .collect(Collectors.toList());
+    public List<Account> getAllAccounts(String username) {
+        return accountRepository.findAllByAccountOwner(username);
     }
 
     Account findByAccountIdAndOwner(Long id, String userName) {
@@ -106,7 +99,7 @@ public class AccountService {
         return account.get();
     }
 
-    public ResponseEntity<?> deleteAccount(String accountId, Principal principal) {
+    public void deleteAccount(String accountId, Principal principal) {
 
         Optional<Account> optionalAccount = accountRepository.findByAccountOwnerAndId(principal.getName(), Long.valueOf(accountId));
 
@@ -115,7 +108,5 @@ public class AccountService {
         }
 
         optionalAccount.ifPresent(accountRepository::delete);
-
-        return new ResponseEntity<>("Account wth id '" + accountId + "' was deleted successfully.", HttpStatus.OK);
     }
 }

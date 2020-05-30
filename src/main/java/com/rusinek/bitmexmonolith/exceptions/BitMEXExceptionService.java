@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.model.response.ExchangeError;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,12 +14,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class BitMEXExceptionService {
-
-    // this error ony appears when to many requests is send by the user and the application must block
-    public ResponseEntity<?> respondAndInform() {
-        log.error("Limits problem caused by user fetching to many data in short period of time.");
-        return new ResponseEntity<>("User almost exceeded limits, blocking actions for 30 seconds.", HttpStatus.SERVICE_UNAVAILABLE);
-    }
 
     public void processErrorResponse(ObjectMapper objectMapper, HttpResponse<String> response, String username, String accountId) {
         //if error occurred BitMEX sends message in this format
@@ -35,15 +27,15 @@ public class BitMEXExceptionService {
         }
         // if BitMEX returned error get properties from it and print log
         if (exchangeError != null) {
-         String errorResponse;
+            String errorResponse;
 
-         errorResponse = "BitMEX returned error with message '" + exchangeError.getError().getMessage() + "', Type of error: '" +
-                 exchangeError.getError().getName() + "'. Status: " + response.getStatus() + ". Error happened to user '" + username + "'";
-         if (accountId != null) {
-            errorResponse += " on account with id '" + accountId + "'. ";
-         } else {
-             errorResponse += ".";
-         }
+            errorResponse = "BitMEX returned error with message '" + exchangeError.getError().getMessage() + "', Type of error: '" +
+                    exchangeError.getError().getName() + "'. Status: " + response.getStatus() + ". Error happened to user '" + username + "'";
+            if (accountId != null) {
+                errorResponse += " on account with id '" + accountId + "'. ";
+            } else {
+                errorResponse += ".";
+            }
             log.error(errorResponse);
         }
     }

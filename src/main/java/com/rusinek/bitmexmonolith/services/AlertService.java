@@ -1,9 +1,6 @@
 package com.rusinek.bitmexmonolith.services;
 
 
-import com.rusinek.bitmexmonolith.controllers.mappers.AlertMapper;
-import com.rusinek.bitmexmonolith.dto.AlertDto;
-import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAlreadyExistsException;
 import com.rusinek.bitmexmonolith.exceptions.alertException.AlertAmountException;
 import com.rusinek.bitmexmonolith.exceptions.alertException.AlertIdException;
@@ -11,15 +8,11 @@ import com.rusinek.bitmexmonolith.model.Alert;
 import com.rusinek.bitmexmonolith.repositories.AlertRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by Adrian Rusinek on 19.03.2020
@@ -29,18 +22,11 @@ import java.util.stream.Collectors;
 public class AlertService {
 
     private final AlertRepository alertRepository;
-    private final MapValidationErrorService errorService;
     private final UserRepository userRepository;
-    private final AlertMapper alertMapper;
 
-    public ResponseEntity<?> saveAlertToAccount(Alert alert, BindingResult result, Principal principal) {
+    public Alert saveAlertToAccount(Alert alert, Principal principal) {
 
-        // processErrorResponse possible errors that may come from model annotations
-        if (result.hasErrors()) {
-            return errorService.validateErrors(result);
-        }
-
-        List<AlertDto> allAlertsByAlertOwner = getAllAlertsByAlertOwner(principal);
+        List<Alert> allAlertsByAlertOwner = getAllAlertsByAlertOwner(principal);
 
         if (allAlertsByAlertOwner.size() > 1) {
             throw new AlertAmountException("Alert amount exceeded.");
@@ -61,18 +47,15 @@ public class AlertService {
             alert.setUser(user);
         });
 
-        return new ResponseEntity<>(alertMapper.alertToDto(alertRepository.save(alert)), HttpStatus.CREATED);
+        return alertRepository.save(alert);
     }
 
-    public List<AlertDto> getAllAlertsByAlertOwner(Principal alertOwner) {
-        // returns all alerts but without some not necessary properties
-        return alertRepository.findAllByAlertOwner(alertOwner.getName())
-                .stream()
-                .map(alertMapper::alertToDto)
-                .collect(Collectors.toList());
+    public List<Alert> getAllAlertsByAlertOwner(Principal alertOwner) {
+
+        return alertRepository.findAllByAlertOwner(alertOwner.getName());
     }
 
-    public ResponseEntity<?> deleteAlert(String alertId, Principal principal) {
+    public void deleteAlert(String alertId, Principal principal) {
 
         Optional<Alert> optionalAlert = alertRepository.findByIdAndAlertOwner(Long.valueOf(alertId), principal.getName());
 
@@ -81,7 +64,5 @@ public class AlertService {
         }
 
         optionalAlert.ifPresent(alertRepository::delete);
-
-        return new ResponseEntity<>("Alert wth id '" + alertId + "' was deleted successfully.", HttpStatus.OK);
     }
 }

@@ -1,5 +1,7 @@
 package com.rusinek.bitmexmonolith.controllers;
 
+import com.rusinek.bitmexmonolith.controllers.mappers.TrailingStopMapper;
+import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.services.TrailingStopService;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +22,35 @@ import java.security.Principal;
 public class TrailingStopController {
 
     private final TrailingStopService trailingStopService;
+    private final TrailingStopMapper trailingStopMapper;
+    private final MapValidationErrorService errorService;
+
 
     @PostMapping("/set-trailing/{accountId}")
-    public ResponseEntity<?> setTrailingStop(@Valid @RequestBody TrailingStop trailingStop,
-                                             BindingResult result,
-                                             Principal principal,
+    public ResponseEntity<?> setTrailingStop(@Valid @RequestBody TrailingStop trailingStop, BindingResult result, Principal principal,
                                              @PathVariable String accountId) {
-        return trailingStopService.saveTrailingStop(trailingStop, result, principal, accountId);
+
+        if (result.hasErrors()) {
+            return errorService.validateErrors(result);
+        }
+
+        return new ResponseEntity<>(trailingStopMapper.trailingStopToDto(trailingStopService
+                .saveTrailingStop(trailingStop, result, principal, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/get-waiting-trailing-stops/{accountId}")
-    public ResponseEntity<?> getWaitingTrailingStops(Principal principal,
-                                                     @PathVariable String accountId) {
-        return new ResponseEntity<>(trailingStopService.getAllByOwnerAndAccountId(principal, accountId), HttpStatus.OK);
+    public ResponseEntity<?> getWaitingTrailingStops(Principal principal, @PathVariable String accountId) {
+
+        return new ResponseEntity<>(trailingStopService.getAllByOwnerAndAccountId(principal, accountId)
+                .stream().map(trailingStopMapper::trailingStopToDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{accountId}/{trailingId}")
     public ResponseEntity<?> deleteTrailingStop(@PathVariable String accountId, @PathVariable String trailingId, Principal principal) {
-        return trailingStopService.deleteTrailingStop(accountId, trailingId, principal);
+
+        trailingStopService.deleteTrailingStop(accountId, trailingId, principal);
+
+        return new ResponseEntity<>("Trailing wth id '" + trailingId + "' was deleted successfully " +
+                "from account " + accountId + ".", HttpStatus.OK);
     }
 }

@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -48,18 +47,18 @@ public class TrailingStopSender {
 
     private Order sentTrailingStop(TrailingStop trailingStop) {
 
-        log.debug("Attempting to sent trailing stop for user: " + trailingStop.getTrailingStopOwner() +
+        log.debug("Attempting to sent trailing stop for user: " + trailingStop.getStopOwner() +
                 " for account with id: " + trailingStop.getAccount().getId());
 
         HttpResponse<String> response = exchangeService.requestApi(ExchangeService.HttpMethod.POST, "/order",
                 parameterService.fillParamsForPostRequest(ParameterService.RequestContent.POST_TRAILING_STOP,
                         trailingStop, extractInstructions(trailingStop)),
-                trailingStop.getAccount().getId(), trailingStop.getTrailingStopOwner());
+                trailingStop.getAccount().getId(), trailingStop.getStopOwner());
         try {
             return objectMapper.readValue(response.getBody(), new TypeReference<Order>() {
             });
         } catch (JsonProcessingException e) {
-            bitmexExceptionService.processErrorResponse(objectMapper, response, trailingStop.getTrailingStopOwner(),
+            bitmexExceptionService.processErrorResponse(objectMapper, response, trailingStop.getStopOwner(),
                     String.valueOf(trailingStop.getAccount().getId()));
         }
         return null;

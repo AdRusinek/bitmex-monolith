@@ -7,8 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -20,6 +19,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 class RequestLimit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private long blockadeActivatedAt;
     private long apiReadyToUse;

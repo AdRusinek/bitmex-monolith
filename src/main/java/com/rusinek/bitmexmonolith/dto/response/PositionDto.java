@@ -15,8 +15,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class PositionDto extends ExchangeDto implements Serializable {
 
-    static final long serialVersionUID = -4501317146703715095L;
-
     private Timestamp openingTimestamp;
     private Long openingQty;
     private Float homeNotional;

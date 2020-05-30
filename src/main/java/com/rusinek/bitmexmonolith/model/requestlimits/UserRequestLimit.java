@@ -19,9 +19,6 @@ import javax.persistence.*;
 @Entity
 public class UserRequestLimit extends RequestLimit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private int connectionTestLimit;
 
     @OneToOne(fetch = FetchType.EAGER)

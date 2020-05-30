@@ -15,8 +15,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class OrderStopDto extends OrderDto implements Serializable {
 
-    static final long serialVersionUID = 8900690300114564902L;
-
     private Timestamp timestamp;
     private String price;
 }

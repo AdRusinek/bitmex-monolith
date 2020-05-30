@@ -51,7 +51,6 @@ public class AccountValidator implements Validator {
     }
 
     private int verifyConnection(Account account) {
-        System.out.println(account);
         return exchangeService
                 .testConnection("/apiKey", parameterService.fillParamsForGetRequest(ParameterService.RequestContent.GET_API_KEY),
                         account, account.getAccountOwner());
