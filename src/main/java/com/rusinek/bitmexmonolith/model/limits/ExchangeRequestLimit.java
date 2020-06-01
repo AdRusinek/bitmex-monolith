@@ -1,7 +1,4 @@
-package com.rusinek.bitmexmonolith.model.requestlimits;
-
-import lombok.Getter;
-import lombok.Setter;
+package com.rusinek.bitmexmonolith.model.limits;
 
 import javax.persistence.Entity;
 

@@ -1,6 +1,6 @@
 package com.rusinek.bitmexmonolith.repositories;
 
-import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.UserRequestLimit;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

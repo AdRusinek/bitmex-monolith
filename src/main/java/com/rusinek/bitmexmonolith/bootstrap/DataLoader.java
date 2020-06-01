@@ -1,6 +1,6 @@
 package com.rusinek.bitmexmonolith.bootstrap;
 
-import com.rusinek.bitmexmonolith.model.requestlimits.ExchangeRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.ExchangeRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.ExchangeRequestLimitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;

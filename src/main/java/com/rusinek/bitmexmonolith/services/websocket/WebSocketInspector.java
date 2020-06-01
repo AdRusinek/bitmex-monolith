@@ -39,20 +39,20 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void triggerActions() {
-        StreamingExchange exchange = null;
-        try {
-            ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);
-            specification.setExchangeSpecificParametersItem("Use_Sandbox", useSandbox);
-            exchange = StreamingExchangeFactory.INSTANCE.createExchange(specification);
-            exchange.connect().blockingAwait();
-        } catch (ExchangeException e) {
-            log.error("BitMEX is down.");
-        }
-
-        if (exchange != null) {
-            exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
-                    .subscribe(this::executeActions, throwable -> log.error("Error in subscribing trades.", throwable));
-        }
+//        StreamingExchange exchange = null;
+//        try {
+//            ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);
+//            specification.setExchangeSpecificParametersItem("Use_Sandbox", useSandbox);
+//            exchange = StreamingExchangeFactory.INSTANCE.createExchange(specification);
+//            exchange.connect().blockingAwait();
+//        } catch (ExchangeException e) {
+//            log.error("BitMEX is down.");
+//        }
+//
+//        if (exchange != null) {
+//            exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
+//                    .subscribe(this::executeActions, throwable -> log.error("Error in subscribing trades.", throwable));
+//        }
     }
 
     private void executeActions(Trade trade) {

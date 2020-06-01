@@ -1,18 +1,15 @@
 package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.AccountRequestLimit;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

@@ -20,5 +20,6 @@ public class LoginRequest {
     private String username;
     @NotBlank(message = "Password cannot be blank.")
     private String password;
+    @NotNull(message = "Code cannot be blank.")
     private Integer code;
 }

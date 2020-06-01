@@ -1,10 +1,9 @@
-package com.rusinek.bitmexmonolith.model.requestlimits;
+package com.rusinek.bitmexmonolith.model.limits;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;

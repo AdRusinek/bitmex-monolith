@@ -7,6 +7,8 @@ import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlr
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
 import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsException;
 import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsExceptionResponse;
+import com.rusinek.bitmexmonolith.exceptions.ipAddresses.IpRequestsException;
+import com.rusinek.bitmexmonolith.exceptions.ipAddresses.IpRequestsExceptionResponse;
 import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountException;
 import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountExceptionResponse;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleIpRequestsException(IpRequestsException e) {
+        return new ResponseEntity<>(new IpRequestsExceptionResponse(e.getMessage()), HttpStatus.TOO_MANY_REQUESTS);
+    }
 
     @ExceptionHandler
     public final ResponseEntity<Object> handleAccountAmountException(AccountAmountException e) {

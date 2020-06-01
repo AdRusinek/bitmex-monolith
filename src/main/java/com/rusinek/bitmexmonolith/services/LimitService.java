@@ -2,8 +2,8 @@ package com.rusinek.bitmexmonolith.services;
 
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.requestlimits.AccountRequestLimit;
-import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.AccountRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.UserRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRequestLimitRepository;
 import lombok.RequiredArgsConstructor;

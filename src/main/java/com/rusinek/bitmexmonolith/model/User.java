@@ -1,7 +1,7 @@
 package com.rusinek.bitmexmonolith.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rusinek.bitmexmonolith.model.requestlimits.UserRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.UserRequestLimit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

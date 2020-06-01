@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.rusinek.bitmexmonolith.exceptions.BitMEXExceptionService;
 import com.rusinek.bitmexmonolith.model.Account;
-import com.rusinek.bitmexmonolith.model.requestlimits.ExchangeRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.ExchangeRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.ExchangeRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;

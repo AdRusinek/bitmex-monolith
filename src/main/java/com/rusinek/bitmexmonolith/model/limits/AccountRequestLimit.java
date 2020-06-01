@@ -1,7 +1,7 @@
-package com.rusinek.bitmexmonolith.model.requestlimits;
+package com.rusinek.bitmexmonolith.model.limits;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rusinek.bitmexmonolith.model.User;
+import com.rusinek.bitmexmonolith.model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +17,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-public class UserRequestLimit extends RequestLimit {
-
-    private int connectionTestLimit;
+public class AccountRequestLimit extends RequestLimit {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-    private User user;
+    private Account account;
 }

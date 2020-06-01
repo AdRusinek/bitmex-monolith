@@ -10,7 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.requestlimits.ExchangeRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.ExchangeRequestLimit;
 import com.rusinek.bitmexmonolith.repositories.AccountRepository;
 import com.rusinek.bitmexmonolith.repositories.ExchangeRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
