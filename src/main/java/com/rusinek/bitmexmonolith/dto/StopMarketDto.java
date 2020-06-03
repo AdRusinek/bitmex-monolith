@@ -4,23 +4,22 @@ import lombok.*;
 
 import java.io.Serializable;
 
-
 /**
- * Created by Adrian Rusinek on 04.05.2020
+ * Created by Adrian Rusinek on 03.06.2020
  **/
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrailingStopDto implements Serializable {
+public class StopMarketDto implements Serializable {
 
-    static final long serialVersionUID = 487441682142195435L;
+    static final long serialVersionUID = -7103958819832568909L;
 
     private Long id;
     private Long accountId;
     private Double startingPrice;
     private Double quantity;
-    private String trialValue;
+    private Float stopPrice;
     private String execInst;
 }

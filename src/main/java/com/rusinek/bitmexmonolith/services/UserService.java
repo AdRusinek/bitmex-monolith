@@ -6,12 +6,14 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
-import com.rusinek.bitmexmonolith.exceptions.ipAddresses.IpRequestsException;
+import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.IpRequestsException;
 import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.limits.IpAddressRequestLimit;
-import com.rusinek.bitmexmonolith.repositories.IpAddressRequestLimitRepository;
+import com.rusinek.bitmexmonolith.model.limits.GuestIpAddressRequestLimit;
+import com.rusinek.bitmexmonolith.model.limits.UserIpAddressRequestLimit;
+import com.rusinek.bitmexmonolith.repositories.GuestIpAddressRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
+import com.rusinek.bitmexmonolith.repositories.UserIpAddressRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
@@ -53,7 +55,8 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
 @RequiredArgsConstructor
 public class UserService {
 
-    private final IpAddressRequestLimitRepository ipLlimitRepository;
+    private final UserIpAddressRequestLimitRepository userIpAddressRequestLimitRepository;
+    private final GuestIpAddressRequestLimitRepository guestIpAddressRequestLimitRepository;
     private final UserRepository userRepository;
     private final LimitService limitService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -86,10 +89,41 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<?> registerUser(User user, BindingResult result, String ip, boolean isOverloaded) {
+
+        if (isOverloaded) {
+            throw new IpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 30 minut ze względu na zbyt dużą ilość żądań.");
+        }
+
+        // processErrorResponse passwords match
+        userValidator.validate(user, result);
+
+
+        if (result.hasErrors()) {
+            return errorService.validateErrors(result);
+        }
+
+        User newUser = saveUser(user);
+        sendRegistryTokenAndQrImage(user);
+
+        Optional<GuestIpAddressRequestLimit> ipAddress = guestIpAddressRequestLimitRepository.findByIpAddress(ip);
+
+        if (ipAddress.isPresent()) {
+            long currentTime = System.currentTimeMillis();
+            ipAddress.get().setActionAttempts(0);
+            ipAddress.get().setApiReadyToUse(currentTime / 1000);
+            ipAddress.get().setBlockadeActivatedAt(currentTime / 1000);
+            guestIpAddressRequestLimitRepository.save(ipAddress.get());
+        }
+
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    }
+
+
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result, String ip, boolean isOverloaded) {
 
         if (isOverloaded) {
-            throw new IpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 10 minut, ze względu na zbyt dużą ilość żądań.");
+            throw new IpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 10 minut ze względu na zbyt dużą ilość żądań.");
         }
 
         Optional<User> user = userRepository.findByUsername(request.getUsername());
@@ -102,14 +136,14 @@ public class UserService {
             return errorService.validateErrors(result);
         }
 
-        Optional<IpAddressRequestLimit> ipAddress = ipLlimitRepository.findByIpAddress(ip);
+        Optional<UserIpAddressRequestLimit> ipAddress = userIpAddressRequestLimitRepository.findByIpAddress(ip);
 
         if (ipAddress.isPresent()) {
             long currentTime = System.currentTimeMillis();
             ipAddress.get().setActionAttempts(0);
             ipAddress.get().setApiReadyToUse(currentTime / 1000);
             ipAddress.get().setBlockadeActivatedAt(currentTime / 1000);
-            ipLlimitRepository.save(ipAddress.get());
+            userIpAddressRequestLimitRepository.save(ipAddress.get());
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -143,21 +177,6 @@ public class UserService {
         ImageIO.write(bufferedImage, "jpg", outputFile);
 
         return outputFile;
-    }
-
-    public ResponseEntity<?> registerUser(User user, BindingResult result) {
-        // processErrorResponse passwords match
-        userValidator.validate(user, result);
-
-
-        if (result.hasErrors()) {
-            return errorService.validateErrors(result);
-        }
-
-        User newUser = saveUser(user);
-        sendRegistryTokenAndQrImage(user);
-
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     public RedirectView verifyToken(String value) {

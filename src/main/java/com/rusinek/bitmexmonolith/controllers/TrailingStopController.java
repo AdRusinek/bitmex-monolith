@@ -35,7 +35,7 @@ public class TrailingStopController {
         }
 
         return new ResponseEntity<>(trailingStopMapper.trailingStopToDto(trailingStopService
-                .saveTrailingStop(trailingStop, result, principal, accountId)), HttpStatus.OK);
+                .saveTrailingStop(trailingStop, principal, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/get-waiting-trailing-stops/{accountId}")

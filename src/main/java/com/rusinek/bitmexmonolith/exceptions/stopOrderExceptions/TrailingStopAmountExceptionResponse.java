@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions;
+package com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

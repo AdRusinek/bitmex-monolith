@@ -1,7 +1,7 @@
 package com.rusinek.bitmexmonolith.services;
 
 
-import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountException;
+import com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions.TrailingStopAmountException;
 import com.rusinek.bitmexmonolith.model.Account;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import com.rusinek.bitmexmonolith.repositories.TrailingStopRepository;
@@ -9,7 +9,6 @@ import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.List;
@@ -27,7 +26,7 @@ public class TrailingStopService {
     private final UserRepository userRepository;
     private final AccountService accountService;
 
-    public TrailingStop saveTrailingStop(TrailingStop trailingStop, BindingResult result, Principal principal, String accountId) {
+    public TrailingStop saveTrailingStop(TrailingStop trailingStop, Principal principal, String accountId) {
 
         if (getAllByOwnerAndAccountId(principal, accountId).size() > 5) {
             throw new TrailingStopAmountException("Trailing Stop amount on your account exceeded.");

@@ -46,6 +46,10 @@ public class Account {
     @JsonIgnore
     private List<TrailingStop> trailingStops = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<StopMarket> stopMarkets = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "account")
     @JsonIgnore
     private AccountRequestLimit accountRequestLimit;

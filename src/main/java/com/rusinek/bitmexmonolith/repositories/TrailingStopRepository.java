@@ -10,5 +10,4 @@ public interface TrailingStopRepository extends JpaRepository<TrailingStop, Long
 
     Iterable<TrailingStop> findAllByStopOwner(String username);
 
-    void deleteById(Long id);
 }

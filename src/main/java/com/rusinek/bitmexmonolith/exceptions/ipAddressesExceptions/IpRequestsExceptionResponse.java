@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.exceptions.ipAddresses;
+package com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

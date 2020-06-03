@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.exceptions.ipAddresses;
+package com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

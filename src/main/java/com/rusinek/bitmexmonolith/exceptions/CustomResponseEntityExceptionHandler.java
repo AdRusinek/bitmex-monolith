@@ -7,10 +7,12 @@ import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlr
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsResponse;
 import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsException;
 import com.rusinek.bitmexmonolith.exceptions.exchangeExceptions.ExchangeLimitsExceptionResponse;
-import com.rusinek.bitmexmonolith.exceptions.ipAddresses.IpRequestsException;
-import com.rusinek.bitmexmonolith.exceptions.ipAddresses.IpRequestsExceptionResponse;
-import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountException;
-import com.rusinek.bitmexmonolith.exceptions.trailingStopExceptions.TrailingStopAmountExceptionResponse;
+import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.IpRequestsException;
+import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.IpRequestsExceptionResponse;
+import com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions.StopMarketAmountException;
+import com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions.StopMarketAmountExceptionResponse;
+import com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions.TrailingStopAmountException;
+import com.rusinek.bitmexmonolith.exceptions.stopOrderExceptions.TrailingStopAmountExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -80,6 +82,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     public final ResponseEntity<Object> handleTrailingStopAmountException(TrailingStopAmountException e) {
         return new ResponseEntity<>(new TrailingStopAmountExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleStopMarketAmountException(StopMarketAmountException e) {
+        return new ResponseEntity<>(new StopMarketAmountExceptionResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler
     public final ResponseEntity<Object> handleExchangeLimitsException(ExchangeLimitsException e) {

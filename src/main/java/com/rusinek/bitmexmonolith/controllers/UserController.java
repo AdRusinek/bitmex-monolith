@@ -1,8 +1,6 @@
 package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.limits.IpAddressRequestLimit;
-import com.rusinek.bitmexmonolith.repositories.IpAddressRequestLimitRepository;
 import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.rusinek.bitmexmonolith.services.IpAddressService;
 import com.rusinek.bitmexmonolith.services.UserService;
@@ -13,9 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Optional;
 
 /**
  * Created by Adrian Rusinek on 01.03.2020
@@ -36,17 +32,15 @@ public class UserController {
 
         String ip = requestUtils.getClientIpAddressIfServletRequestExist();
 
-        boolean b = ipAddressService.areIpRequestsOverloaded(ip);
-
-        System.out.println(b);
-
-        return userService.authenticateUser(loginRequest, result, ip,b );
+        return userService.authenticateUser(loginRequest, result, ip, ipAddressService.areUserIpRequestsOverloaded(ip));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user,
-                                          BindingResult result) {
-        return userService.registerUser(user, result);
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result) {
+
+        String ip = requestUtils.getClientIpAddressIfServletRequestExist();
+
+        return userService.registerUser(user, result, ip, ipAddressService.areGuestIpRequestsOverloaded(ip));
     }
 
     @GetMapping("/token")
