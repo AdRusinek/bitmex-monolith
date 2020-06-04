@@ -10,11 +10,9 @@ import lombok.Setter;
 @Setter
 public class InvalidLoginResponse {
 
-    private String username;
-    private String password;
+    private String wrongCredentials;
 
     public InvalidLoginResponse() {
-        this.username = "Invalid username";
-        this.password = "Invalid password";
+        this.wrongCredentials = "Niepoprawne dane.";
     }
 }

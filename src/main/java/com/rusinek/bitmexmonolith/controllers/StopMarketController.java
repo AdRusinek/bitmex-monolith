@@ -34,20 +34,20 @@ public class StopMarketController {
         }
 
         return new ResponseEntity<>(stopMarketMapper.stopMarketToDto(stopMarketService
-                .saveStopMarket(stopMarket, principal, accountId)), HttpStatus.OK);
+                .saveStopMarketOrder(stopMarket, principal, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/get-waiting-stop-markets/{accountId}")
     public ResponseEntity<?> getWaitingStopMarkets(Principal principal, @PathVariable String accountId) {
 
-        return new ResponseEntity<>(stopMarketService.getAllByOwnerAndAccountId(principal, accountId)
+        return new ResponseEntity<>(stopMarketService.findAllAccountStopMarketOrders(principal, accountId)
                 .stream().map(stopMarketMapper::stopMarketToDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{accountId}/{stopMarketId}")
     public ResponseEntity<?> deleteStopMarket(@PathVariable String accountId, @PathVariable String stopMarketId, Principal principal) {
 
-        stopMarketService.deleteStopMarket(accountId, stopMarketId, principal);
+        stopMarketService.deleteStopMarketOrder(accountId, stopMarketId, principal);
 
         return new ResponseEntity<>("Stop Market wth id '" + stopMarketId + "' was deleted successfully " +
                 "from account " + accountId + ".", HttpStatus.OK);

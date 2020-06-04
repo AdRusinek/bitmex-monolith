@@ -6,7 +6,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
-import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.IpRequestsException;
+import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.GuestIpRequestsException;
+import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.UserIpRequestsException;
 import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.model.limits.GuestIpAddressRequestLimit;
@@ -92,7 +93,7 @@ public class UserService {
     public ResponseEntity<?> registerUser(User user, BindingResult result, String ip, boolean isOverloaded) {
 
         if (isOverloaded) {
-            throw new IpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 30 minut ze względu na zbyt dużą ilość żądań.");
+            throw new GuestIpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 30 minut ze względu na zbyt dużą ilość żądań.");
         }
 
         // processErrorResponse passwords match
@@ -123,7 +124,7 @@ public class UserService {
     public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result, String ip, boolean isOverloaded) {
 
         if (isOverloaded) {
-            throw new IpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 10 minut ze względu na zbyt dużą ilość żądań.");
+            throw new UserIpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 10 minut ze względu na zbyt dużą ilość żądań.");
         }
 
         Optional<User> user = userRepository.findByUsername(request.getUsername());

@@ -6,13 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Created by Adrian Rusinek on 01.06.2020
+ * Created by Adrian Rusinek on 03.06.2020
  **/
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class IpRequestsExceptionResponse {
+public class GuestIpRequestsExceptionResponse {
 
-    private String requestFromIp;
+    private String maxGuestIpRequests;
 }

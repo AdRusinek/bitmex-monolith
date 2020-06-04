@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
-class Stop {
+public class Stop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

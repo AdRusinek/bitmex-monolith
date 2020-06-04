@@ -2,13 +2,18 @@ package com.rusinek.bitmexmonolith.controllers.mappers;
 
 import com.rusinek.bitmexmonolith.dto.TrailingStopDto;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
+import com.rusinek.bitmexmonolith.util.ResponseModifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by Adrian Rusinek on 04.05.2020
  **/
 @Component
+@RequiredArgsConstructor
 public class TrailingStopMapper {
+
+    private final ResponseModifier responseModifier;
 
     public TrailingStopDto trailingStopToDto(TrailingStop trailingStop) {
         if (trailingStop == null) {
@@ -21,18 +26,7 @@ public class TrailingStopMapper {
                 .startingPrice(trailingStop.getStartingPrice())
                 .quantity(trailingStop.getQuantity())
                 .trialValue(trailingStop.getTrialValue())
-                .execInst(setExecutionInstructions(trailingStop))
+                .execInst(responseModifier.setExecutionInstructionsToClient(trailingStop))
                 .build();
-    }
-
-    private String setExecutionInstructions(TrailingStop trailingStop) {
-
-        String closeOnTriggerInString;
-        if (trailingStop.getCloseOnTrigger()) {
-            closeOnTriggerInString = ", Close";
-        } else {
-            closeOnTriggerInString = "";
-        }
-        return trailingStop.getExecInst() + closeOnTriggerInString;
     }
 }

@@ -2,13 +2,18 @@ package com.rusinek.bitmexmonolith.controllers.mappers;
 
 import com.rusinek.bitmexmonolith.dto.StopMarketDto;
 import com.rusinek.bitmexmonolith.model.StopMarket;
+import com.rusinek.bitmexmonolith.util.ResponseModifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by Adrian Rusinek on 03.06.2020
  **/
 @Component
+@RequiredArgsConstructor
 public class StopMarketMapper {
+
+    private final ResponseModifier responseModifier;
 
     public StopMarketDto stopMarketToDto(StopMarket stopMarket) {
         if (stopMarket == null) {
@@ -21,18 +26,7 @@ public class StopMarketMapper {
                 .startingPrice(stopMarket.getStartingPrice())
                 .quantity(stopMarket.getQuantity())
                 .stopPrice(stopMarket.getStopPrice())
-                .execInst(setExecutionInstructions(stopMarket))
+                .execInst(responseModifier.setExecutionInstructionsToClient(stopMarket))
                 .build();
-    }
-
-    private String setExecutionInstructions(StopMarket stopMarket) {
-
-        String closeOnTriggerInString;
-        if (stopMarket.getCloseOnTrigger()) {
-            closeOnTriggerInString = ", Close";
-        } else {
-            closeOnTriggerInString = "";
-        }
-        return stopMarket.getExecInst() + closeOnTriggerInString;
     }
 }

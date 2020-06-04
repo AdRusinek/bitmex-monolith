@@ -1,6 +1,7 @@
 package com.rusinek.bitmexmonolith.util;
 
 import com.google.gson.Gson;
+import com.rusinek.bitmexmonolith.model.StopMarket;
 import com.rusinek.bitmexmonolith.model.TrailingStop;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +14,6 @@ import java.util.Map;
 @Service
 public class ParameterService {
 
-    public enum RequestContent {
-        GET_POSITIONS,
-        GET_STOP_ORDERS,
-        GET_LIMIT_ORDERS,
-        GET_API_KEY,
-
-        POST_TRAILING_STOP
-    }
-
     public Map<String, Object> fillParamsForGetRequest(RequestContent requestContent) {
 
         Map<String, Object> params = new HashMap<>();
@@ -33,12 +25,14 @@ public class ParameterService {
             case GET_API_KEY:
                 params.put("reverse", false);
                 return params;
+
             case GET_POSITIONS:
                 filterMap.put("isOpen", true);
                 filterMap.put("symbol", "XBTUSD");
 
                 params.put("filter", gson.toJson(filterMap));
                 return params;
+
             case GET_LIMIT_ORDERS:
                 filterMap.put("symbol", "XBTUSD");
                 filterMap.put("ordType", "Limit");
@@ -49,6 +43,7 @@ public class ParameterService {
                 params.put("count", 20);
                 params.put("reverse", false);
                 return params;
+
             case GET_STOP_ORDERS:
                 String[] ordTypes = {"Stop", "MarketIfTouched", "StopLimit", "LimitIfTouched"};
                 filterMap.put("symbol", "XBTUSD");
@@ -64,20 +59,38 @@ public class ParameterService {
         return null;
     }
 
-    public Map<String, Object> fillParamsForPostRequest(RequestContent requestContent, TrailingStop trailingStop, String exactInstructions) {
+    public Map<String, Object> fillParamsForPostRequest(RequestContent requestContent, TrailingStop trailingStop, StopMarket stopMarket, String exactInstructions) {
 
         Map<String, Object> params = new HashMap<>();
 
-        // switch  for later for now could replace with if
-        if (requestContent == RequestContent.POST_TRAILING_STOP) {
-            params.put("symbol", "XBTUSD");
-            params.put("ordType", "Stop");
-            params.put("pegPriceType ", "TrailingStopPeg");
-            params.put("pegOffsetValue", trailingStop.getTrialValue());
-            params.put("orderQty", trailingStop.getQuantity());
-            params.put("execInst", exactInstructions);
-            return params;
+        switch (requestContent) {
+            case POST_TRAILING_STOP:
+                params.put("symbol", "XBTUSD");
+                params.put("ordType", "Stop");
+                params.put("pegPriceType ", "TrailingStopPeg");
+                params.put("pegOffsetValue", trailingStop.getTrialValue());
+                params.put("orderQty", trailingStop.getQuantity());
+                params.put("execInst", exactInstructions);
+                return params;
+
+            case POST_STOP_MARKET:
+                params.put("symbol", "XBTUSD");
+                params.put("ordType", "Stop");
+                params.put("orderQty", stopMarket.getQuantity());
+                params.put("stopPx", stopMarket.getStopPrice());
+                params.put("execInst", exactInstructions);
+                return params;
         }
         return null;
+    }
+
+    public enum RequestContent {
+        GET_POSITIONS,
+        GET_STOP_ORDERS,
+        GET_LIMIT_ORDERS,
+        GET_API_KEY,
+
+        POST_TRAILING_STOP,
+        POST_STOP_MARKET
     }
 }

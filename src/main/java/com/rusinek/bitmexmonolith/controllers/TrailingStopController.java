@@ -35,20 +35,20 @@ public class TrailingStopController {
         }
 
         return new ResponseEntity<>(trailingStopMapper.trailingStopToDto(trailingStopService
-                .saveTrailingStop(trailingStop, principal, accountId)), HttpStatus.OK);
+                .saveTrailingStopOrder(trailingStop, principal, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/get-waiting-trailing-stops/{accountId}")
     public ResponseEntity<?> getWaitingTrailingStops(Principal principal, @PathVariable String accountId) {
 
-        return new ResponseEntity<>(trailingStopService.getAllByOwnerAndAccountId(principal, accountId)
+        return new ResponseEntity<>(trailingStopService.findAllAccountTrailingStopOrders(principal, accountId)
                 .stream().map(trailingStopMapper::trailingStopToDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{accountId}/{trailingId}")
     public ResponseEntity<?> deleteTrailingStop(@PathVariable String accountId, @PathVariable String trailingId, Principal principal) {
 
-        trailingStopService.deleteTrailingStop(accountId, trailingId, principal);
+        trailingStopService.deleteTrailingStopOrder(accountId, trailingId, principal);
 
         return new ResponseEntity<>("Trailing wth id '" + trailingId + "' was deleted successfully " +
                 "from account " + accountId + ".", HttpStatus.OK);

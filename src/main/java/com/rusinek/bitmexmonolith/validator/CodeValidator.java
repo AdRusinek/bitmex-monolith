@@ -31,7 +31,7 @@ public class CodeValidator implements Validator {
 
         if (loginRequest.getCode() != null) {
             if (!googleAuthenticator.authorizeUser(loginRequest.getUsername(), loginRequest.getCode())) {
-                errors.rejectValue("code", "Wrong", "Podane dane są błędne.");
+                errors.rejectValue("code", "Wrong", "Niepoprawne dane.");
             }
         }
     }

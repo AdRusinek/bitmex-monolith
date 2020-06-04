@@ -9,7 +9,10 @@ import com.rusinek.bitmexmonolith.util.ResponseModifier;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
@@ -38,6 +41,6 @@ public class OrderController {
     public ResponseEntity<?> getStopOrders(Principal principal, @PathVariable String accountId) {
 
         return new ResponseEntity<>(responseModifier.extractAndSetNewOrderPrice(orderStopMapper
-                .orderStopsToDtos(stopOrderService.requestStopOrders(principal, accountId, responseModifier))), HttpStatus.OK);
+                .orderStopsToDto(stopOrderService.requestStopOrders(principal, accountId, responseModifier))), HttpStatus.OK);
     }
 }

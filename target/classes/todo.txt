@@ -1,2 +1,3 @@
-bulk trailing
 smieciowe zlecenia
+set sell stop (stop market) =< websocket
+set buy stop > webocket

@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StopMarketRepository extends JpaRepository<StopMarket, Long> {
 
     Iterable<StopMarket> findAllByStopOwner(String username);
+
 }
