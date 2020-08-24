@@ -1,31 +1,17 @@
 package com.rusinek.bitmexmonolith.services;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.rusinek.bitmexmonolith.exceptions.MapValidationErrorService;
 import com.rusinek.bitmexmonolith.exceptions.authenticationException.UsernameAlreadyExistsException;
-import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.GuestIpRequestsException;
-import com.rusinek.bitmexmonolith.exceptions.ipAddressesExceptions.UserIpRequestsException;
 import com.rusinek.bitmexmonolith.model.RegisterToken;
 import com.rusinek.bitmexmonolith.model.User;
-import com.rusinek.bitmexmonolith.model.limits.GuestIpAddressRequestLimit;
-import com.rusinek.bitmexmonolith.model.limits.UserIpAddressRequestLimit;
-import com.rusinek.bitmexmonolith.repositories.GuestIpAddressRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.TokenRepository;
-import com.rusinek.bitmexmonolith.repositories.UserIpAddressRequestLimitRepository;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.security.JWTLoginSuccessResponse;
 import com.rusinek.bitmexmonolith.security.JwtTokenProvider;
 import com.rusinek.bitmexmonolith.security.LoginRequest;
 import com.rusinek.bitmexmonolith.validator.CodeValidator;
 import com.rusinek.bitmexmonolith.validator.UserValidator;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
-import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
-import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -39,8 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,9 +40,8 @@ import static com.rusinek.bitmexmonolith.security.SecurityConstants.TOKEN_PREFIX
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserIpAddressRequestLimitRepository userIpAddressRequestLimitRepository;
-    private final GuestIpAddressRequestLimitRepository guestIpAddressRequestLimitRepository;
     private final UserRepository userRepository;
+    private final GoogleAuthService googleAuthService;
     private final LimitService limitService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider tokenProvider;
@@ -68,13 +51,11 @@ public class UserService {
     private final CodeValidator codeValidator;
     private final MailService mailService;
     private final TokenRepository tokenRepository;
-    private final GoogleAuthenticator googleAuthenticator;
     @Value("${bitmex-monolith.registerToken-redirection-url}")
     private String tokenRedirectionUrl;
     @Value("${bitmex-monolith.default-url}")
     private String defaultUrl;
-    @Value("${bitmex-monolith.temporary-qrs}")
-    private String temporaryQrStorage;
+
 
     private User saveUser(User user) {
         try {
@@ -85,16 +66,14 @@ public class UserService {
             limitService.saveUserRequestLimit(savedUser);
 
             return savedUser;
+
         } catch (Exception e) {
             throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists.");
         }
     }
 
-    public ResponseEntity<?> registerUser(User user, BindingResult result, String ip, boolean isOverloaded) {
+    public ResponseEntity<?> registerUser(User user, BindingResult result) {
 
-        if (isOverloaded) {
-            throw new GuestIpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 30 minut ze względu na zbyt dużą ilość żądań.");
-        }
 
         // processErrorResponse passwords match
         userValidator.validate(user, result);
@@ -107,44 +86,20 @@ public class UserService {
         User newUser = saveUser(user);
         sendRegistryTokenAndQrImage(user);
 
-        Optional<GuestIpAddressRequestLimit> ipAddress = guestIpAddressRequestLimitRepository.findByIpAddress(ip);
-
-        if (ipAddress.isPresent()) {
-            long currentTime = System.currentTimeMillis();
-            ipAddress.get().setActionAttempts(0);
-            ipAddress.get().setApiReadyToUse(currentTime / 1000);
-            ipAddress.get().setBlockadeActivatedAt(currentTime / 1000);
-            guestIpAddressRequestLimitRepository.save(ipAddress.get());
-        }
-
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
 
-    public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result, String ip, boolean isOverloaded) {
-
-        if (isOverloaded) {
-            throw new UserIpRequestsException("Twoje ip '" + ip + "' zostało zablokowane na 10 minut ze względu na zbyt dużą ilość żądań.");
-        }
+    public ResponseEntity<?> authenticateUser(LoginRequest request, BindingResult result) {
 
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
         if (user.isPresent()) {
-            codeValidator.validate(request, result);
+//            codeValidator.validate(request, result);
         }
 
         if (result.hasErrors()) {
             return errorService.validateErrors(result);
-        }
-
-        Optional<UserIpAddressRequestLimit> ipAddress = userIpAddressRequestLimitRepository.findByIpAddress(ip);
-
-        if (ipAddress.isPresent()) {
-            long currentTime = System.currentTimeMillis();
-            ipAddress.get().setActionAttempts(0);
-            ipAddress.get().setApiReadyToUse(currentTime / 1000);
-            ipAddress.get().setBlockadeActivatedAt(currentTime / 1000);
-            userIpAddressRequestLimitRepository.save(ipAddress.get());
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -160,26 +115,6 @@ public class UserService {
     }
 
 
-    @SneakyThrows
-    private File generateQr(User user) {
-
-        final GoogleAuthenticatorKey key = googleAuthenticator.createCredentials(user.getUsername());
-
-        //I've decided to generate QRCode on backend site
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-
-        String otpAuthURL = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL("BitMEX app", user.getUsername(), key);
-
-        BitMatrix bitMatrix = qrCodeWriter.encode(otpAuthURL, BarcodeFormat.QR_CODE, 200, 200);
-
-        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
-
-        File outputFile = new File(temporaryQrStorage);
-        ImageIO.write(bufferedImage, "jpg", outputFile);
-
-        return outputFile;
-    }
-
     public RedirectView verifyToken(String value) {
         tokenRepository.findByValue(value).ifPresent(registerToken -> {
             User user = registerToken.getUser();
@@ -192,7 +127,7 @@ public class UserService {
 
     private void sendRegistryTokenAndQrImage(User user) {
 
-        File qrImage = generateQr(user);
+        File qrImage = googleAuthService.generateQr(user);
         String url = defaultUrl + "/api/users/token?value=" + generateRegistryToken(user);
 
         try {
@@ -203,7 +138,8 @@ public class UserService {
                 log.error("Couldn't delete qr image");
             }
         } catch (Exception e) {
-            log.error("Error occurred while sending mail to " + user.getUsername());
+            e.getMessage();
+            e.printStackTrace();
         }
     }
 

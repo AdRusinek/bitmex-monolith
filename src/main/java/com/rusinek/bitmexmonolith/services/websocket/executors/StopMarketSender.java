@@ -35,12 +35,12 @@ public class StopMarketSender {
 
     public void iterateStopMarket(Trade trade) {
         stopMarketRepository.findAll().forEach(stopMarket -> {
-            if (stopMarket.getStopType().equals("sell")) {
-                if (stopMarket.getStartingPrice() >= trade.getPrice().doubleValue()) {
+            if (stopMarket.getStopType().equals("Sell")) {
+                if (stopMarket.getStartingPrice() < trade.getPrice().doubleValue()) {
                     deleteStopMarket(stopMarket);
                 }
-            } else if (stopMarket.getStopType().equals("buy")) {
-                if (stopMarket.getStartingPrice() < trade.getPrice().doubleValue()) {
+            } else if (stopMarket.getStopType().equals("Buy")) {
+                if (stopMarket.getStartingPrice() >= trade.getPrice().doubleValue()) {
                     deleteStopMarket(stopMarket);
                 }
             }

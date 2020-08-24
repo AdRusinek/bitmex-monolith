@@ -1,4 +1,4 @@
-package com.rusinek.bitmexmonolith.telbot;
+package com.rusinek.bitmexmonolith.test.telbot;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

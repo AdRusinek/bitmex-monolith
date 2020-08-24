@@ -2,9 +2,7 @@ package com.rusinek.bitmexmonolith.controllers;
 
 import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.security.LoginRequest;
-import com.rusinek.bitmexmonolith.services.IpAddressService;
 import com.rusinek.bitmexmonolith.services.UserService;
-import com.rusinek.bitmexmonolith.util.HttpReqRespUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,25 +20,17 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
-    private final HttpReqRespUtils requestUtils;
-    private final IpAddressService ipAddressService;
 
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
                                               BindingResult result) {
-
-        String ip = requestUtils.getClientIpAddressIfServletRequestExist();
-
-        return userService.authenticateUser(loginRequest, result, ip, ipAddressService.areUserIpRequestsOverloaded(ip));
+        return userService.authenticateUser(loginRequest, result);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result) {
-
-        String ip = requestUtils.getClientIpAddressIfServletRequestExist();
-
-        return userService.registerUser(user, result, ip, ipAddressService.areGuestIpRequestsOverloaded(ip));
+        return userService.registerUser(user, result);
     }
 
     @GetMapping("/token")

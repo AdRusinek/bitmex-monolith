@@ -76,6 +76,7 @@ public class ParameterService {
             case POST_STOP_MARKET:
                 params.put("symbol", "XBTUSD");
                 params.put("ordType", "Stop");
+                params.put("side", stopMarket.getStopType());
                 params.put("orderQty", stopMarket.getQuantity());
                 params.put("stopPx", stopMarket.getStopPrice());
                 params.put("execInst", exactInstructions);

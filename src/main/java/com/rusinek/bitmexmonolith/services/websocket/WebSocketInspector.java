@@ -43,7 +43,8 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
         StreamingExchange exchange = null;
         try {
             ExchangeSpecification specification = new ExchangeSpecification(BitmexStreamingExchange.class);
-            specification.setExchangeSpecificParametersItem("Use_Sandbox", useSandbox);
+            specification.setExchangeSpecificParametersItem("UseSandbox", useSandbox);
+
             exchange = StreamingExchangeFactory.INSTANCE.createExchange(specification);
             exchange.connect().blockingAwait();
         } catch (ExchangeException e) {
@@ -52,7 +53,8 @@ public class WebSocketInspector implements ApplicationListener<ContextRefreshedE
 
         if (exchange != null) {
             exchange.getStreamingMarketDataService().getTrades(CurrencyPair.XBT_USD)
-                    .subscribe(this::executeActions, throwable -> log.error("Error in subscribing trades.", throwable));
+                    .subscribe(this::executeActions,
+                            throwable -> log.error("Error in subscribing trades.", throwable));
         }
     }
 

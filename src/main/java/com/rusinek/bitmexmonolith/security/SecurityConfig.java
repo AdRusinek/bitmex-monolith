@@ -4,6 +4,7 @@ import com.rusinek.bitmexmonolith.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.rusinek.bitmexmonolith.security.SecurityConstants.H2_URL;
 import static com.rusinek.bitmexmonolith.security.SecurityConstants.SIGN_UP_URLS;
 
 
@@ -31,6 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final CustomUserDetailsService customUserDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationEventPublisher authenticationEventPublisher;
 
     @Override
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
@@ -45,7 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(customUserDetailsService)
+        authenticationManagerBuilder
+                .authenticationEventPublisher(authenticationEventPublisher)
+                .userDetailsService(customUserDetailsService)
                 .passwordEncoder(bCryptPasswordEncoder);
     }
 
@@ -55,8 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .headers().frameOptions().sameOrigin() // To enable H2 Database
                 .and()
                 .authorizeRequests()
                 .antMatchers(
@@ -71,7 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js"
                 ).permitAll()
                 .antMatchers(SIGN_UP_URLS).permitAll()
-                .antMatchers(H2_URL).permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);

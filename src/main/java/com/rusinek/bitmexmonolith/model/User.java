@@ -43,6 +43,11 @@ public class User implements UserDetails {
     @Transient
     private String confirmPassword;
     private boolean isTokenVerified;
+    private Boolean accountNonExpired = true;
+    private Boolean accountNonLocked = true;
+    private Boolean credentialsNonExpired = true;
+    private Boolean enabled = true;
+
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -75,24 +80,26 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.accountNonExpired;
     }
 
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.accountNonLocked;
     }
 
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.credentialsNonExpired;
     }
 
     @JsonIgnore
+    @Override
     public boolean isEnabled() {
-        return isTokenVerified;
+        return this.enabled;
     }
+
 
 }

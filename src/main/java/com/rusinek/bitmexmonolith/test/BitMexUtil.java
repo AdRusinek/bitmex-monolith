@@ -1,10 +1,9 @@
-package com.rusinek.bitmexmonolith.util;
+package com.rusinek.bitmexmonolith.test;
 
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.body.MultipartBody;
@@ -17,8 +16,6 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -29,7 +26,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,11 +106,14 @@ public class BitMexUtil {
         // get signContent
         String paramsEncodedStr = getEncodedStrOfParams(params);
         String path = basePath + varPath;
+
         if ((method == HTTP_METHOD.GET) && !paramsEncodedStr.equals("")) {
             path += "?" + paramsEncodedStr;
         }
         String url = host + path;
         String signContent = method.toString() + path + String.valueOf(apiExpires);
+
+
         if (method == HTTP_METHOD.POST) {
             signContent += paramsEncodedStr;
         }
