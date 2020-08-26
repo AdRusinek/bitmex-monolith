@@ -1,10 +1,9 @@
 package com.rusinek.bitmexmonolith.security.listeners;
 
-import com.rusinek.bitmexmonolith.exceptions.authenticationException.ToManyLoginFailuresException;
-import com.rusinek.bitmexmonolith.model.User;
 import com.rusinek.bitmexmonolith.model.security.LoginFailure;
 import com.rusinek.bitmexmonolith.repositories.UserRepository;
 import com.rusinek.bitmexmonolith.repositories.security.LoginFailureRepository;
+import com.rusinek.bitmexmonolith.services.UserLockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -13,10 +12,6 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Created by Adrian Rusinek on 24.08.2020
@@ -28,6 +23,7 @@ public class AuthenticationFailureListener {
 
     private final LoginFailureRepository loginFailureRepository;
     private final UserRepository userRepository;
+    private final UserLockService userLockService;
 
     @EventListener
     public void listenFailure(AuthenticationFailureBadCredentialsEvent event) {
@@ -57,22 +53,10 @@ public class AuthenticationFailureListener {
             log.debug("Failure Event: " + failure.getId());
 
             if (failure.getUser() != null) {
-                lockUserAccount(failure.getUser());
+                userLockService.lockUserAccount(failure.getUser());
             }
         }
     }
 
-    private void lockUserAccount(User user) {
-        List<LoginFailure> failures = loginFailureRepository.findAllByUserAndCreatedDateIsAfter(user,
-                Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
 
-        if (failures.size() > 3) {
-            log.debug("Locking User Account.");
-            user.setAccountNonLocked(false);
-            userRepository.save(user);
-
-            throw new ToManyLoginFailuresException("Twoje konto zostało zablokowane " +
-                    "na dzien ze względu na zbyt dużą liczbę nieudanych prób logowania.");
-        }
-    }
 }

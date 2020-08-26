@@ -95,7 +95,7 @@ public class UserService {
         Optional<User> user = userRepository.findByUsername(request.getUsername());
 
         if (user.isPresent()) {
-//            codeValidator.validate(request, result);
+            codeValidator.validate(request, result);
         }
 
         if (result.hasErrors()) {

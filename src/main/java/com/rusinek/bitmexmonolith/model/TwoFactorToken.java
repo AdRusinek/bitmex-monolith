@@ -25,11 +25,9 @@ public class TwoFactorToken {
     private Long id;
     private String username;
     private String secretKey;
-
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createdDate;
-
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private User user;
