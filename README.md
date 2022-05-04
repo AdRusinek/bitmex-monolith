@@ -9,9 +9,11 @@ of Internet exchanges, so they can get better results.
 - As the application uses very sensitive customer data, which are the BitMEX access keys, it has also been secured with Google two-factor authentication.
 - The program controls errors returned by the exchange as well as unusual user actions, which, if not handled, would result in blocking the application. The user of this website can be anyone who only has an account on the BitMEX exchange.
 
-Main landing page look as follows:
-![image](https://user-images.githubusercontent.com/43619870/166824939-6a0c314d-31bb-4710-891c-4c47d4295c79.png)
+Main landing page look as follows (For more information about graphic interface please visit frontend repository [Bitmex Frontend](https://github.com/AdRusinek/BitMEX_Frontend))
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/43619870/166824939-6a0c314d-31bb-4710-891c-4c47d4295c79.png" alt="alternate text">
+ </p>
 
 A step forward would be to implement specific cryptocurrency playing tactics, so that the user would not have to engage in any game on the stock market, 
 but would set the tactics and the program would play for him.
