@@ -18,7 +18,7 @@
         <java.version>1.8</java.version>
         <exchange.version>4.4.0</exchange.version>
         <jwt.version>0.9.0</jwt.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <gson.version>2.8.6</gson.version>
         <unirest.version>1.4.9</unirest.version>
         <guava.version>27.1-android</guava.version>
